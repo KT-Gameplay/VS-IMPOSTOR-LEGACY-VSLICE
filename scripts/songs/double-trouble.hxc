@@ -1,7 +1,7 @@
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.data.character.CharacterDataParser;
-import funkin.graphics.shaders.DropShadowShader;
+import legacy.shaders.ExtraDropShadowShader;
 import flixel.FlxG;
 import flixel.addons.display.FlxRuntimeShader;
 import openfl.filters.ShaderFilter;
@@ -23,8 +23,10 @@ class DoubleTroubleSong extends Song
 
     var redElement = null;
     var redPostor = null;
-    var bfShader = null;
-    var greenShader = null;
+    var bfShader:ExtraDropShadowShader = new ExtraDropShadowShader();
+    var greenShader:ExtraDropShadowShader = new ExtraDropShadowShader();
+    var gfShader:ExtraDropShadowShader = new ExtraDropShadowShader();
+    var redShader:ExtraDropShadowShader = new ExtraDropShadowShader();
     var rainShader = null;
     var rainIntensity:Float = 0.1;
     var heartRad:Float = 0;
@@ -43,7 +45,7 @@ class DoubleTroubleSong extends Song
         redPostor.x = -420;
         redPostor.y = -380;
         redPostor.origin.set();
-        PlayState.instance.currentStage.characters.set(redPostor.characterId, redPostor);
+        PlayState.instance.currentStage.characters.set('red', redPostor);
 
         bf = PlayState.instance.currentStage.getBoyfriend();
         gf = PlayState.instance.currentStage.getGirlfriend();
@@ -58,14 +60,26 @@ class DoubleTroubleSong extends Song
 		frame.add(redElement);
 	});
 
-    bfShader = new DropShadowShader();
     bfShader.setAdjustColor(-78, -25, -15, -58);
+	bfShader.addLayer([
+		.8, 0, 0, 0, 0,
+		0, 1, 0, 0, 0,
+		.3, 0, 1, 0, 0,
+		0, 0, 0, 1, 0
+	], 90, 35, .01, 1, .5);
+	
+	greenShader.copyFrom(gfShader.copyFrom(bfShader));
+	greenShader.setAdjustColor(-28, -22, -10, -60);
 
-    greenShader = new DropShadowShader();
-    greenShader.setAdjustColor(-28, -22, -10, -60);
+    redShader.copyFrom(greenShader);
+	
+	bfShader.layers[0].angle = 110;
+	greenShader.layers[0].angle = 70;
 
-    bf.shader = gf.shader = bfShader;
-    redPostor.shader = dad.shader = greenShader;
+    bfShader.attachedSprite = bf;
+    gfShader.attachedSprite = gf;
+    greenShader.attachedSprite = dad;
+    redShader.attachedSprite = redPostor;
 
     rainShader = new FlxRuntimeShader(Assets.getText(Paths.frag('rain-legacy')));
 	rainShader.setFloatArray('uScreenResolution', [FlxG.width, FlxG.height]);
@@ -103,10 +117,11 @@ class DoubleTroubleSong extends Song
         bfIntro = FunkinSprite.createTextureAtlas(2100, 1080, 'BG/dt/bfIntro', 'shared', {cacheOnLoad: true, swfMode: true});
         bfIntro.anim.addByFrameLabel('intro', 'intro', 24, false);
         PlayState.instance.currentStage.add(bfIntro);
-        bfIntro.shader = bfShader;
+        bfShader.attachedSprite = bfIntro;
         PlayState.instance.currentStage.getBoyfriend().kill();
         bfIntro.anim.play('intro', true);
         PlayState.instance.currentStage.getGirlfriend().playAnimation('intro', true);
+        PlayState.instance.currentStage.scriptGet('lightningDarken')?.push(bfIntro);
 
         new FlxTimer().start(0.5, function(_) {
             PlayState.instance.tweenCameraZoom(0.7, 15, true, FlxEase.sineInOut);
@@ -132,6 +147,8 @@ class DoubleTroubleSong extends Song
                 PlayState.instance.currentStage.remove(bfIntro);
                 bfIntro.destroy();
                 PlayState.instance.currentStage.getBoyfriend().revive();
+                bfShader.attachedSprite = PlayState.instance.currentStage.getBoyfriend();
+                PlayState.instance.currentStage.scriptGet('lightningDarken')?.remove(bfIntro);
             });
         });
 
