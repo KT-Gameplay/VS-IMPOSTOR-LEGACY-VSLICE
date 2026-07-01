@@ -1,0 +1,1210 @@
+import haxe.ds.StringMap;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
+import funkin.ui.MusicBeatState;
+import funkin.ui.transition.LoadingState;
+import funkin.save.Save;
+import funkin.play.song.Song;
+import funkin.data.song.SongRegistry;
+import funkin.Paths;
+import funkin.audio.FunkinSound;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.utils.Constants;
+import StringTools;
+
+class ImpostorLegacyFreeplayState extends MusicBeatState
+{
+	var songComposers:StringMap;
+	var songDisplayNames:StringMap;
+	var songGlowColours:StringMap;
+	var songIcons:StringMap;
+	var songPortraits:StringMap;
+	var songIconSplitDivisor:StringMap;
+	var songIconSparrow:StringMap;
+	var songAltPortraits:StringMap;
+
+
+	var portraitOffsetX:StringMap;
+	var portraitOffsetY:StringMap;
+	var portraitScale:StringMap;
+
+	var bg:FlxSprite;
+	var bg2:FlxSprite;
+	var starFG:FlxSprite;
+	var starFG2:FlxSprite;
+	var bgScrollX:Float = 0;
+	var fgScrollX:Float = 0;
+	var bgSpeed:Float = 20.0;
+	var fgSpeed:Float = 45.0;
+
+// communitygame saved me on this one
+	var pages:Array<Array<String>> = [
+		["sussus-moogus","sabotage","meltdown",
+		 "sussus-toogus","lights-down","reactor","ejected",
+		 "mando","d'low","oversight","danger","double-kill",
+		 "defeat","identity-crisis","finale"],
+		["ashes","magmatic","boiling-point",
+		 "delusion","blackout","neurotic",
+		 "heartbeat","pinkwave","pretender","sauces-moogus"],
+		["o2","voting-time","turbulence","victory","roomcode"],
+		["sussy-bussy","rivals","chewmate","tomongus-tuesday"],
+		["lemon-lime","chlorophyll","inflorescence","stargazer"],
+		["titular","greatest-plan","reinforcements","armed"],
+		["ow","who","insane-streamer","sussus-nuzzus",
+		 "idk","esculent","drippypop","crewicide",
+		 "monotone-attack","top-10","double-trouble"],
+		["chippin","chipping","torture"]
+	];
+
+	var DLC_SONGS:Array<String> = ["triple-threat","trot-away","suspect","don't-lied","49"];
+
+	var pageNames:Array<String> = [
+		"Story Mode",
+		"Triple Trouble",
+		"Jorsawsee's Jams",
+		"Rosy Rivals",
+		"Lime Green Jadspostor",
+		"Battling The Boyfriend",
+		"Bonus Songs",
+		"Cval vs. Pip"
+	];
+
+	var curPage:Int = 0;
+	var curIndex:Int = 0;
+
+	var CARD_W:Float = 500.0;
+	var CARD_H:Float = 90.0;
+	var SEL_X:Float = 80.0;
+	var SEL_Y:Float = 360.0;
+	var STEP_X:Float = 70.0;
+	var STEP_Y:Float = 100.0;
+	var STEP_ALPHA:Float = 0.22;
+	var MAX_CARDS:Int = 20;
+
+	var cards:Array<FlxSprite> = [];
+	var cardIcons:Array<FlxSprite> = [];
+	var cardIconNames:Array<String> = [];
+	var songTitles:Array<FlxText> = [];
+	var composerTexts:Array<FlxText> = [];
+	var musicNotes:Array<FlxSprite> = [];
+	var ratingTexts:Array<FlxText> = [];
+
+	var curX:Array<Float> = [];
+	var curY:Array<Float> = [];
+	var curA:Array<Float> = [];
+	var tgtX:Array<Float> = [];
+	var tgtY:Array<Float> = [];
+	var tgtA:Array<Float> = [];
+
+	var backGlow:FlxSprite;
+	var topBar:FlxSprite;
+	var weekTitle:FlxText;
+	var menuBackBtn:FlxSprite;
+
+	var canDoStuffs:Bool = true;
+	var curDifficulty:Int = 0;
+
+	var pageIcons:Array<FlxSprite> = [];
+	var pageIconNames:Array<String> = ["story", "tt", "jams", "tomo", "jads", "henry", "bonus", "cvp"];
+
+	var infoText:FlxText;
+	var intendedScore:Int = 0;
+	var lerpScore:Int = 0;
+	var intendedRating:Float = 0;
+	var lerpRating:Float = 0;
+
+	var lastClickedCard:Int = -1;
+	var clickTimer:Float = 0;
+	var DOUBLE_CLICK_TIME:Float = 0.4;
+
+	var portrait:FlxSprite;
+	var portraitTween:FlxTween;
+	var portraitAlphaTween:FlxTween;
+	var colorTween:FlxTween;
+	var portraitTargetX:Float = 0;
+	var PORTRAIT_ONSCREEN_X:Float = 304.65;
+	var lastPortraitName:String = "";
+	var TOP_BAR_H:Float = 110.0;
+
+	function initMaps():Void
+	{
+		songComposers = new StringMap();
+		songComposers.set("sussus-moogus", "EthanTheDoodler");
+		songComposers.set("sabotage", "EthanTheDoodler");
+		songComposers.set("meltdown", "punkett");
+		songComposers.set("sussus-toogus", "EthanTheDoodler, Fabs");
+		songComposers.set("lights-down", "Rareblin");
+		songComposers.set("reactor", "EthanTheDoodler, Rareblin");
+		songComposers.set("ejected", "Rareblin");
+		songComposers.set("mando", "Emihead, Rareblin");
+		songComposers.set("d'low", "punkett, Rareblin");
+		songComposers.set("oversight", "Emihead, Rareblin");
+		songComposers.set("danger", "Rareblin");
+		songComposers.set("double-kill", "Rareblin");
+		songComposers.set("defeat", "Rareblin");
+		songComposers.set("identity-crisis", "Dogu, Vruzzen, Rareblin");
+		songComposers.set("finale", "Vruzzen, punkett");
+		songComposers.set("ashes", "EthanTheDoodler");
+		songComposers.set("magmatic", "Rozebud");
+		songComposers.set("boiling-point", "EthanTheDoodlers, Rareblin");
+		songComposers.set("delusion", "Fluffyhairs");
+		songComposers.set("blackout", "Cval");
+		songComposers.set("neurotic", "Nii-san");
+		songComposers.set("heartbeat", "Saster");
+		songComposers.set("pinkwave", "Fluffyhairs");
+		songComposers.set("pretender", "EthanTheDoodler");
+		songComposers.set("sauces-moogus", "Saster");
+		songComposers.set("o2", "punkett");
+		songComposers.set("voting-time", "punkett, JADS");
+		songComposers.set("turbulence", "Keegan");
+		songComposers.set("victory", "punkett");
+		songComposers.set("roomcode", "Keegan");
+		songComposers.set("titular", "EthanTheDoodler");
+		songComposers.set("greatest-plan", "EthanTheDoodler");
+		songComposers.set("reinforcements", "EthanTheDoodler, Philiplol");
+		songComposers.set("armed", "EthanTheDoodler, punkett");
+		songComposers.set("sussy-bussy", "Saruky");
+		songComposers.set("rivals", "Keoni");
+		songComposers.set("chewmate", "Moonmistt");
+		songComposers.set("tomongus-tuesday", "Emihead");
+		songComposers.set("lemon-lime", "Rozebud");
+		songComposers.set("chlorophyll", "JADS");
+		songComposers.set("inflorescence", "Rosebud");
+		songComposers.set("stargazer", "punkett");
+		songComposers.set("sussus-nuzzus", "Lunaxis");
+		songComposers.set("triple-threat", "Seatoo");
+		songComposers.set("double-trouble", "Rareblin");
+		songComposers.set("ow", "fabs");
+		songComposers.set("chippin", "Ziffy");
+		songComposers.set("chipping", "Ziffy");
+		songComposers.set("crewicide", "Punkett");
+		songComposers.set("drippypop", "EthanTheDoodler, Neato");
+		songComposers.set("esculent", "Nii-san");
+		songComposers.set("idk", "Kiwiquest");
+		songComposers.set("insane-streamer", "EthanTheDoodler, Neato");
+		songComposers.set("monotone-attack", "Biddle3");
+		songComposers.set("top-10", "Top 10 Awesome");
+		songComposers.set("torture", "Team TORTURE");
+		songComposers.set("who", "EthanTheDoodler");
+		songComposers.set("trot-away", "DeepFriedBolognese & Kakow0");
+		songComposers.set("suspect", "rodreal");
+		songComposers.set("don't-lied", "Kakow0");
+		songComposers.set("49", "Ra_TanG");
+
+		songDisplayNames = new StringMap();
+		songDisplayNames.set("chippin", "Chippin");
+		songDisplayNames.set("chipping", "Chipping");
+		songDisplayNames.set("crewicide", "Crewicide");
+		songDisplayNames.set("drippypop", "Drippypop");
+		songDisplayNames.set("esculent", "Esculent");
+		songDisplayNames.set("idk", "Idk");
+		songDisplayNames.set("insane-streamer", "Insane Streamer");
+		songDisplayNames.set("monotone-attack", "Monotone Attack");
+		songDisplayNames.set("top-10", "Top 10");
+		songDisplayNames.set("torture", "Torture");
+		songDisplayNames.set("who", "Who");
+		songDisplayNames.set("trot-away", "Trot Away");
+		songDisplayNames.set("suspect", "Suspect");
+		songDisplayNames.set("don't-lied", "Don't Lied");
+		songDisplayNames.set("49", "49");
+
+		songGlowColours = new StringMap();
+		songGlowColours.set("sussus-moogus", 0xFFFF2200);
+		songGlowColours.set("sabotage", 0xFFFF2200);
+		songGlowColours.set("meltdown", 0xFFFF2200);
+		songGlowColours.set("sussus-toogus", 0xFF00CC44);
+		songGlowColours.set("lights-down", 0xFF00CC44);
+		songGlowColours.set("reactor", 0xFF00CC44);
+		songGlowColours.set("ejected", 0xFF44FF66);
+		songGlowColours.set("mando", 0xFFFFDD00);
+		songGlowColours.set("d'low", 0xFFFFDD00);
+		songGlowColours.set("oversight", 0xFFDDEEFF);
+		songGlowColours.set("danger", 0xFF220033);
+		songGlowColours.set("double-kill", 0xFF8899BB);
+		songGlowColours.set("defeat", 0xFF220033);
+		songGlowColours.set("identity-crisis", 0xFF778899);
+		songGlowColours.set("finale", 0xFF440066);
+		songGlowColours.set("ashes", 0xFF990022);
+		songGlowColours.set("magmatic", 0xFF990022);
+		songGlowColours.set("boiling-point", 0xFF771133);
+		songGlowColours.set("delusion", 0xFF667788);
+		songGlowColours.set("blackout", 0xFF556677);
+		songGlowColours.set("neurotic", 0xFF667788);
+		songGlowColours.set("heartbeat", 0xFFFF55BB);
+		songGlowColours.set("pinkwave", 0xFFFF55BB);
+		songGlowColours.set("pretender", 0xFF8800FF);
+		songGlowColours.set("sauces-moogus", 0xFFBBCCDD);
+		songGlowColours.set("o2", 0xFF2255CC);
+		songGlowColours.set("voting-time", 0xFFCC1100);
+		songGlowColours.set("turbulence", 0xFFDD1100);
+		songGlowColours.set("victory", 0xFFCC7700);
+		songGlowColours.set("roomcode", 0xFF0077CC);
+		songGlowColours.set("titular", 0xFF996633);
+		songGlowColours.set("greatest-plan", 0xFF2255BB);
+		songGlowColours.set("reinforcements", 0xFF7733BB);
+		songGlowColours.set("armed", 0xFFCC4400);
+		songGlowColours.set("sussy-bussy", 0xFFFF6677);
+		songGlowColours.set("rivals", 0xFFFF6677);
+		songGlowColours.set("chewmate", 0xFFFF6677);
+		songGlowColours.set("tomongus-tuesday", 0xFFFF6677);
+		songGlowColours.set("sussus-nuzzus", 0xFFFF6677);
+		songGlowColours.set("triple-threat", 0xFFAA2266);
+		songGlowColours.set("lemon-lime", 0xFF88FF00);
+		songGlowColours.set("chlorophyll", 0xFF44DD00);
+		songGlowColours.set("inflorescence", 0xFF66FF44);
+		songGlowColours.set("stargazer", 0xFF99FF22);
+		songGlowColours.set("ow", 0xFF182F39);
+		songGlowColours.set("double-trouble", 0xFF000B0C);
+		songGlowColours.set("chippin", 0xFFFF3C26);
+		songGlowColours.set("chipping", 0xFFFF3C26);
+		songGlowColours.set("crewicide", 0xFF0000FF);
+		songGlowColours.set("drippypop", 0xFFBC6ADF);
+		songGlowColours.set("esculent", 0xFF87423D);
+		songGlowColours.set("idk", 0xFF3F48CC);
+		songGlowColours.set("insane-streamer", 0xFFFFFFCC);
+		songGlowColours.set("monotone-attack", 0xFFFFFFFF);
+		songGlowColours.set("top-10", 0xFFFF0000);
+		songGlowColours.set("torture", 0xFFBC6ADF);
+		songGlowColours.set("who", 0xFF1641F0);
+		songGlowColours.set("trot-away", 0xFF44AACC);
+		songGlowColours.set("suspect", 0xFFCC8833);
+		songGlowColours.set("don't-lied", 0xFF8844AA);
+		songGlowColours.set("49", 0xFF4466AA);
+
+		songIcons = new StringMap();
+		songIcons.set("sussus-moogus", "icon-impostor");
+		songIcons.set("sabotage", "icon-impostor");
+		songIcons.set("meltdown", "icon-impostor");
+		songIcons.set("sussus-toogus", "icon-crewmate");
+		songIcons.set("lights-down", "icon-green");
+		songIcons.set("reactor", "icon-green");
+		songIcons.set("double-trouble", "icon-double-trouble");
+		songIcons.set("ejected", "icon-green-parasite");
+		songIcons.set("mando", "icon-yellow");
+		songIcons.set("d'low", "icon-yellow");
+		songIcons.set("oversight", "icon-white");
+		songIcons.set("danger", "icon-black");
+		songIcons.set("double-kill", "icon-double-kill");
+		songIcons.set("defeat", "icon-black");
+		songIcons.set("identity-crisis", "icon-monotone");
+		songIcons.set("finale", "icon-black");
+		songIcons.set("ashes", "icon-maroon");
+		songIcons.set("magmatic", "icon-maroon");
+		songIcons.set("boiling-point", "icon-maroon");
+		songIcons.set("sauces-moogus", "icon-chef");
+		songIcons.set("delusion", "icon-gray");
+		songIcons.set("blackout", "icon-gray");
+		songIcons.set("neurotic", "icon-gray");
+		songIcons.set("heartbeat", "icon-pink");
+		songIcons.set("pinkwave", "icon-pink");
+		songIcons.set("pretender", "icon-pretender");
+		songIcons.set("o2", "icon-jorsawsee");
+		songIcons.set("voting-time", "icon-votingtime");
+		songIcons.set("turbulence", "icon-redmungus");
+		songIcons.set("victory", "icon-victory");
+		songIcons.set("roomcode", "icon-powers");
+		songIcons.set("titular", "icon-henry");
+		songIcons.set("greatest-plan", "icon-charles");
+		songIcons.set("reinforcements", "icon-ellie");
+		songIcons.set("armed", "icon-armed");
+		songIcons.set("sussy-bussy", "icon-tuesday");
+		songIcons.set("rivals", "icon-tuesday");
+		songIcons.set("chewmate", "icon-tuesday");
+		songIcons.set("tomongus-tuesday", "icon-tuesday");
+		songIcons.set("sussus-nuzzus", "icon-nuzzles");
+		songIcons.set("triple-threat", "icon-tt2");
+		songIcons.set("lemon-lime", "icon-jads");
+		songIcons.set("chlorophyll", "icon-jads");
+		songIcons.set("inflorescence", "icon-jads");
+		songIcons.set("stargazer", "icon-jads");
+		songIcons.set("ow", "icon-kills");
+		songIcons.set("chippin", "icon-cvp");
+		songIcons.set("chipping", "icon-cvp");
+		songIcons.set("crewicide", "icon-dave");
+		songIcons.set("drippypop", "icon-drippy");
+		songIcons.set("esculent", "icon-dead");
+		songIcons.set("idk", "icon-idk");
+		songIcons.set("insane-streamer", "icon-jerma");
+		songIcons.set("monotone-attack", "icon-attack");
+		songIcons.set("top-10", "icon-top");
+		songIcons.set("torture", "icon-ziffy");
+		songIcons.set("who", "icon-whoguys");
+		songIcons.set("trot-away", "icon-horsemate");
+		songIcons.set("suspect", "icon-detective");
+		songIcons.set("don't-lied", "icon-purple");
+		songIcons.set("49", "icon-noob49");
+
+		songIconSplitDivisor = new StringMap();
+		songIconSparrow = new StringMap();
+		songIconSparrow.set("icon-horsemate", "idle0000");
+
+		songPortraits = new StringMap();
+		songPortraits.set("sussus-moogus", "red");
+		songPortraits.set("sabotage", "red");
+		songPortraits.set("meltdown", "red");
+		songPortraits.set("sussus-toogus", "green");
+		songPortraits.set("lights-down", "green");
+		songPortraits.set("reactor", "green");
+		songPortraits.set("double-trouble", "doubletrouble");
+		songPortraits.set("ejected", "greenp");
+		songPortraits.set("mando", "yellow");
+		songPortraits.set("d'low", "yellow");
+		songPortraits.set("oversight", "white");
+		songPortraits.set("danger", "black");
+		songPortraits.set("double-kill", "doublekill");
+		songPortraits.set("defeat", "black");
+		songPortraits.set("identity-crisis", "monotone");
+		songPortraits.set("finale", "blackp");
+		songPortraits.set("ashes", "maroon");
+		songPortraits.set("magmatic", "maroon");
+		songPortraits.set("boiling-point", "maroonp");
+		songPortraits.set("sauces-moogus", "chef");
+		songPortraits.set("delusion", "grey");
+		songPortraits.set("blackout", "grey");
+		songPortraits.set("neurotic", "grey");
+		songPortraits.set("heartbeat", "pink");
+		songPortraits.set("pinkwave", "pink");
+		songPortraits.set("pretender", "pretender");
+		songPortraits.set("o2", "jorsawsee");
+		songPortraits.set("voting-time", "voting");
+		songPortraits.set("turbulence", "mungusp");
+		songPortraits.set("victory", "voting");
+		songPortraits.set("roomcode", "powers");
+		songPortraits.set("titular", "henry");
+		songPortraits.set("greatest-plan", "charles");
+		songPortraits.set("reinforcements", "ellie");
+		songPortraits.set("armed", "rhm");
+		songPortraits.set("sussy-bussy", "mech");
+		songPortraits.set("rivals", "mech");
+		songPortraits.set("chewmate", "mech");
+		songPortraits.set("tomongus-tuesday", "mech");
+		songPortraits.set("ow", "ow");
+		songPortraits.set("sussus-nuzzus", "nuzzus");
+		songPortraits.set("triple-threat", "triplethreat");
+		songPortraits.set("lemon-lime", "jads");
+		songPortraits.set("chlorophyll", "jads");
+		songPortraits.set("inflorescence", "jads");
+		songPortraits.set("stargazer", "jads");
+		songPortraits.set("chippin", "cval");
+		songPortraits.set("chipping", "cval");
+		songPortraits.set("crewicide", "dave");
+		songPortraits.set("drippypop", "drip");
+		songPortraits.set("esculent", "esculent");
+		songPortraits.set("idk", "idk");
+		songPortraits.set("insane-streamer", "jerma");
+		songPortraits.set("monotone-attack", "attack");
+		songPortraits.set("top-10", "awesome");
+		songPortraits.set("torture", "torture");
+		songPortraits.set("who", "who");
+		songPortraits.set("trot-away", "horsemate");
+		songPortraits.set("suspect", "detective");
+		songPortraits.set("don't-lied", "purple");
+		songPortraits.set("49", "noob49");
+
+		songAltPortraits = new StringMap();
+		songAltPortraits.set("sussus-toogus", "twogus");
+		songAltPortraits.set("lights-down", "twogus");
+		songAltPortraits.set("defeat", "blackv1");
+		songAltPortraits.set("double-trouble", "twogus-double");
+
+		portraitOffsetX = new StringMap();
+		portraitOffsetX.set("red", -70);
+		portraitOffsetX.set("green", -70);
+		portraitOffsetX.set("greenp", -120);
+		portraitOffsetX.set("black", -50);
+		portraitOffsetX.set("blackp", -150);
+		portraitOffsetX.set("doublekill", -100);
+		portraitOffsetX.set("grey", -100);
+		portraitOffsetX.set("yellow", -100);
+		portraitOffsetX.set("chef", -50);
+		portraitOffsetX.set("maroon", -250);
+		portraitOffsetX.set("maroonp", -150);
+		portraitOffsetX.set("pink", 0);
+		portraitOffsetX.set("pretender", -50);
+		portraitOffsetX.set("monotone", -50);
+		portraitOffsetX.set("henry", 0);
+		portraitOffsetX.set("charles", -50);
+		portraitOffsetX.set("ellie", -150);
+		portraitOffsetX.set("powers", -50);
+		portraitOffsetX.set("mech", 50);
+		portraitOffsetX.set("fella", 100);
+		portraitOffsetX.set("nuzzus", 0);
+		portraitOffsetX.set("impostor", 0);
+		portraitOffsetX.set("mungusp", -50);
+		portraitOffsetX.set("twogus", 0);
+		portraitOffsetX.set("twogus-double", 0);
+		portraitOffsetX.set("blackv1", 60);
+		portraitOffsetX.set("jads", 0);
+		portraitOffsetX.set("white", -250);
+		portraitOffsetX.set("tripletrouble", -50);
+		portraitOffsetX.set("doubletrouble", -100);
+		portraitOffsetX.set("triplethreat", -125);
+		portraitOffsetX.set("jorsawsee", -150);
+		portraitOffsetX.set("voting", -250);
+		portraitOffsetX.set("ow", 0);
+		portraitOffsetX.set("nahorange", -50);
+
+		portraitOffsetY = new StringMap();
+		portraitOffsetY.set("red", 150);
+		portraitOffsetY.set("green", 130);
+		portraitOffsetY.set("yellow", 0);
+		portraitOffsetY.set("black", 30);
+		portraitOffsetY.set("blackp", -80);
+		portraitOffsetY.set("grey", 20);
+		portraitOffsetY.set("chef", 50);
+		portraitOffsetY.set("maroon", -80);
+		portraitOffsetY.set("maroonp", -50);
+		portraitOffsetY.set("pink", 0);
+		portraitOffsetY.set("pretender", -30);
+		portraitOffsetY.set("monotone", -50);
+		portraitOffsetY.set("henry", 90);
+		portraitOffsetY.set("charles", 150);
+		portraitOffsetY.set("powers", 0);
+		portraitOffsetY.set("mech", 50);
+		portraitOffsetY.set("fella", 250);
+		portraitOffsetY.set("nuzzus", 150);
+		portraitOffsetY.set("impostor", 150);
+		portraitOffsetY.set("mungusp", 100);
+		portraitOffsetY.set("twogus", 50);
+		portraitOffsetY.set("twogus-double", 150);
+		portraitOffsetY.set("blackv1", 0);
+		portraitOffsetY.set("jads", 120);
+		portraitOffsetY.set("triplethreat", 25);
+		portraitOffsetY.set("white", 0);
+		portraitOffsetY.set("voting", 50);
+		portraitOffsetY.set("ow", 150);
+		portraitOffsetY.set("nahorange", 200);
+
+		portraitScale = new StringMap();
+		portraitScale.set("ow", 0.97);
+		portraitScale.set("nahorange", 1.5);
+	}
+
+	override function create()
+	{
+		super.create();
+
+		initMaps();
+
+		var hasDLCCharts:Bool = false;
+		for (s in DLC_SONGS)
+		{
+			if (SongRegistry.instance.fetchEntry(s, {variation: ""}) != null)
+			{
+				hasDLCCharts = true;
+				break;
+			}
+		}
+		if (hasDLCCharts)
+		{
+			pages.push(DLC_SONGS);
+			pageNames.push("Security DLC");
+			pageIconNames.push("dlc");
+		}
+
+		FlxG.mouse.visible = true;
+		FunkinSound.playMusic('freakyMenu', {overrideExisting: true, restartTrack: false, persist: true});
+
+		bg = new FlxSprite(0, 0);
+		bg.loadGraphic(Paths.image("menus/freeplay/starBG"));
+		bg.setGraphicSize(1280, 720);
+		bg.updateHitbox();
+		bg.antialiasing = true;
+		add(bg);
+
+		bg2 = new FlxSprite(1280, 0);
+		bg2.loadGraphic(Paths.image("menus/freeplay/starBG"));
+		bg2.setGraphicSize(1280, 720);
+		bg2.updateHitbox();
+		bg2.antialiasing = true;
+		add(bg2);
+
+		starFG = new FlxSprite(0, 0);
+		starFG.loadGraphic(Paths.image("menus/freeplay/starFG"));
+		starFG.setGraphicSize(1280, 720);
+		starFG.updateHitbox();
+		starFG.antialiasing = true;
+		add(starFG);
+
+		starFG2 = new FlxSprite(1280, 0);
+		starFG2.loadGraphic(Paths.image("menus/freeplay/starFG"));
+		starFG2.setGraphicSize(1280, 720);
+		starFG2.updateHitbox();
+		starFG2.antialiasing = true;
+		add(starFG2);
+
+		backGlow = new FlxSprite(0, 0);
+		backGlow.loadGraphic(Paths.image("menus/freeplay/backGlow"));
+		backGlow.setGraphicSize(820, 820);
+		backGlow.updateHitbox();
+		backGlow.x = 1280 - backGlow.width;
+		backGlow.y = 720 - backGlow.height;
+		backGlow.alpha = 0.55;
+		backGlow.antialiasing = true;
+		add(backGlow);
+
+		portrait = new FlxSprite(0, 0);
+		portrait.loadGraphic(Paths.image("menus/freeplay/portraits/red"));
+		portrait.antialiasing = true;
+		portrait.scale.set(0.97, 0.97);
+		portrait.updateHitbox();
+		portraitTargetX = PORTRAIT_ONSCREEN_X;
+		portrait.x = 504.65;
+		portrait.y = -100;
+		portrait.alpha = 0;
+		portrait.scrollFactor.set(0, 0);
+		add(portrait);
+
+		for (i in 0...MAX_CARDS)
+		{
+			var card = new FlxSprite(SEL_X, SEL_Y);
+			card.loadGraphic(Paths.image("menus/freeplay/card"));
+			card.setGraphicSize(Std.int(CARD_W), Std.int(CARD_H));
+			card.updateHitbox();
+			card.antialiasing = true;
+			card.visible = false;
+			card.scrollFactor.set(0, 0);
+			add(card);
+			cards.push(card);
+
+			var icon = new FlxSprite(0, 0);
+			icon.makeGraphic(1, 1, 0x00000000);
+			icon.visible = false;
+			icon.scrollFactor.set(0, 0);
+			add(icon);
+			cardIcons.push(icon);
+			cardIconNames.push("");
+
+			var title = new FlxText(0, 0, 520, "");
+			title.setFormat(Paths.font("AmaticSC-Bold.ttf"), 64, 0xFFFFFFFF, "left", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+			title.borderSize = 1;
+			title.antialiasing = true;
+			title.visible = false;
+			title.scrollFactor.set(0, 0);
+			add(title);
+			songTitles.push(title);
+
+			var note = new FlxSprite(0, 0);
+			note.loadGraphic(Paths.image("menus/freeplay/musicNote"));
+			note.setGraphicSize(16, 16);
+			note.updateHitbox();
+			note.antialiasing = true;
+			note.visible = false;
+			note.scrollFactor.set(0, 0);
+			add(note);
+			musicNotes.push(note);
+
+			var comp = new FlxText(0, 0, 400, "");
+			comp.setFormat(Paths.font("vcr.ttf"), 19, 0xFFFFFFFF, "left", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+			comp.borderSize = 1;
+			comp.antialiasing = true;
+			comp.visible = false;
+			comp.scrollFactor.set(0, 0);
+			add(comp);
+			composerTexts.push(comp);
+
+			var rating = new FlxText(0, 0, 30, "");
+			rating.setFormat(Paths.font("AmaticSC-Bold.ttf"), 68, 0xFF00DD00, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+			rating.borderSize = 1;
+			rating.antialiasing = true;
+			rating.visible = false;
+			rating.scrollFactor.set(0, 0);
+			add(rating);
+			ratingTexts.push(rating);
+
+			curX.push(SEL_X);
+			curY.push(SEL_Y + i * STEP_Y);
+			curA.push(1.0);
+			tgtX.push(SEL_X);
+			tgtY.push(SEL_Y + i * STEP_Y);
+			tgtA.push(1.0);
+		}
+
+		topBar = new FlxSprite(0, -15);
+		topBar.loadGraphic(Paths.image("menus/freeplay/topBar"));
+		topBar.setGraphicSize(1280, Std.int(TOP_BAR_H));
+		topBar.updateHitbox();
+		topBar.antialiasing = true;
+		topBar.scrollFactor.set(0, 0);
+		add(topBar);
+
+		var iconSpacing:Float = 90.0;
+		var iconsStartX:Float = (1280 - iconSpacing * (pageIconNames.length - 1)) / 2;
+		for (i in 0...pageIconNames.length)
+		{
+			var pIcon = new FlxSprite(0, 0);
+			pIcon.loadGraphic(Paths.image("menu/freeplay/sections/" + pageIconNames[i]));
+			pIcon.scale.set(0.55, 0.55);
+			pIcon.updateHitbox();
+			pIcon.antialiasing = true;
+			pIcon.scrollFactor.set(0, 0);
+			pIcon.x = iconsStartX + iconSpacing * i - pIcon.width / 2;
+			pIcon.y = (TOP_BAR_H - pIcon.height) / 2.5 - 12.5;
+			pIcon.alpha = (i == 0) ? 1.0 : 0.35;
+			add(pIcon);
+			pageIcons.push(pIcon);
+		}
+
+		weekTitle = new FlxText(0, TOP_BAR_H + 2, 1280, "");
+		weekTitle.setFormat(Paths.font("AmaticSC-Bold.ttf"), 70, 0xFFFFFFFF, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+		weekTitle.borderSize = 2;
+		weekTitle.antialiasing = true;
+		weekTitle.scrollFactor.set(0, 0);
+		add(weekTitle);
+
+		infoText = new FlxText(0, 91, FlxG.width - 6, "", 48);
+		infoText.setFormat(Paths.font("vcr.ttf"), 36, FlxColor.WHITE, "right", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		infoText.antialiasing = true;
+		infoText.scrollFactor.set(0, 0);
+		add(infoText);
+
+		menuBackBtn = new FlxSprite(12, 8);
+		menuBackBtn.loadGraphic(Paths.image("menu/common/menuBack"));
+		menuBackBtn.antialiasing = true;
+		menuBackBtn.scrollFactor.set(0, 0);
+		add(menuBackBtn);
+
+		buildPage(true);
+		var songs0 = pages[curPage];
+		while (curIndex < songs0.length && !hasChart(songs0[curIndex]))
+			curIndex++;
+		if (curIndex >= songs0.length) curIndex = 0;
+		loadPortrait(pages[curPage][curIndex], null);
+		updateScoreDisplay();
+		updatePageIcons();
+	}
+
+	function getGlowColour(song:String):Int
+	{
+		if (songGlowColours.exists(song)) return songGlowColours.get(song);
+		return 0xFF444455;
+	}
+
+	function getIconName(song:String):String
+	{
+		if (songIcons.exists(song)) return songIcons.get(song);
+		return "icon-impostor";
+	}
+
+	function getPortrait(song:String, diff:String):String
+	{
+		if (diff != null && diff != "normal" && songAltPortraits.exists(song))
+			return songAltPortraits.get(song);
+		if (songPortraits.exists(song)) return songPortraits.get(song);
+		return "red";
+	}
+
+	function getPortraitOffsetX(name:String):Float
+	{
+		if (portraitOffsetX.exists(name)) return portraitOffsetX.get(name);
+		return 0;
+	}
+
+	function getPortraitOffsetY(name:String):Float
+	{
+		if (portraitOffsetY.exists(name)) return portraitOffsetY.get(name);
+		return 0;
+	}
+
+	function getPortraitScale(name:String):Float
+	{
+		if (portraitScale.exists(name)) return portraitScale.get(name);
+		return 0.97;
+	}
+
+	function getComposer(song:String):String
+	{
+		if (songComposers.exists(song)) return songComposers.get(song);
+		return "unknown";
+	}
+
+	function getDisplayName(song:String):String
+	{
+		if (songDisplayNames.exists(song)) return songDisplayNames.get(song);
+		var raw:String = StringTools.replace(song, "-", " ");
+		var words:Array<String> = raw.split(" ");
+		var out:Array<String> = [];
+		for (w in words)
+		{
+			if (w.length > 0)
+				out.push(w.charAt(0).toUpperCase() + w.substr(1).toLowerCase());
+		}
+		return out.join(" ");
+	}
+
+	function getLegacyRank(accuracy:Float, missed:Float):Dynamic
+	{
+		if (Math.isNaN(accuracy) || accuracy < 0 || missed < 0) return null;
+		if (accuracy >= 99 && missed == 0) return {letter: "P", colour: 0xFFAA00FF};
+		if (accuracy >= 95 && missed == 0) return {letter: "S", colour: 0xFF00FFFF};
+		if (accuracy >= 90 && missed <= 20) return {letter: "A", colour: 0xFF00CC44};
+		if (accuracy >= 85 && missed <= 30) return {letter: "B", colour: 0xFF88DD44};
+		if (accuracy >= 70 && missed <= 50) return {letter: "C", colour: 0xFFFFDD00};
+		if (accuracy >= 50 && missed <= 70) return {letter: "D", colour: 0xFFCC9944};
+		return {letter: "F", colour: 0xFFCC2200};
+	}
+
+	function updateCardRating(i:Int, song:String):Void
+	{
+		var saveData = Save.instance.getSongScore(song, "hard");
+		if (saveData == null || saveData.tallies == null)
+		{
+			ratingTexts[i].visible = false;
+			return;
+		}
+		var t = saveData.tallies;
+		var weightedHits:Float = t.sick + t.good * 0.67 + t.bad * 0.34;
+		var totalPlayed:Float = t.totalNotesHit + t.missed;
+		var accuracy:Float = 0;
+		if (totalPlayed > 0) accuracy = (weightedHits / totalPlayed) * 100;
+		var info = getLegacyRank(accuracy, t.missed);
+		if (info == null)
+			ratingTexts[i].visible = false;
+		else
+		{
+			ratingTexts[i].visible = cards[i].visible;
+			ratingTexts[i].text = info.letter;
+			ratingTexts[i].color = info.colour;
+			ratingTexts[i].size = 68;
+		}
+	}
+
+	function getSongDiffs(song:String):Array<String>
+	{
+		if (song == "sussus-toogus" || song == "lights-down" || song == "double-trouble" || song == "defeat")
+			return ["normal", "old"];
+		return ["normal"];
+	}
+
+	function hasChart(song:String):Bool
+	{
+		return SongRegistry.instance.fetchEntry(song, {variation: ""}) != null;
+	}
+
+	function buildPage(snap:Bool = false):Void
+	{
+		var songs = pages[curPage];
+		if (curIndex >= songs.length) curIndex = songs.length - 1;
+		if (curIndex < 0) curIndex = 0;
+
+		weekTitle.text = pageNames[curPage];
+		backGlow.color = getGlowColour(pages[curPage][curIndex]);
+
+		for (i in 0...MAX_CARDS)
+		{
+			if (i < songs.length && hasChart(songs[i]))
+			{
+				cards[i].visible = true;
+				cardIcons[i].visible = songTitles[i].visible = true;
+				composerTexts[i].visible = musicNotes[i].visible = true;
+
+				songTitles[i].text = getDisplayName(songs[i]);
+				composerTexts[i].text = getComposer(songs[i]);
+
+				var iconName:String = getIconName(songs[i]);
+				if (iconName != cardIconNames[i])
+				{
+					cardIconNames[i] = iconName;
+					if (songIconSparrow.exists(iconName))
+					{
+						var atlasFrames = Paths.getSparrowAtlas("icons/" + iconName);
+						if (atlasFrames != null)
+						{
+							cardIcons[i].frames = atlasFrames;
+							cardIcons[i].animation.addByPrefix('idle', songIconSparrow.get(iconName), 1, false);
+							cardIcons[i].animation.play('idle');
+						}
+						else
+						{
+							var iconGraphic = Paths.image("icons/" + iconName);
+							if (iconGraphic != null)
+								cardIcons[i].loadGraphic(iconGraphic);
+						}
+					}
+					else
+					{
+						var iconGraphic = Paths.image("icons/" + iconName);
+						if (iconGraphic == null) iconGraphic = Paths.image("icons/icon-impostor");
+						if (iconGraphic != null)
+						{
+							var splitDiv:Float = 2;
+							if (songIconSplitDivisor.exists(iconName)) splitDiv = Std.parseFloat(songIconSplitDivisor.get(iconName));
+							var frameW:Int = (splitDiv >= 1) ? Std.int(iconGraphic.width / splitDiv) : Std.int(iconGraphic.width * splitDiv);
+							var frameH:Int = Std.int(iconGraphic.height);
+							cardIcons[i].loadGraphic(iconGraphic, true, frameW, frameH);
+							cardIcons[i].animation.frameIndex = 0;
+						}
+					}
+					cardIcons[i].scale.set(0.48, 0.48);
+					cardIcons[i].updateHitbox();
+					cardIcons[i].antialiasing = true;
+				}
+
+				updateCardRating(i, songs[i]);
+
+				var dist:Int = i - curIndex;
+				var absDist:Float = Math.abs(dist);
+				var tx:Float = SEL_X - absDist * STEP_X;
+				var ty:Float = SEL_Y - CARD_H / 2.0 + dist * STEP_Y;
+				var ta:Float = 1.0 - absDist * STEP_ALPHA;
+				if (ta < 0.0) ta = 0.0;
+
+				tgtX[i] = tx;
+				tgtY[i] = ty;
+				tgtA[i] = ta;
+
+				if (snap)
+				{
+					curX[i] = tx;
+					curY[i] = ty;
+					curA[i] = ta;
+				}
+			}
+			else
+			{
+				cards[i].visible = cardIcons[i].visible = false;
+				songTitles[i].visible = composerTexts[i].visible = false;
+				musicNotes[i].visible = ratingTexts[i].visible = false;
+			}
+		}
+	}
+
+	function applyCardPositions():Void
+	{
+		for (i in 0...MAX_CARDS)
+		{
+			if (!cards[i].visible) continue;
+
+			cards[i].x = curX[i];
+			cards[i].y = curY[i];
+			cards[i].alpha = curA[i];
+
+			var iconPad:Float = 8;
+			cardIcons[i].x = curX[i] + iconPad;
+			cardIcons[i].y = curY[i] + (CARD_H - cardIcons[i].height) / 2.0;
+			cardIcons[i].alpha = curA[i];
+
+			var textX:Float = curX[i] + cardIcons[i].width + iconPad + 6;
+			songTitles[i].x = textX;
+			songTitles[i].y = curY[i] - 8;
+			songTitles[i].alpha = curA[i];
+
+			musicNotes[i].x = textX;
+			musicNotes[i].y = curY[i] + CARD_H - 21;
+			musicNotes[i].alpha = curA[i];
+
+			composerTexts[i].x = textX + musicNotes[i].width + 4;
+			composerTexts[i].y = curY[i] + CARD_H - 22;
+			composerTexts[i].alpha = curA[i];
+
+			ratingTexts[i].x = curX[i] + CARD_W - 75;
+			ratingTexts[i].y = curY[i] + (CARD_H - ratingTexts[i].height) / 2.0;
+			ratingTexts[i].alpha = curA[i];
+		}
+	}
+
+	function updatePageIcons():Void
+	{
+		for (i in 0...pageIcons.length)
+			pageIcons[i].alpha = (i == curPage) ? 1.0 : 0.35;
+	}
+
+	function loadPortrait(song:String, diff:String):Void
+	{
+		var portraitName:String = getPortrait(song, diff);
+		if (portraitName == lastPortraitName) return;
+		lastPortraitName = portraitName;
+		portrait.loadGraphic(Paths.image("menus/freeplay/portraits/" + portraitName));
+		portrait.antialiasing = true;
+		var sc:Float = getPortraitScale(portraitName);
+		portrait.scale.set(sc, sc);
+		portrait.updateHitbox();
+		portrait.offset.set(0, 0);
+		portrait.offset.x += (portrait.frameWidth - 1215) * 0.5 * portrait.scale.x;
+		portrait.offset.y += (portrait.frameHeight - 1097) * 0.5 * portrait.scale.y;
+		portraitTargetX = PORTRAIT_ONSCREEN_X;
+
+		if (portraitTween != null) portraitTween.cancel();
+		if (portraitAlphaTween != null) portraitAlphaTween.cancel();
+		if (colorTween != null) colorTween.cancel();
+
+		portrait.x = 504.65;
+		portrait.alpha = 0;
+
+		var glowColor:Int = getGlowColour(song);
+		colorTween = FlxTween.color(backGlow, 0.2, backGlow.color, glowColor);
+		portraitTween = FlxTween.tween(portrait, {x: portraitTargetX}, 0.3, {ease: FlxEase.expoOut});
+		portraitAlphaTween = FlxTween.tween(portrait, {alpha: 1}, 0.3, {ease: FlxEase.expoOut});
+	}
+
+	function updateScoreDisplay():Void
+	{
+		var song:String = pages[curPage][curIndex];
+		var saveData = Save.instance.getSongScore(song, "hard");
+		if (saveData != null)
+		{
+			intendedScore = saveData.score;
+			if (saveData.tallies != null)
+			{
+				var t = saveData.tallies;
+				var total:Float = t.sick + t.good + t.bad + t.shit + t.missed;
+				if (total > 0)
+					intendedRating = (t.sick * 1.0 + t.good * 0.67 + t.bad * 0.34) / total * 100;
+				else
+					intendedRating = 0;
+			}
+			else
+				intendedRating = 0;
+		}
+		else
+		{
+			intendedScore = 0;
+			intendedRating = 0;
+		}
+	}
+
+	function changeSelection(change:Int):Void
+	{
+		var songs = pages[curPage];
+		curIndex += change;
+		if (curIndex < 0) curIndex = songs.length - 1;
+		if (curIndex >= songs.length) curIndex = 0;
+		if (!hasChart(songs[curIndex]))
+		{
+			changeSelection(change > 0 ? 1 : -1);
+			return;
+		}
+		curDifficulty = 0;
+		buildPage();
+		loadPortrait(songs[curIndex], null);
+		updateScoreDisplay();
+		FlxG.sound.play(Paths.sound("hover"));
+	}
+
+	function changePage(page:Int):Void
+	{
+		if (page < 0 || page >= pages.length) return;
+		curPage = page;
+		curIndex = 0;
+		var songs = pages[curPage];
+		while (curIndex < songs.length && !hasChart(songs[curIndex]))
+			curIndex++;
+		if (curIndex >= songs.length) curIndex = 0;
+		buildPage(true);
+		for (i in 0...MAX_CARDS)
+		{
+			if (cards[i].visible) curX[i] = -700;
+		}
+		loadPortrait(pages[curPage][curIndex], null);
+		updateScoreDisplay();
+		updatePageIcons();
+	}
+
+	function selectSong():Void
+	{
+		var songName:String = pages[curPage][curIndex];
+		FlxG.sound.play(Paths.sound("confirmMenu"));
+		canDoStuffs = false;
+
+		var songEntry:Song = SongRegistry.instance.fetchEntry(songName, {variation: ""});
+		if (songEntry == null)
+		{
+			trace('Song not found: ' + songName);
+			canDoStuffs = true;
+			return;
+		}
+
+		PlayStatePlaylist.isStoryMode = false;
+		PlayStatePlaylist.campaignDifficulty = "hard";
+		PlayStatePlaylist.campaignVariation = Constants.DEFAULT_VARIATION;
+		PlayStatePlaylist.songPlaylist = [songName];
+
+		LoadingState.loadPlayState({
+			targetSong: songEntry,
+			targetDifficulty: "hard",
+			practiceMode: false,
+			minimalMode: false,
+			botPlayMode: false,
+		}, true);
+	}
+
+	override function update(elapsed:Float)
+	{
+		if (bg == null) return;
+
+		bgScrollX -= bgSpeed * elapsed;
+		if (bgScrollX <= -1280) bgScrollX = 0;
+		bg.x = bgScrollX;
+		bg2.x = bgScrollX + 1280;
+
+		fgScrollX -= fgSpeed * elapsed;
+		if (fgScrollX <= -1280) fgScrollX = 0;
+		starFG.x = fgScrollX;
+		starFG2.x = fgScrollX + 1280;
+
+		var lerpAmt:Float = 0.08;
+		for (i in 0...MAX_CARDS)
+		{
+			if (!cards[i].visible) continue;
+			curX[i] += (tgtX[i] - curX[i]) * lerpAmt;
+			curY[i] += (tgtY[i] - curY[i]) * lerpAmt;
+			curA[i] += (tgtA[i] - curA[i]) * lerpAmt;
+		}
+		applyCardPositions();
+
+		if (!canDoStuffs)
+		{
+			super.update(elapsed);
+			return;
+		}
+
+		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
+		{
+			var newPage:Int = curPage - 1;
+			if (newPage < 0) newPage = pages.length - 1;
+			FlxG.sound.play(Paths.sound("panelDisappear"));
+			changePage(newPage);
+		}
+		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D)
+		{
+			var newPage:Int = curPage + 1;
+			if (newPage >= pages.length) newPage = 0;
+			FlxG.sound.play(Paths.sound("panelAppear"));
+			changePage(newPage);
+		}
+
+		if (FlxG.keys.justPressed.E)
+		{
+			var song:String = pages[curPage][curIndex];
+			var diffs:Array<String> = getSongDiffs(song);
+			if (diffs.length > 1)
+			{
+				curDifficulty++;
+				if (curDifficulty >= diffs.length) curDifficulty = 0;
+				loadPortrait(song, diffs[curDifficulty]);
+				var songs = pages[curPage];
+				for (i in 0...songs.length) updateCardRating(i, songs[i]);
+				updateScoreDisplay();
+			}
+		}
+
+		if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W) changeSelection(-1);
+		if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S) changeSelection(1);
+		// allow swipe gestures to move selection (match FreeplayState behavior)
+		if (SwipeUtil.justSwipedUp) changeSelection(-1);
+		if (SwipeUtil.justSwipedDown) changeSelection(1);
+		if (FlxG.mouse.wheel > 0) changeSelection(-1);
+		else if (FlxG.mouse.wheel < 0) changeSelection(1);
+
+		if (FlxG.keys.justPressed.R && !FlxG.keys.pressed.SHIFT)
+		{
+			var song:String = pages[curPage][curIndex];
+			var saveData = Save.instance.getSongScore(song, "hard");
+			if (saveData != null && saveData.score > 0)
+			{
+				Save.instance.setSongScore(song, "hard", null);
+				updateScoreDisplay();
+				buildPage();
+				FlxG.sound.play(Paths.sound("confirmMenu"));
+			}
+		}
+
+		if (SwipeUtil.justSwipedLeft)
+		{
+			var newPage:Int = curPage - 1;
+			if (newPage < 0) newPage = pages.length - 1;
+			FlxG.sound.play(Paths.sound("panelDisappear"));
+			changePage(newPage);
+		}
+		if (SwipeUtil.justSwipedRight)
+		{
+			var newPage:Int = curPage + 1;
+			if (newPage >= pages.length) newPage = 0;
+			FlxG.sound.play(Paths.sound("panelAppear"));
+			changePage(newPage);
+		}
+		if (SwipeUtil.justSwipedUp) changeSelection(-1);
+		if (SwipeUtil.justSwipedDown) changeSelection(1);
+
+		clickTimer -= elapsed;
+
+		if (TouchUtil.justPressed)
+		{
+			var mx:Float = TouchUtil.touch.x;
+			var my:Float = TouchUtil.touch.y;
+
+			var hitPage:Bool = false;
+			for (i in 0...pageIcons.length)
+			{
+				var pi = pageIcons[i];
+				if (mx >= pi.x && mx <= pi.x + pi.width && my >= pi.y && my <= pi.y + pi.height)
+				{
+					if (i != curPage)
+					{
+						FlxG.sound.play(Paths.sound("panelAppear"));
+						changePage(i);
+					}
+					hitPage = true;
+					break;
+				}
+			}
+
+			if (!hitPage)
+			{
+				var songs = pages[curPage];
+				for (i in 0...songs.length)
+				{
+					if (!cards[i].visible) continue;
+					if (mx >= curX[i] && mx <= curX[i] + CARD_W && my >= curY[i] && my <= curY[i] + CARD_H)
+					{
+						if (i == curIndex)
+						{
+							if (lastClickedCard == i && clickTimer > 0)
+								selectSong();
+							else
+							{
+								lastClickedCard = i;
+								clickTimer = DOUBLE_CLICK_TIME;
+							}
+						}
+						else
+						{
+							changeSelection(i - curIndex);
+							lastClickedCard = i;
+							clickTimer = DOUBLE_CLICK_TIME;
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		if (FlxG.keys.justPressed.ENTER) selectSong();
+		if (FlxG.keys.justPressed.ESCAPE || (TouchUtil.justPressed && TouchUtil.overlaps(menuBackBtn)))
+		{
+			canDoStuffs = false;
+			FlxG.sound.play(Paths.sound("cancelMenu"));
+			FlxG.switchState(ScriptedMusicBeatState.init('ImpostorLegacyMainMenuState'));
+		}
+
+		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, Math.exp(-elapsed * 24)));
+		lerpRating = FlxMath.lerp(lerpRating, intendedRating, Math.exp(-elapsed * 12));
+
+		var scoreVal:String = FlxStringUtil.formatMoney(Math.round(lerpScore), false);
+		var accVal:String = Math.round(lerpRating * 100) / 100 + "%";
+		infoText.text = "Score: " + scoreVal + "\nAccuracy: " + accVal;
+
+		super.update(elapsed);
+	}
+}

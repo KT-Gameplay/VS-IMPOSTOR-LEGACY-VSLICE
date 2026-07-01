@@ -1,0 +1,561 @@
+import funkin.modding.module.Module;
+import funkin.modding.events.StateChangeScriptEvent;
+import funkin.modding.base.ScriptedMusicBeatState;
+import funkin.ui.MusicBeatState;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.title.TitleState;
+import funkin.ui.story.StoryMenuState;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.options.OptionsState;
+import funkin.save.Save;
+import funkin.Paths;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.Conductor;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.input.keyboard.FlxKey;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import flixel.util.FlxAxes;
+import flixel.text.FlxTextAlign;
+import flixel.math.FlxMath;
+import flixel.addons.display.FlxBackdrop;
+import funkin.util.TouchUtil;
+
+
+class MainMenuRedirect extends Module
+{
+	public function new()
+	{
+		super('MainMenuRedirect');
+	}
+
+
+
+	function onStateChangeEnd(event:StateChangeScriptEvent)
+	{
+		super.onStateChangeEnd(event);
+
+		if (event.targetState == null) return;
+
+		if (Std.isOfType(event.targetState, MainMenuState))
+		{
+			preloadMainMenuAssets();
+
+			var customState = ScriptedMusicBeatState.init('ImpostorLegacyMainMenuState');
+			if (customState != null)
+				FlxG.switchState(customState);
+		}
+	}
+
+	function preloadMainMenuAssets():Void
+	{
+		try { Paths.image('menu/common/starBG'); } catch (e:Dynamic) {}
+		try { Paths.image('menu/common/starFG'); } catch (e:Dynamic) {}
+		try { Paths.getSparrowAtlas('logoBumpin'); } catch (e:Dynamic) {}
+		try { Paths.getSparrowAtlas('menu/main/redmenu'); } catch (e:Dynamic) {}
+		try { Paths.getSparrowAtlas('menu/main/greenmenu'); } catch (e:Dynamic) {}
+		try { Paths.image('menu/main/glow'); } catch (e:Dynamic) {}
+		try { Paths.image('menu/main/vignette'); } catch (e:Dynamic) {}
+		try { Paths.image('menu/main/tablet'); } catch (e:Dynamic) {}
+		try { Paths.getSparrowAtlas('menu/main/new buttons and stuff'); } catch (e:Dynamic) {}
+		try { Paths.getSparrowAtlas('menu/main/shiny'); } catch (e:Dynamic) {}
+	}
+}
+
+class ImpostorLegacyMainMenuState extends MusicBeatState
+{
+	public static var fromTitle:Bool = false;
+
+	var lockMovement:Bool = false;
+	var mouseMode:Bool = false;
+
+	var lastBeatCheck:Int = 0;
+	var conductorTimer:Float = 0;
+
+	static var curMenuItem:Int = 0;
+	static var lastSmallBtn:Int = 3;
+	var menuButtons:Array<FlxSprite> = [];
+	var menuLabels:Array<FlxText> = [];
+	var menuLabelBaseSizes:Array<Int> = [];
+	var menuLabelYOffsets:Array<Float> = [];
+	var menuIcons:Array<FlxSprite> = [];
+	var menuIconOrigX:Array<Float> = [];
+	var menuIconTweens:Array<FlxTween> = [];
+
+	var redMenu:FlxSprite;
+	var greenMenu:FlxSprite;
+	var logo:FlxSprite;
+
+	var starFG:FlxBackdrop;
+	var starBG:FlxBackdrop;
+
+	var panelIntroItems:Array<FlxSprite> = [];
+	var introActive:Bool = false;
+	var introTimer:Float = 0;
+
+	var menuShinies:Array<FlxSprite> = [];
+	var r:Float;
+
+	var readyToEnter:Bool = false;
+	var timeNotMoving:Float = 0;
+
+	static final BIG_LABEL_KEYS = ['Story Mode', 'Freeplay', 'Cosmicube'];
+	static final SMALL_LABEL_KEYS = ['Options', 'Awards'];
+	static final ICON_PREFIXES = ['Red and Green instance 1', 'Cone instance 1', 'Polus instance 1', 'Gear instance 1', 'Trophy instance 1'];
+	static final MENU_LABEL_MIN_SIZE:Int = 12;
+
+	override function create()
+	{
+		persistentUpdate = persistentDraw = true;
+
+		if (FlxG.sound.music == null) FunkinSound.playMusic('freakyMenu', {persist: true, overrideExisting: false});
+
+		starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
+		add(starBG);
+
+		starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
+		add(starFG);
+
+		logo = new FlxSprite(0, -5);
+		logo.frames = Paths.getSparrowAtlas('logoBumpin');
+		logo.animation.addByPrefix('bump', 'logo bumpin', 24, false);
+		logo.antialiasing = true;
+		logo.scale.set(0.5, 0.5);
+		logo.updateHitbox();
+		logo.screenCenter(FlxAxes.X);
+		logo.x += 20;
+		add(logo);
+
+		buildPanel();
+
+		var redTargetX:Float = 630;
+		var greenTargetX:Float = -225;
+
+		redMenu = new FlxSprite(redTargetX, 70);
+		redMenu.frames = Paths.getSparrowAtlas('menu/main/redmenu');
+		redMenu.animation.addByPrefix('idle', 'idle', 24, false);
+		redMenu.animation.addByPrefix('select', 'confirm', 24, false);
+		redMenu.animation.play('idle');
+
+		greenMenu = new FlxSprite(greenTargetX, 100);
+		greenMenu.frames = Paths.getSparrowAtlas('menu/main/greenmenu');
+		greenMenu.animation.addByPrefix('idle', 'idle', 24, false);
+		greenMenu.animation.addByPrefix('select', 'confirm', 24, false);
+		greenMenu.animation.play('idle');
+
+		add(redMenu);
+		add(greenMenu);
+
+		var glow = new FlxSprite().loadGraphic(Paths.image('menu/main/glow'));
+		glow.scale.set(1.1, 1.1);
+		glow.updateHitbox();
+		glow.screenCenter();
+		glow.blend = "add";
+		add(glow);
+
+		var vignette = new FlxSprite().loadGraphic(Paths.image('menu/main/vignette'));
+		vignette.scrollFactor.set();
+		vignette.active = false;
+		add(vignette);
+
+		var versionShit = new FlxText(8, FlxG.height - 24, FlxG.width - 16, 'VS Impostor Legacy V-Slice', 16);
+		versionShit.scrollFactor.set();
+		versionShit.setFormat(Paths.font('vcr.ttf', false), 16, FlxColor.WHITE, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(versionShit);
+
+		var cx:Float = 8;
+		var cy:Float = FlxG.height - 44;
+		var ci = new FlxSprite(cx, cy).loadGraphic(Paths.image('menu/common/controls/arrow'));
+		add(ci);
+		cx += ci.width + 6;
+		var cl = new FlxText(cx, cy + 10, 0, 'Select', 18);
+		cl.setFormat(Paths.font('vcr.ttf'), 18, FlxColor.WHITE, 'left');
+		add(cl);
+		cx += cl.width + 10;
+		var ci2 = new FlxSprite(cx, cy).loadGraphic(Paths.image('menu/common/controls/enter'));
+		add(ci2);
+		cx += ci2.width + 6;
+		var cl2 = new FlxText(cx, cy + 10, 0, 'Confirm', 18);
+		cl2.setFormat(Paths.font('vcr.ttf'), 18, FlxColor.WHITE, 'left');
+		add(cl2);
+
+		Conductor.bpm = 102;
+
+		super.create();
+
+		FlxG.mouse.visible = true;
+
+		if (fromTitle)
+		{
+			redMenu.x = FlxG.width + 120;
+			greenMenu.x = -greenMenu.width - 120;
+			FlxTween.tween(redMenu, {x: redTargetX}, 1.2, {ease: FlxEase.expoOut});
+			FlxTween.tween(greenMenu, {x: greenTargetX}, 1.2, {ease: FlxEase.expoOut});
+			playPanelIntro();
+			fromTitle = false;
+		}
+
+		updateMenuSelection();
+
+		var shinies:Int = 5;
+		for (i in 0...menuShinies.length)
+			menuShinies[i].visible = (i < shinies);
+	}
+
+	var backpanel:FlxSprite;
+
+	function buildPanel()
+	{
+		final ext:String = 'menu/main/';
+		r = (1280 / 1920);
+
+		backpanel = new FlxSprite(0, 350, Paths.image('${ext}tablet'));
+		backpanel.scale.set(r, r);
+		backpanel.updateHitbox();
+		backpanel.screenCenter(FlxAxes.X);
+		add(backpanel);
+		panelIntroItems.push(backpanel);
+
+		var buttonY:Float = (backpanel.y + 28);
+		for (i in 0...BIG_LABEL_KEYS.length)
+		{
+			var btn = new FlxSprite(0, buttonY);
+			btn.frames = Paths.getSparrowAtlas('${ext}new buttons and stuff');
+			btn.animation.addByPrefix('idle', 'Big button instance 1', 24, false);
+			btn.animation.play('idle');
+			btn.animation.pause();
+			btn.scale.set(r, r);
+			btn.updateHitbox();
+			btn.screenCenter(FlxAxes.X);
+			add(btn);
+			menuButtons.push(btn);
+			panelIntroItems.push(btn);
+
+			buttonY += (btn.height + 8);
+
+			var lbl = new FlxText(btn.x + 16, 0, btn.width - 32, BIG_LABEL_KEYS[i], 24);
+			lbl.setFormat(Paths.font('vcr.ttf'), 28, 0xFF0F332F, FlxTextAlign.RIGHT);
+			lbl.y = Math.round(btn.y + (btn.height - lbl.height) * 0.5 + 4);
+			add(lbl);
+			menuLabels.push(lbl);
+			menuLabelBaseSizes.push(28);
+			menuLabelYOffsets.push(4);
+			panelIntroItems.push(lbl);
+		}
+
+		for (i in 0...SMALL_LABEL_KEYS.length)
+		{
+			var btn = new FlxSprite(0, buttonY);
+			btn.frames = Paths.getSparrowAtlas('${ext}new buttons and stuff');
+			btn.animation.addByPrefix('idle', 'Small Button instance 1', 24, false);
+			btn.animation.play('idle');
+			btn.animation.pause();
+			btn.scale.set(r, r);
+			btn.updateHitbox();
+			btn.x = Math.round(i == 0 ? backpanel.x + 28 : backpanel.x + backpanel.width - btn.width - 28);
+			add(btn);
+			menuButtons.push(btn);
+			panelIntroItems.push(btn);
+
+			var lbl = new FlxText(btn.x + 16, 0, btn.width - 32, SMALL_LABEL_KEYS[i], 22);
+			lbl.setFormat(Paths.font('vcr.ttf'), 18, 0xFF0F332F, FlxTextAlign.RIGHT);
+			lbl.y = Math.round(btn.y + (btn.height - lbl.height) * 0.5 + 3);
+			add(lbl);
+			menuLabels.push(lbl);
+			menuLabelBaseSizes.push(18);
+			menuLabelYOffsets.push(3);
+			panelIntroItems.push(lbl);
+		}
+
+		var shinies:Int = 5;
+		for (i in 0...shinies)
+		{
+			var shiny = new FlxSprite();
+			shiny.frames = Paths.getSparrowAtlas('${ext}shiny');
+			shiny.animation.addByPrefix('idle', 'Symbol 21 instance 1', 24, true);
+			shiny.animation.play('idle');
+			shiny.visible = false;
+			shiny.scale.set(.75, .75);
+			shiny.updateHitbox();
+			shiny.setPosition(Math.round(FlxMath.remapToRange(i, 0, shinies - 1, backpanel.x + 28, backpanel.x + backpanel.width - shiny.width - 28)),
+				Math.round(backpanel.y + backpanel.height - shiny.height - 28));
+			add(shiny);
+			menuShinies.push(shiny);
+			panelIntroItems.push(shiny);
+		}
+
+		for (i in 0...menuButtons.length)
+		{
+			var btn = menuButtons[i];
+			var icon = new FlxSprite();
+			icon.frames = Paths.getSparrowAtlas('${ext}new buttons and stuff');
+			icon.animation.addByPrefix('idle', ICON_PREFIXES[i], 24, false);
+			icon.animation.play('idle');
+			icon.scale.set(r, r);
+			icon.updateHitbox();
+			icon.x = btn.x + (i < 3 ? -40 : 10);
+			icon.y = btn.y + (btn.height - icon.height) * 0.5;
+			icon.origin.x = (btn.width * 0.5 - 10);
+			icon.offset.x = (icon.origin.x * (1 - r));
+			add(icon);
+			menuIcons.push(icon);
+			menuIconOrigX.push(icon.x);
+			menuIconTweens.push(null);
+			panelIntroItems.push(icon);
+		}
+
+		refreshMenuLabelLayout();
+	}
+
+	function refreshMenuLabelLayout()
+	{
+		for (i in 0...menuLabels.length)
+			fitMenuLabel(i);
+	}
+
+	function fitMenuLabel(i:Int)
+	{
+		var btn = menuButtons[i];
+		var lbl = menuLabels[i];
+		var icon = menuIcons[i];
+
+		var leftBound:Float = btn.x + 8;
+		if (icon != null && icon.visible) leftBound = Math.max(leftBound, icon.x + icon.width + 8);
+		var rightBound:Float = btn.x + btn.width - 8;
+
+		lbl.x = Math.round(leftBound + 4);
+		lbl.fieldWidth = Math.max(8, Math.round(rightBound - lbl.x - 4));
+
+		var size:Int = menuLabelBaseSizes[i];
+		lbl.setFormat(Paths.font('vcr.ttf'), size, lbl.color, FlxTextAlign.RIGHT);
+		lbl.textField.wordWrap = false;
+		lbl.textField.multiline = false;
+
+		while (size > MENU_LABEL_MIN_SIZE && lbl.textField != null && lbl.textField.textWidth > lbl.fieldWidth)
+		{
+			size--;
+			lbl.setFormat(Paths.font('vcr.ttf'), size, lbl.color, FlxTextAlign.RIGHT);
+			lbl.textField.wordWrap = false;
+			lbl.textField.multiline = false;
+		}
+
+		lbl.y = Math.round(btn.y + (btn.height - lbl.height) * 0.5 + menuLabelYOffsets[i]);
+	}
+
+	function playPanelIntro()
+	{
+		introActive = true;
+		introTimer = 0.6;
+		for (item in panelIntroItems)
+		{
+			var targetY = item.y;
+			item.y += 220;
+			FlxTween.tween(item, {y: targetY}, 1.2, {ease: FlxEase.expoOut});
+		}
+	}
+
+	function updateMenuSelection()
+	{
+		for (i in 0...menuButtons.length)
+		{
+			menuButtons[i].animation.curAnim.curFrame = (i == curMenuItem) ? 1 : 0;
+
+			if (menuIconTweens[i] != null)
+			{
+				menuIconTweens[i].cancel();
+				menuIconTweens[i] = null;
+			}
+
+			if (i < 3)
+			{
+				menuIconTweens[i] = FlxTween.tween(menuIcons[i].offset, {x: (i == curMenuItem ? 15 : 0)}, 0.15, {ease: FlxEase.quadOut});
+			}
+		}
+	}
+
+	function onBeat():Void
+	{
+		if (logo != null && logo.animation != null) logo.animation.play('bump', true);
+		if (redMenu != null && redMenu.animation.name != 'select') redMenu.animation.play('idle', true);
+		if (greenMenu != null && greenMenu.animation.name != 'select') greenMenu.animation.play('idle', true);
+	}
+
+	function select()
+	{
+		if (lockMovement) return;
+		lockMovement = true;
+
+		redMenu.animation.play('select');
+		greenMenu.animation.play('select');
+
+		for (item in [menuButtons[curMenuItem], menuLabels[curMenuItem], menuIcons[curMenuItem]])
+		{
+			if (item != null)
+			{
+				var sx = item.scale.x;
+				var sy = item.scale.y;
+				item.scale.set(sx * 0.9, sy * 0.9);
+				FlxTween.tween(item.scale, {x: item.scale.x * 1.05, y: item.scale.y * 1.05}, .2, {ease: FlxEase.circOut});
+			}
+		}
+
+		FlxG.sound.play(Paths.sound('confirmMenu'));
+
+		FlxTween.tween(starFG, {y: starFG.y + 2000}, 1.8, {ease: FlxEase.sineIn, startDelay: .6});
+		FlxTween.tween(starBG, {y: starBG.y + 1500}, 1.8, {ease: FlxEase.sineIn, startDelay: .6});
+		FlxTween.tween(redMenu, {y: redMenu.y + 750}, 1.2, {ease: FlxEase.quadInOut, startDelay: .6});
+		FlxTween.tween(greenMenu, {y: greenMenu.y + 750}, 1.2, {ease: FlxEase.quadInOut, startDelay: .6});
+		FlxTween.tween(logo, {y: logo.y + 1000}, 1.2, {ease: FlxEase.quadInOut, startDelay: .6});
+		for (item in panelIntroItems)
+			if (item != null) FlxTween.tween(item, {y: item.y + 1000}, 1.2, {ease: FlxEase.quadInOut, startDelay: .6});
+		FlxTimer.wait(1, switchToSelection);
+	}
+
+	function switchToSelection()
+	{
+		switch (curMenuItem)
+		{
+			case 0:
+				FlxG.switchState(new NewStoryMenu());
+			case 1:
+				FlxG.switchState(ScriptedMusicBeatState.init('ImpostorLegacyFreeplayState'));
+			case 2:
+				FlxG.switchState(ScriptedMusicBeatState.init('CosmicubeSelectState'));
+			case 3:
+				FlxG.switchState(new OptionsState());
+			case 4:
+				FlxG.switchState(ScriptedMusicBeatState.init('AwardsState'));
+		}
+	}
+
+	override function update(elapsed:Float)
+	{
+		if (FlxG.sound.music != null)
+		{
+			if (FlxG.sound.music.volume < 0.8) FlxG.sound.music.volume += 0.5 * elapsed;
+			Conductor.songPosition = FlxG.sound.music.time;
+			if (FlxG.sound.music.playing) conductorTimer = FlxG.sound.music.time / 1000;
+		}
+
+		starBG.x -= 4.5 * elapsed;
+		starFG.x -= 9 * elapsed;
+
+		if (FlxG.keys.justPressed.SEVEN) FlxG.switchState(new FreeplayState());
+
+		if (FlxG.keys.firstJustPressed() != FlxKey.NONE) mouseMode = false;
+		if (FlxG.mouse.justMoved) mouseMode = true;
+
+		if (!lockMovement && !introActive && mouseMode && !FlxG.onMobile)
+		{
+			for (i in 0...menuButtons.length)
+			{
+				if (FlxG.mouse.overlaps(menuButtons[i]))
+				{
+					if (curMenuItem != i)
+					{
+						curMenuItem = i;
+						updateMenuSelection();
+					}
+					if (FlxG.mouse.justPressed) select();
+					break;
+				}
+			}
+		}
+
+		if (FlxG.onMobile)
+		{
+			if (TouchUtil.justPressed)
+			{
+				FlxG.mouse.visible = true;
+				timeNotMoving = 0;
+				readyToEnter = false;
+
+				var found = false;
+				for (i in 0...menuButtons.length)
+				{
+					var btn = menuButtons[i];
+					if (TouchUtil.overlapsComplex(btn))
+					{
+						if (curMenuItem != i)
+						{
+							curMenuItem = i;
+							updateMenuSelection();
+						}
+						else readyToEnter = true;
+						found = true;
+						break;
+					}
+				}
+			}
+			else
+			{
+				timeNotMoving += elapsed;
+				if (timeNotMoving > 2) FlxG.mouse.visible = false;
+			}
+
+			if ((TouchUtil.justReleased && readyToEnter) || controls.ACCEPT)
+				select();
+		}
+
+		if (introActive)
+		{
+			introTimer -= elapsed;
+			if (introTimer <= 0) introActive = false;
+		}
+
+		conductorTimer += elapsed;
+		var beat:Int = Math.floor(conductorTimer * 102 / 60);
+		if (beat > lastBeatCheck)
+		{
+			onBeat();
+			lastBeatCheck = beat;
+		}
+
+		if (!lockMovement && !introActive)
+		{
+			var moved = false;
+			if (controls.UI_UP_P)
+			{
+				final prev = curMenuItem;
+				if (curMenuItem >= 3)
+				{
+					lastSmallBtn = curMenuItem;
+					curMenuItem = 2;
+				}
+				else if (curMenuItem > 0) curMenuItem--;
+				moved = curMenuItem != prev;
+			}
+			else if (controls.UI_DOWN_P)
+			{
+				final prev = curMenuItem;
+				if (curMenuItem == 2) curMenuItem = lastSmallBtn;
+				else if (curMenuItem < 2) curMenuItem++;
+				moved = curMenuItem != prev;
+			}
+			else if (controls.UI_LEFT_P && curMenuItem == 4)
+			{
+				curMenuItem = 3;
+				moved = true;
+			}
+			else if (controls.UI_RIGHT_P && curMenuItem == 3)
+			{
+				curMenuItem = 4;
+				moved = true;
+			}
+			if (moved)
+			{
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
+				updateMenuSelection();
+			}
+			if (!FlxG.onMobile && controls.ACCEPT) select();
+		}
+
+		super.update(elapsed);
+	}
+}
