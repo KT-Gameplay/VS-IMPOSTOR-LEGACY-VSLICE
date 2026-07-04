@@ -1053,13 +1053,13 @@ class ImpostorLegacyFreeplayState extends MusicBeatState
 		starFG.x = fgScrollX;
 		starFG2.x = fgScrollX + 1280;
 
-		var lerpAmt:Float = 0.08;
+		var lerpSpeed:Float = 1 - Math.exp(-elapsed * 15);
 		for (i in 0...MAX_CARDS)
 		{
 			if (!cards[i].visible) continue;
-			curX[i] += (tgtX[i] - curX[i]) * lerpAmt;
-			curY[i] += (tgtY[i] - curY[i]) * lerpAmt;
-			curA[i] += (tgtA[i] - curA[i]) * lerpAmt;
+			curX[i] += (tgtX[i] - curX[i]) * lerpSpeed;
+			curY[i] += (tgtY[i] - curY[i]) * lerpSpeed;
+			curA[i] += (tgtA[i] - curA[i]) * lerpSpeed;
 		}
 		applyCardPositions();
 
