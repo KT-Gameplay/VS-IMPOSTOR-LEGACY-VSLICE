@@ -25,7 +25,7 @@ import funkin.ui.ScriptedMusicBeatState;
 import funkin.utils.Constants;
 import StringTools;
 
-class ImpostorLegacyFreeplayState extends MusicBeatState
+class LegacyFreeplay extends MusicBeatState
 {
 	var songComposers:StringMap;
 	var songDisplayNames:StringMap;
@@ -138,6 +138,11 @@ class ImpostorLegacyFreeplayState extends MusicBeatState
 	var PORTRAIT_ONSCREEN_X:Float = 304.65;
 	var lastPortraitName:String = "";
 	var TOP_BAR_H:Float = 110.0;
+
+    public function new()
+    {
+       super();
+    }
 
 	function initMaps():Void
 	{
