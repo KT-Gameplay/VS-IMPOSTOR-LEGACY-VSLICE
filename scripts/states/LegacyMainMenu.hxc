@@ -1,3 +1,5 @@
+package legacy.menus;
+
 import funkin.modding.module.Module;
 import funkin.modding.events.StateChangeScriptEvent;
 import funkin.modding.base.ScriptedMusicBeatState;
@@ -26,33 +28,9 @@ import flixel.text.FlxTextAlign;
 import flixel.math.FlxMath;
 import flixel.addons.display.FlxBackdrop;
 import funkin.util.TouchUtil;
+import legacy.menus.LegacyFreeplay;
 
-
-class MainMenuRedirect extends Module
-{
-	public function new()
-	{
-		super('MainMenuRedirect');
-	}
-
-
-
-	function onStateChangeEnd(event:StateChangeScriptEvent)
-	{
-		super.onStateChangeEnd(event);
-
-		if (event.targetState == null) return;
-
-		if (Std.isOfType(event.targetState, MainMenuState))
-		{
-			preloadMainMenuAssets();
-
-			var customState = ScriptedMusicBeatState.init('ImpostorLegacyMainMenuState');
-			if (customState != null)
-				FlxG.switchState(customState);
-		}
-	}
-
+/*
 	function preloadMainMenuAssets():Void
 	{
 		try { Paths.image('menu/common/starBG'); } catch (e:Dynamic) {}
@@ -66,9 +44,9 @@ class MainMenuRedirect extends Module
 		try { Paths.getSparrowAtlas('menu/main/new buttons and stuff'); } catch (e:Dynamic) {}
 		try { Paths.getSparrowAtlas('menu/main/shiny'); } catch (e:Dynamic) {}
 	}
-}
+}*/
 
-class ImpostorLegacyMainMenuState extends MusicBeatState
+class LegacyMainMenu extends MusicBeatState
 {
 	public static var fromTitle:Bool = false;
 
@@ -109,6 +87,14 @@ class ImpostorLegacyMainMenuState extends MusicBeatState
 	static final SMALL_LABEL_KEYS = ['Options', 'Awards'];
 	static final ICON_PREFIXES = ['Red and Green instance 1', 'Cone instance 1', 'Polus instance 1', 'Gear instance 1', 'Trophy instance 1'];
 	static final MENU_LABEL_MIN_SIZE:Int = 12;
+
+	var isFinale:Bool = false;
+
+	public function new(?finale:Bool = false)
+	{
+		super();
+		isFinale = finale;
+	}
 
 	override function create()
 	{
@@ -424,7 +410,7 @@ class ImpostorLegacyMainMenuState extends MusicBeatState
 			case 0:
 				FlxG.switchState(new NewStoryMenu());
 			case 1:
-				FlxG.switchState(ScriptedMusicBeatState.init('ImpostorLegacyFreeplayState'));
+				FlxG.switchState(new LegacyFreeplay());
 			case 2:
 				FlxG.switchState(ScriptedMusicBeatState.init('CosmicubeSelectState'));
 			case 3:
