@@ -1,3 +1,5 @@
+package legacy.menus;
+
 import haxe.ds.StringMap;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -67,7 +69,7 @@ class ImpostorLegacyFreeplayState extends MusicBeatState
 		["chippin","chipping","torture"]
 	];
 
-	var DLC_SONGS:Array<String> = ["triple-threat","trot-away","suspect","don't-lied","49"];
+	var DLC_SONGS:Array<String> = ["49", "don't-lied", "suspect", "trot-away", "triple-threat"];
 
 	var pageNames:Array<String> = [
 		"Story Mode",
@@ -1195,7 +1197,7 @@ class ImpostorLegacyFreeplayState extends MusicBeatState
 		{
 			canDoStuffs = false;
 			FlxG.sound.play(Paths.sound("cancelMenu"));
-			FlxG.switchState(ScriptedMusicBeatState.init('ImpostorLegacyMainMenuState'));
+			FlxG.switchState(new LegacyMainMenu());
 		}
 
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, Math.exp(-elapsed * 24)));
