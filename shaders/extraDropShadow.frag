@@ -92,7 +92,7 @@
 			if (!aa) coord = (floor(coord * openfl_TextureSize) / openfl_TextureSize);
 			
 			float rimIntensity = (1. - texture2D(bitmap, coord).a);
-			if (frameBounds.z > 0 && (coord.x < frameBounds.x || coord.y < frameBounds.y || coord.x >= frameBounds.z || coord.y >= frameBounds.w)) rimIntensity = 1.;
+			if (frameBounds.z > 0. && (coord.x < frameBounds.x || coord.y < frameBounds.y || coord.x >= frameBounds.z || coord.y >= frameBounds.w)) rimIntensity = 1.;
 			
 			return (rimIntensity * strength * antialias(openfl_TextureCoordv, data[0].z, data[1].y));
 		}
