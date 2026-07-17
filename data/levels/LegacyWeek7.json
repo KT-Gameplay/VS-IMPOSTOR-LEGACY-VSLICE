@@ -1,0 +1,13 @@
+{
+    "version": "1.0.0",
+    "name": "Humane Heartbeat",
+    "titleAsset": "storymenu/titles/humaneheartbeat",
+  "capsule": {
+    "name": "Humane Heartbeat"
+  },
+    "props": [],
+    "background": "#FFFFFF",
+    "songs": [
+        "heartbeat", "pinkwave", "pretender"
+    ]
+}

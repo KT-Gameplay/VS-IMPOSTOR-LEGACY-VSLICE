@@ -1,0 +1,81 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "green-dt",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "dt",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/freeplay/doubleTrouble",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "para idle",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "para down",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "para left",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "para right",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "para up",
+			"offsets": [
+				-1,
+				0
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		}
+	]
+}

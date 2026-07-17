@@ -1,0 +1,43 @@
+{
+ "version": "1.0.2",
+ "name": "Dave",
+ "props": [
+  {
+   "assetPath": "BG/dave/bg",
+   "atlasSettings": null,
+   "name": "bg",
+   "position": [0, 0],
+   "scale": 2,
+   "startingAnimation": ""
+  },
+  {
+   "assetPath": "BG/dave/die",
+   "atlasSettings": null,
+   "name": "die",
+   "position": [0, 0],
+   "scale": 2,
+  "alpha": 0.001,
+   "startingAnimation": "",
+   "zIndex": 1
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [1201, 1099],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [260, -220],
+   "position": [791.8, 1113.6],
+   "zIndex": 200
+  },
+  "gf": {
+   "alpha": 0,
+   "cameraOffsets": [0, 0],
+   "position": [751.5, 787],
+   "zIndex": -1
+  }
+ },
+ "cameraZoom": 0.9
+}

@@ -1,0 +1,310 @@
+import funkin.modding.module.Module;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.NoteSprite;
+import funkin.play.PlayState;
+import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.stage.Stage;
+import funkin.Highscore;
+import funkin.save.Save;
+import funkin.Paths;
+import haxe.ds.StringMap;
+import flixel.FlxG;
+import flixel.util.FlxTimer;
+import haxe.Json;
+import Std;
+import Math;
+
+class PsychHolds extends Module {
+    var playerHoldDirCursor:Int = 0;
+    var oppHoldDirCursor:Int = 0;
+    var playerNewNoteTimer:Float = 0.0;
+    var playerRandAnimTimer:Float = 0.0;
+    var oppRandAnimTimer:Float = 0.0;
+    static final NEW_NOTE_DURATION:Float = 0.12;
+
+    var fakeNote;
+
+    static final SING_ANIMS:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
+
+    var vsliceSustainsCache:StringMap<Bool> = new StringMap();
+
+    static final VSLICE_CHARS:Array<String> = [
+        'bf-ghost', 'bf-ghost-retro', 'blackdk', 'cval', 'cvaltorture',
+        'doubleTrouble', 'drippypop', 'ellie', 'esculent',
+        'gf-dt', 'gf-pixel', 'green', 'green-crewmate', 'green-dark',
+        'green-dt', 'greenNotBornYesterdayOnTheLookout', 'greenp',
+        'henry', 'idk', 'maroonP', 'maroonplayable', 'maroonplayableop',
+        'nuzzus', 'picolobby', 'picolobby-death', 'piptorture',
+        'red', 'red-dt', 'red-ow', 'red-sabotage', 'redp',
+        'reginald', 'rhm', 'tomongus', 'tuesday', 'upboy',
+        'white', 'whitep', 'yellow', 'yellow-ghost', 'ziffytorture'
+    ];
+
+    function usesVSlice(char):Bool {
+        if (char == null) return false;
+        var id = Std.string(char.characterId != null ? char.characterId : char.curCharacter).toLowerCase();
+        if (id == '' || id == 'null') return true;
+        if (vsliceSustainsCache.exists(id)) return vsliceSustainsCache.get(id);
+        var result = VSLICE_CHARS.indexOf(id) < 0;
+        vsliceSustainsCache.set(id, result);
+        return result;
+    }
+
+    function getBF() {
+        var s = PlayState.instance != null ? PlayState.instance.currentStage : null;
+        return s != null ? s.getBoyfriend() : null;
+    }
+    function getDad() {
+        var s = PlayState.instance != null ? PlayState.instance.currentStage : null;
+        return s != null ? s.getDad() : null;
+    }
+    function getGF() {
+        var s = PlayState.instance != null ? PlayState.instance.currentStage : null;
+        return s != null ? s.getGirlfriend() : null;
+    }
+
+	function getSuffixFromAnim(animName:String):String {
+		if (animName == null || animName == '') return '';
+		for (base in SING_ANIMS) {
+			if (animName.indexOf(base) != -1) {
+				return animName.substr(base.length);
+			}
+		}
+		return '';
+	}
+
+	function getSuffixFromChar(char):String {
+		if (char.curNoteKind != null && char.curNoteKind.suffix != null && char.curNoteKind.suffix != '') {
+			return '-' + char.curNoteKind.suffix;
+		}
+		if (char.animation.curAnim != null) {
+			var suffix = getSuffixFromAnim(char.animation.curAnim.name);
+			if (suffix == '-hold' || suffix == '-end') return '';
+			return suffix;
+		}
+		return '';
+	}
+
+	function buildAnim(dir:Int, suffix:String):String {
+		return SING_ANIMS[dir] + suffix;
+	}
+
+    function getActivePlayerDirs():Array<Int> {
+        var dirs = [];
+        var game = PlayState.instance;
+        if (game == null || game.playerStrumline == null) return dirs;
+        for (hn in game.playerStrumline.holdNotes) {
+            if (hn != null && hn.hitNote && !hn.missedNote && hn.sustainLength > 0 && hn.alive && hn.noteData != null) {
+                var d = hn.noteDirection;
+                if (d >= 0 && d <= 3 && dirs.indexOf(d) == -1) dirs.push(d);
+            }
+        }
+        return dirs;
+    }
+
+    function getActiveOppDirs():Array<Int> {
+        var dirs = [];
+        var game = PlayState.instance;
+        if (game == null || game.opponentStrumline == null) return dirs;
+        for (hn in game.opponentStrumline.holdNotes) {
+            if (hn != null && hn.hitNote && !hn.missedNote && hn.sustainLength > 0) {
+                var d = hn.noteDirection;
+                if (d >= 0 && d <= 3 && dirs.indexOf(d) == -1) dirs.push(d);
+            }
+        }
+        return dirs;
+    }
+
+    function isGFNote(note) {
+        return note != null && note.noteData != null && note.noteData.kind == 'gf';
+    }
+
+    function getOppChar(dir:Int, oppDirs:Array<Int>):Dynamic {
+        var game = PlayState.instance;
+        if (game == null || game.opponentStrumline == null) return getDad();
+        for (hn in game.opponentStrumline.holdNotes) {
+            if (hn != null && hn.noteDirection == dir && isGFNote(hn)) return getGF();
+        }
+        return getDad();
+    }
+
+    function new() {
+        super("PsychHolds");
+        fakeNote = new NoteSprite(NoteStyleRegistry.instance.fetchDefault(), 0);
+    }
+
+    override function onNoteHit(ev:HitNoteScriptEvent) {
+        super.onNoteHit(ev);
+        if (PlayState.instance == null || !ev.note.noteData.getMustHitNote()) return;
+        playerNewNoteTimer = NEW_NOTE_DURATION;
+    }
+
+    function dispatchHold(holdNote, isOpp) {
+        fakeNote.hasBeenHit = true;
+        fakeNote.noteData   = holdNote.noteData;
+        fakeNote.direction  = holdNote.noteDirection;
+        fakeNote.scoreable  = false;
+        var judgement = (isOpp || PlayState.instance.isBotPlayMode) ? 'hold-perfect' : 'hold';
+        var event = new HitNoteScriptEvent(fakeNote, 0.0, 0, judgement, false, Highscore.tallies.combo);
+        PlayState.instance.dispatchEvent(event);
+        return event;
+    }
+
+    override function onStepHit(event) {
+        if (PlayState.instance == null) return;
+        super.onStepHit(event);
+        var game = PlayState.instance;
+
+        for (holdNote in game.opponentStrumline.holdNotes) {
+            if (holdNote != null && holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
+                var oppChar = isGFNote(holdNote) ? getGF() : getDad();
+                if (oppChar == null || usesVSlice(oppChar)) dispatchHold(holdNote, true);
+            }
+        }
+
+        var bf = getBF();
+        var dad = getDad();
+        var gf = getGF();
+        for (holdNote in game.playerStrumline.holdNotes) {
+            if (holdNote != null && holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0 && holdNote.alive && holdNote.noteData != null) {
+                var kind = NoteKindManager.getNoteKind(holdNote.noteData.kind);
+                if (kind != null && (!kind.scoreable || kind.noanim)) continue;
+                var suffix = (kind != null && kind.suffix != null) ? kind.suffix : '';
+                if (bf != null && usesVSlice(bf))
+                {
+                    bf.holdTimer = 0;
+                    bf.playSingAnimation(holdNote.noteDirection, false, suffix);
+                }
+                if (suffix != null && suffix != '')
+                {
+                    var dir = holdNote.noteDirection;
+                    if (dad != null && dad.animation.exists(buildAnim(dir, suffix)) && usesVSlice(dad))
+                    {
+                        dad.holdTimer = 0;
+                        dad.playAnimation(buildAnim(dir, suffix), false, false);
+                    }
+                    if (gf != null && gf.animation.exists(buildAnim(dir, suffix)) && usesVSlice(gf))
+                    {
+                        gf.holdTimer = 0;
+                        gf.playAnimation(buildAnim(dir, suffix), false, false);
+                    }
+                }
+                if (game.vocals != null)
+                    game.vocals.set_playerVolume(1);
+            }
+        }
+    }
+
+    var isSussus(get, never):Bool;
+    function get_isSussus():Bool
+    {
+        var game = PlayState.instance;
+        return game != null && game.currentSong != null && game.currentSong.id == 'sussus-moogus';
+    }
+
+    override function onBeatHit(event) {
+        super.onBeatHit(event);
+        if (FlxG.state.subState != null) return;
+        var game = PlayState.instance;
+        if (game == null) return;
+        var isSussus:Bool = this.isSussus;
+
+        var bf = getBF();
+        if (playerNewNoteTimer <= 0 && bf != null && usesVSlice(bf)) {
+            var playerDirs = getActivePlayerDirs();
+            if (playerDirs.length >= 2 && isSussus) {
+                playerHoldDirCursor = (playerHoldDirCursor + 1) % playerDirs.length;
+                var dirIdx = playerDirs[playerHoldDirCursor];
+                var suffixP = getSuffixFromChar(bf);
+                bf.playAnimation(buildAnim(dirIdx, suffixP), true, false);
+                for (d in playerDirs) {
+                    if (game.playerStrumline.strumlineNotes.members[d] != null)
+                        game.playerStrumline.strumlineNotes.members[d].playConfirm();
+                }
+            } else {
+                for (d in playerDirs) {
+                    if (bf != null && game.playerStrumline.strumlineNotes.members[d] != null) {
+                        game.playerStrumline.strumlineNotes.members[d].playConfirm();
+                    }
+                }
+            }
+        }
+
+        var oppDirs = getActiveOppDirs();
+        if (oppDirs.length >= 2 && isSussus) {
+            oppHoldDirCursor = (oppHoldDirCursor + 1) % oppDirs.length;
+            var dirIdx = oppDirs[oppHoldDirCursor];
+            var oppChar = getOppChar(dirIdx, oppDirs);
+            if (oppChar != null && usesVSlice(oppChar)) {
+                var suffixO = getSuffixFromChar(oppChar);
+                oppChar.playAnimation(buildAnim(dirIdx, suffixO), true, false);
+            }
+            for (d in oppDirs) {
+                if (game.opponentStrumline.strumlineNotes.members[d] != null)
+                    game.opponentStrumline.strumlineNotes.members[d].playConfirm();
+            }
+        } else {
+            for (d in oppDirs) {
+                var oppChar = getOppChar(d, oppDirs);
+                if (oppChar != null && usesVSlice(oppChar)) {
+                    var suffixO = getSuffixFromChar(oppChar);
+                    oppChar.playAnimation(buildAnim(d, suffixO), true, false);
+                }
+                if (game.opponentStrumline.strumlineNotes.members[d] != null)
+                    game.opponentStrumline.strumlineNotes.members[d].playConfirm();
+            }
+        }
+    }
+
+    override function onUpdate(event) {
+        super.onUpdate(event);
+        if (FlxG.state.subState != null) return;
+        var game = PlayState.instance;
+        if (game == null) return;
+        var isSussus:Bool = this.isSussus;
+
+        if (playerNewNoteTimer > 0) {
+            playerNewNoteTimer -= FlxG.elapsed;
+        }
+
+        playerRandAnimTimer -= FlxG.elapsed;
+        oppRandAnimTimer -= FlxG.elapsed;
+
+        var bf = getBF();
+        if (playerNewNoteTimer <= 0 && bf != null && usesVSlice(bf)) {
+            var playerDirs = getActivePlayerDirs();
+            if (playerDirs.length >= 2 && isSussus) {
+                if (playerRandAnimTimer <= 0) {
+                    playerHoldDirCursor = (playerHoldDirCursor + 1) % playerDirs.length;
+                    var dirIdx = playerDirs[playerHoldDirCursor];
+                    var suffixP = getSuffixFromChar(bf);
+                    var animP = buildAnim(dirIdx, suffixP);
+                    var curP = bf.animation.curAnim;
+                    if (curP == null || curP.name != animP || curP.finished) {
+                        bf.playAnimation(animP, true, false);
+                    }
+                    playerRandAnimTimer = 0.15;
+                }
+            }
+        }
+
+        var oppDirs = getActiveOppDirs();
+        if (oppDirs.length >= 2 && isSussus) {
+            if (oppRandAnimTimer <= 0) {
+                oppHoldDirCursor = (oppHoldDirCursor + 1) % oppDirs.length;
+                var dirIdx = oppDirs[oppHoldDirCursor];
+                var oppChar = getOppChar(dirIdx, oppDirs);
+                if (oppChar != null && usesVSlice(oppChar)) {
+                    var suffixO = getSuffixFromChar(oppChar);
+                    var animO = buildAnim(dirIdx, suffixO);
+                    var curO = oppChar.animation.curAnim;
+                    if (curO == null || curO.name != animO || curO.finished) {
+                        oppChar.playAnimation(animO, true, false);
+                    }
+                }
+                oppRandAnimTimer = 0.15;
+            }
+        }
+    }
+}

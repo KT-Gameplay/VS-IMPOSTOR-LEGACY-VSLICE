@@ -1,0 +1,41 @@
+{
+    "name": "Red",
+    "side": 0,
+    "asset": "red",
+    "boxColor": [255, 21, 21],
+    "boxShadeColor": [125, 0, 88],
+    "icon": "red",
+    "sound": "red",
+    "animations": [
+        {
+            "anim": "happy",
+            "name": "RI happy",
+            "loop": false,
+            "offsets": [0, 0]
+        },
+        {
+            "anim": "mad",
+            "name": "RI mad",
+            "loop": false,
+            "offsets": [0, 0]
+        },
+        {
+            "anim": "nervous",
+            "name": "RI nervous",
+            "loop": false,
+            "offsets": [100, 0]
+        },
+        {
+            "anim": "neutral",
+            "name": "RI neutral",
+            "loop": false,
+            "offsets": [0, 0]
+        },
+        {
+            "anim": "sad",
+            "name": "RI sad",
+            "loop": false,
+            "offsets": [0, 0]
+        }
+    ]
+}

@@ -1,0 +1,115 @@
+import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
+import funkin.modding.module.Module;
+import flixel.group.FlxSpriteGroup;
+import funkin.play.PlayState;
+import flixel.text.FlxTextAlign;
+import flixel.text.FlxTextBorderStyle;
+import flixel.FlxSprite;
+import flixel.tweens.FlxEase;
+import haxe.Json;
+import funkin.Paths;
+
+class SusCreditBox extends Module
+{
+    function new(){
+        super("SusCreditBox");
+    }
+
+public var taskGroup:FlxSpriteGroup;
+var bg:FlxSprite;
+var text:FlxText;
+var subtext:FlxText;
+var size:Float = 0;
+var json = null;
+var porter;
+
+function onCountdownStart(event)
+{
+	if(taskGroup != null)
+	{
+	FlxTween.cancelTweensOf(taskGroup);
+	PlayState.instance.remove(taskGroup);
+	taskGroup = null;
+	}
+	taskGroup = new FlxSpriteGroup(0, 200);
+	taskGroup.camera = PlayState.instance.camCutscene;
+	PlayState.instance.add(taskGroup);
+	
+	text = new FlxText(0, 0, 0, 'ME');
+	text.setFormat(Paths.font("liberbold.ttf", false), 24, 0xFFFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, 0xFF000000);
+	
+	subtext = new FlxText(0, 30, 0, 'I MADE THE SONG');
+	subtext.setFormat(Paths.font("liber.ttf", false), 24, 0xFFFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, 0xFF000000);
+	
+	bg = new FlxSprite(24 / -2, 24 / -2);
+	assignValues();
+	
+	bg.alpha = 0.3;
+	
+	for (item in [bg, text, subtext])
+	{
+		taskGroup.add(item);
+	}
+}
+
+function assignValues()
+{
+	var rawJson = null;
+	if(Assets.exists(Paths.json('porters/' + PlayState.instance.currentSong.id.toLowerCase())))
+	rawJson = Assets.getText(Paths.json('porters/' + PlayState.instance.currentSong.id.toLowerCase()));
+	if(rawJson != null) json = Json.parse(rawJson);
+	taskGroup.x = 0;
+	text.text = PlayState.instance.currentChart.songName;
+	subtext.text = 'Composer: ' + PlayState.instance.currentChart.songArtist + ((PlayState.instance.currentChart.charter != 'Unknown' && PlayState.instance.currentChart.charter !=  '') ? '\n' + 'Charter: ' + PlayState.instance.currentChart.charter : '') + (json != null ? '\n' + 'Ported by ' + json.porter : '');
+	size = (subtext.fieldWidth > text.fieldWidth) ? subtext.fieldWidth : text.fieldWidth;
+	bg.makeGraphic(Math.floor(size + 24), Std.int(text.height + subtext.height + 15), 0xFFFFFFFF);
+	bg.height = text.height + subtext.height;
+	
+	taskGroup.x -= size + 15;
+}
+
+function switchCredits()
+{
+	assignValues();
+	startTaskSong();
+}
+
+function onCountdownStep(event)
+{
+	if(taskGroup == null) return;
+	if (Std.string(event.step) == 'THREE')
+		startTaskSong();
+}
+
+function onSongEvent(event)
+{
+	if(taskGroup == null) return;
+	if (event.eventData.eventKind == 'ShowTaskSong')
+	{
+		taskGroup.visible = true;
+		
+		switchCredits();
+		startTaskSong();
+	}
+}
+
+public function startTaskSong()
+{
+	taskGroup.x = 0;
+	taskGroup.x -= size + 15;
+	FlxTween.cancelTweensOf(taskGroup);
+	
+	FlxTween.tween(taskGroup, {x: taskGroup.x + (size + 15) + (24 / 2)}, 1,
+		{
+			ease: FlxEase.quintInOut,
+			onComplete: function(twn:FlxTween) {
+				FlxTween.tween(taskGroup, {x: taskGroup.x - (size + 15) - 50}, 1,
+					{
+						ease: FlxEase.quintInOut,
+						startDelay: 2
+					});
+			}
+		});
+}
+}

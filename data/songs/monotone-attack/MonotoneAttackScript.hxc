@@ -1,0 +1,349 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterDataParser;
+import funkin.Conductor;
+import funkin.util.GRhythmUtil;
+import StringTools;
+import funkin.play.character.CharacterType;
+import flixel.tweens.FlxTween;
+import flixel.math.FlxPoint;
+
+class MonotoneAttackScript extends Module
+{	
+	var mom = null;
+	var target1 = null;
+	var target2 = null;
+	var curVar:String;
+	var attackCharacter = 0;
+
+	function new()
+	{
+		super("MonotoneAttackScript");
+	}
+
+	function onSongLoaded(event:SongLoadScriptEvent)
+    {
+        super.onSongLoaded(event);
+
+        if (PlayState.instance.currentSong.id.toLowerCase() != 'monotone-attack') return;
+
+        if(attackCharacter == 1 && PlayState.instance.currentStage.getDad().characterId == 'attack') // attack
+        {
+			for (songNote in event.notes)
+			{
+			if(songNote.kind == "BF Sing")
+			{
+			if(songNote.data <= 3)
+			songNote.data += 4;
+			}
+			if(songNote.kind == "Opponent Sing")
+			{
+			if(songNote.data >= 4)
+			songNote.data -= 4;
+			}
+			}
+        }
+
+        if(attackCharacter == 2 && PlayState.instance.currentStage.getGirlfriend().characterId == 'fabs') // fabs
+        {
+			for (songNote in event.notes)
+			{
+			switch (songNote.kind)
+			{
+			case "BF Sing":
+			if(songNote.data <= 3)
+			songNote.data += 4;
+			songNote.kind = "Opponent 2 Sing";
+			case "GF Sing":
+			if(songNote.data >= 4)
+			songNote.data -= 4;
+			songNote.kind = "BF Sing";
+			case "Opponent Sing":
+			songNote.kind = "GF Sing";
+			case "Opponent 2 Sing":
+			songNote.kind = "Opponent Sing";
+			}
+			}
+        }
+
+        if(attackCharacter == 3 && PlayState.instance.currentStage.characters.get('mom') == null) // biddle
+        {
+			for (songNote in event.notes)
+			{
+			switch (songNote.kind)
+			{
+			case "BF Sing":
+			if(songNote.data <= 3)
+			songNote.data += 4;
+			songNote.kind = "Opponent 2 Sing";
+			case "GF Sing":
+			songNote.kind = "Opponent Sing";
+			case "Opponent Sing":
+			songNote.kind = "GF Sing";
+			case "Opponent 2 Sing":
+			if(songNote.data >= 4)
+			songNote.data -= 4;
+			songNote.kind = "BF Sing";
+			}
+			}
+        }
+    }
+
+	function onSongRetry(event:SongRetryEvent):Void
+	{
+		super.onSongRetry(event);
+		if (PlayState.instance.currentSong.id.toLowerCase() != 'monotone-attack') return;
+		if (attackCharacter == 2 && PlayState.instance.currentStage.getCharacter('mom') != null)
+		{
+PlayState.instance.currentStage.getDad().x = PlayState.instance.currentStage.getBoyfriendPosition().x - PlayState.instance.currentStage.getDad().characterOrigin.x + 250;
+PlayState.instance.currentStage.getDad().y = PlayState.instance.currentStage.getBoyfriendPosition().y - PlayState.instance.currentStage.getDad().characterOrigin.y;
+		}
+		PlayState.instance.currentStage.getBoyfriend().x = boyfriendX;
+		PlayState.instance.currentStage.getBoyfriend().y = boyfriendY;
+		PlayState.instance.currentStage.getBoyfriend().flipX = boyfriendFlipX;
+	}
+
+	override function onCountdownStart(event:CountdownScriptEvent):Void
+	{
+		super.onCountdownStart(event);
+
+		if (PlayState.instance.currentSong.id.toLowerCase() == 'monotone-attack')
+		{
+			if (PlayState.instance.currentStage == null) return;
+			if (PlayState.instance.currentStage.getCharacter('mom') != null) return;
+
+			mom = CharacterDataParser.fetchCharacter('biddle');
+			PlayState.instance.currentStage.add(mom);
+
+			mom.zIndex = 50;
+			mom.x = PlayState.instance.currentStage.getBoyfriendPosition().x - mom.characterOrigin.x + 250;
+			mom.y = PlayState.instance.currentStage.getBoyfriendPosition().y - mom.characterOrigin.y;
+			mom.flipX = false;
+
+			PlayState.instance.currentStage.refresh();
+			PlayState.instance.currentStage.characters.set('mom', mom);
+
+			if(attackCharacter == 1)
+			{
+			boyfriendcamerafocuspoint = new FlxPoint(0, 0);
+			boyfriendcamerafocuspoint.x = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x;
+			boyfriendcamerafocuspoint.y = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y;
+			dadcamerafocuspoint = new FlxPoint(0, 0);
+			dadcamerafocuspoint.x = PlayState.instance.currentStage.getDad().cameraFocusPoint.x;
+			dadcamerafocuspoint.y = PlayState.instance.currentStage.getDad().cameraFocusPoint.y;
+
+			PlayState.instance.currentStage.getBoyfriend().characterType = CharacterType.DAD;
+			PlayState.instance.currentStage.getDad().characterType = CharacterType.BF;
+
+			var boyfriend = PlayState.instance.currentStage.getBoyfriend();
+			var dad = PlayState.instance.currentStage.getDad();
+			PlayState.instance.currentStage.characters.set('dad', boyfriend);
+			PlayState.instance.currentStage.characters.set('bf', dad);
+			}
+
+			if(attackCharacter == 2)
+			{
+			boyfriendcamerafocuspoint = new FlxPoint(0, 0);
+			boyfriendcamerafocuspoint.x = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x;
+			boyfriendcamerafocuspoint.y = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y;
+			dadcamerafocuspoint = new FlxPoint(0, 0);
+			dadcamerafocuspoint.x = PlayState.instance.currentStage.getDad().cameraFocusPoint.x;
+			dadcamerafocuspoint.y = PlayState.instance.currentStage.getDad().cameraFocusPoint.y;
+			girlfriendcamerafocuspoint = new FlxPoint(0, 0);
+			girlfriendcamerafocuspoint.x = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x;
+			girlfriendcamerafocuspoint.y = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y;
+			momcamerafocuspoint = new FlxPoint(0, 0);
+			momcamerafocuspoint.x = PlayState.instance.currentStage.characters.get('mom').cameraFocusPoint.x;
+			momcamerafocuspoint.y = PlayState.instance.currentStage.characters.get('mom').cameraFocusPoint.y;
+
+			PlayState.instance.currentStage.characters.get('mom').characterType = CharacterType.DAD;
+			PlayState.instance.currentStage.getGirlfriend().characterType = CharacterType.BF;
+			PlayState.instance.currentStage.getBoyfriend().characterType = CharacterType.OTHER;
+			PlayState.instance.currentStage.getDad().characterType = CharacterType.GF;
+
+			var boyfriend = PlayState.instance.currentStage.getBoyfriend();
+			var dad = PlayState.instance.currentStage.getDad();
+			var girlfriend = PlayState.instance.currentStage.getGirlfriend();
+			var mom2 = PlayState.instance.currentStage.characters.get('mom');
+			PlayState.instance.currentStage.characters.set('dad', mom2);
+			PlayState.instance.currentStage.characters.set('bf', girlfriend);
+			PlayState.instance.currentStage.characters.set('gf', dad);
+			PlayState.instance.currentStage.characters.set('mom', boyfriend);
+			}
+
+			if(attackCharacter == 3)
+			{
+			boyfriendcamerafocuspoint = new FlxPoint(0, 0);
+			boyfriendcamerafocuspoint.x = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x;
+			boyfriendcamerafocuspoint.y = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y;
+			dadcamerafocuspoint = new FlxPoint(0, 0);
+			dadcamerafocuspoint.x = PlayState.instance.currentStage.getDad().cameraFocusPoint.x;
+			dadcamerafocuspoint.y = PlayState.instance.currentStage.getDad().cameraFocusPoint.y;
+			girlfriendcamerafocuspoint = new FlxPoint(0, 0);
+			girlfriendcamerafocuspoint.x = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x;
+			girlfriendcamerafocuspoint.y = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y;
+			momcamerafocuspoint = new FlxPoint(0, 0);
+			momcamerafocuspoint.x = PlayState.instance.currentStage.characters.get('mom').cameraFocusPoint.x;
+			momcamerafocuspoint.y = PlayState.instance.currentStage.characters.get('mom').cameraFocusPoint.y;
+
+			PlayState.instance.currentStage.characters.get('mom').characterType = CharacterType.BF;
+			PlayState.instance.currentStage.getGirlfriend().characterType = CharacterType.DAD;
+			PlayState.instance.currentStage.getBoyfriend().characterType = CharacterType.OTHER;
+			PlayState.instance.currentStage.getDad().characterType = CharacterType.GF;
+
+			var boyfriend = PlayState.instance.currentStage.getBoyfriend();
+			var dad = PlayState.instance.currentStage.getDad();
+			var girlfriend = PlayState.instance.currentStage.getGirlfriend();
+			var mom2 = PlayState.instance.currentStage.characters.get('mom');
+			PlayState.instance.currentStage.characters.set('dad', girlfriend);
+			PlayState.instance.currentStage.characters.set('bf', mom2);
+			PlayState.instance.currentStage.characters.set('gf', dad);
+			PlayState.instance.currentStage.characters.set('mom', boyfriend);
+			}
+
+			boyfriendX = PlayState.instance.currentStage.getBoyfriend().x;
+			boyfriendY = PlayState.instance.currentStage.getBoyfriend().y;
+			boyfriendFlipX = PlayState.instance.currentStage.getBoyfriend().flipX;
+		}
+	}
+
+	function onSongStart(event:ScriptEvent)
+	{
+		super.onSongStart(event);
+		if (PlayState.instance.currentSong.id.toLowerCase() == 'monotone-attack')
+		{
+			if(attackCharacter == 1)
+			{
+			PlayState.instance.currentStage.getDad().cameraFocusPoint.x = dadcamerafocuspoint.x;
+			PlayState.instance.currentStage.getDad().cameraFocusPoint.y = dadcamerafocuspoint.y;
+			PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x = boyfriendcamerafocuspoint.x;
+			PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y = boyfriendcamerafocuspoint.y;
+			}
+			if(attackCharacter == 2 || attackCharacter == 3)
+			{
+			PlayState.instance.currentStage.getDad().cameraFocusPoint.x = dadcamerafocuspoint.x;
+			PlayState.instance.currentStage.getDad().cameraFocusPoint.y = dadcamerafocuspoint.y;
+			PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x = boyfriendcamerafocuspoint.x;
+			PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y = boyfriendcamerafocuspoint.y;
+			PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x = girlfriendcamerafocuspoint.x;
+			PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y = girlfriendcamerafocuspoint.y;
+			PlayState.instance.currentStage.characters.get('mom').cameraFocusPoint.x = momcamerafocuspoint.x;
+			PlayState.instance.currentStage.characters.get('mom').cameraFocusPoint.y = momcamerafocuspoint.y;
+			}
+		}
+	}
+
+	function onNoteIncoming(event:NoteScriptEvent):Void
+	{
+		super.onNoteIncoming(event);
+		if (PlayState.instance.currentSong.id.toLowerCase() == 'monotone-attack')
+		{
+			if (event.note.noteData.kind == "Opponent 2 Sing" || event.note.noteData.kind == "GF Sing")
+			{
+				event.note.hasBeenHit = true;
+				event.note.alpha = 0.001;
+
+				if (event.note.holdNoteSprite != null)
+				{
+					event.note.holdNoteSprite.missedNote = true;
+					event.note.holdNoteSprite.handledMiss = true;
+					event.note.holdNoteSprite.alpha = 0.001;
+				}
+			}
+		}
+	}
+
+	function onUpdate(event:UpdateScriptEvent):Void
+	{
+		super.onUpdate(event);
+
+		if (PlayState.instance != null && !PlayState.instance.isInCutscene)
+		{
+			processNotes(event.elapsed);
+		}
+	}
+
+	function processNotes(elapsed:Float):Void
+	{
+		if (PlayState.instance.currentSong.id.toLowerCase() == 'monotone-attack')
+		{
+			if (
+				PlayState.instance.opponentStrumline.notes.members == null
+			)
+			{
+				return;
+			}
+			for (note in PlayState.instance.opponentStrumline.notes.members)
+			{
+				if (note == null) continue;
+				if (note.noteData.kind != "Opponent 2 Sing" && note.noteData.kind != "GF Sing") continue;
+
+					if(note.alive)
+					{
+						note.hasBeenHit = false;
+
+					var r = GRhythmUtil.processWindow(note, false);
+
+					note.hasBeenHit = true;
+
+					if (r.botplayHit)
+					{
+						if (note.noteData.kind == "Opponent 2 Sing" && PlayState.instance.currentStage != null && PlayState.instance.currentStage.characters.get('mom') != null)
+						{
+							PlayState.instance.currentStage.characters.get('mom').playSingAnimation(note.noteData.getDirection(), false);
+							PlayState.instance.currentStage.characters.get('mom').holdTimer = 0;
+						}
+
+						if (note.noteData.kind == "GF Sing" && PlayState.instance.currentStage != null && PlayState.instance.currentStage.getGirlfriend() != null)
+						{
+							PlayState.instance.currentStage.getGirlfriend().playSingAnimation(note.noteData.getDirection(), false);
+							PlayState.instance.currentStage.getGirlfriend().holdTimer = 0;
+						}
+
+						note.kill();
+
+						if (note.holdNoteSprite != null)
+						{
+						note.holdNoteSprite.sustainLength = Math.min(note.holdNoteSprite.fullSustainLength, (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - Conductor.instance.songPosition);
+						}
+					}
+					}
+					if (!note.alive && note.holdNoteSprite != null && note.holdNoteSprite.alive)
+					{
+						if (note.hasBeenHit && note.holdNoteSprite.sustainLength > 0)
+						{
+							if (
+								note.hasBeenHit
+								&& PlayState.instance.currentStage != null
+								&& PlayState.instance.currentStage.characters.get('mom') != null
+								&& PlayState.instance.currentStage.characters.get('mom').isSinging() && note.noteData.kind == "Opponent 2 Sing"
+							)
+							{
+								PlayState.instance.currentStage.characters.get('mom').holdTimer = 0;
+							}
+
+							if (
+								note.hasBeenHit
+								&& PlayState.instance.currentStage != null
+								&& PlayState.instance.currentStage.getGirlfriend() != null
+								&& PlayState.instance.currentStage.getGirlfriend().isSinging() && note.noteData.kind == "GF Sing"
+							)
+							{
+								PlayState.instance.currentStage.getGirlfriend().holdTimer = 0;
+							}
+
+							if (Conductor.instance.songPosition > note.holdNoteSprite.strumTime && note.hasBeenHit)
+							{
+							note.holdNoteSprite.sustainLength = Math.min(note.holdNoteSprite.fullSustainLength, (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - Conductor.instance.songPosition);
+							}
+
+							if (note.holdNoteSprite.sustainLength <= 0)
+							{
+								note.holdNoteSprite.kill();
+							}
+						}
+					}
+			}
+		}
+	}
+}

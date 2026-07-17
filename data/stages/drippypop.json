@@ -1,0 +1,33 @@
+{
+ "version": "1.0.2",
+ "name": "Drippypop",
+ "props": [
+  {
+   "assetPath": "BG/drippypop/bg",
+   "atlasSettings": null,
+   "name": "bg",
+   "position": [0, 0],
+   "scale": 1,
+   "startingAnimation": ""
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-150, -30],
+   "position": [1577.45, 1006.3],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [921.7615, 992.562],
+   "scale": 0.91,
+   "zIndex": 200
+  },
+  "gf": {
+   "cameraOffsets": [0, 230],
+   "position": [1282.5, 570],
+   "zIndex": 100
+  }
+ },
+ "cameraZoom": 0.9
+}

@@ -1,0 +1,242 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.addons.display.FlxBackdrop;
+import flixel.FlxSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.math.FlxMath;
+import Math;
+import Std;
+import funkin.Conductor;
+import flixel.util.FlxTimer;
+import openfl.display.BlendMode;
+import flixel.addons.display.FlxRuntimeShader;
+import funkin.Paths;
+import flixel.effects.particles.FlxEmitter;
+import flixel.effects.particles.FlxEmitterMode;
+import flixel.effects.particles.FlxParticle;
+import flixel.FlxG;
+
+class PinkStage extends Stage
+{
+    public function new()
+    {
+        super("pink");
+    }
+
+    var cloud1:FlxBackdrop;
+    var cloud2:FlxBackdrop;
+    var cloud3:FlxBackdrop;
+    var cloud4:FlxBackdrop;
+    var cloudbig:FlxBackdrop;
+
+    var ext = 'BG/pink/';
+
+    var longus;
+    var grey;
+    var tomato;
+    var rhm;
+    var blue;
+
+    var pinkVignette:FlxSprite;
+    var pinkVignette2:FlxSprite;
+    var heartsImage:FlxSprite;
+    var heartColorShader:FlxRuntimeShader = null;
+    var pinkCanPulse:Bool;
+
+    var vignetteTween:FlxTween;
+    var whiteTween:FlxTween;
+
+    override function buildStage()
+    {
+        super.buildStage();
+
+        cloud1 = new FlxBackdrop(Paths.image(ext + 'cloud 1', 'shared'));
+        cloud1.setPosition(0, -1000);
+        cloud1.zIndex = 4;
+        add(cloud1);
+	
+        cloud2 = new FlxBackdrop(Paths.image(ext + 'cloud 2', 'shared'));
+        cloud2.setPosition(0, -1200);
+        cloud2.zIndex = 5;
+        add(cloud2);
+	
+        cloud3 = new FlxBackdrop(Paths.image(ext + 'cloud 3', 'shared'));
+        cloud3.setPosition(0, -1400);
+        cloud3.zIndex = 6;
+        add(cloud3);
+	
+        cloud4 = new FlxBackdrop(Paths.image(ext + 'cloud 4', 'shared'));
+        cloud4.setPosition(0, -1600);
+        cloud4.zIndex = 7;
+        add(cloud4);
+	
+	    cloudbig = new FlxBackdrop(Paths.image(ext + 'bigcloud', 'shared'));
+        cloudbig.setPosition(0, -1200);
+        cloud1.zIndex = 8;
+        add(cloudbig);
+
+        refresh();
+
+        longus = getNamedProp('longus');
+        grey = getNamedProp('grey');
+        tomato = getNamedProp('tomato');
+        rhm = getNamedProp('rhm');
+        blue = getNamedProp('blue');
+
+        heartColorShader = new FlxRuntimeShader(Assets.getText(Paths.frag('colorSwap-legacy')));
+    }
+
+    override function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        var fakeStartTimer = new FlxTimer().start((Conductor.instance.beatLengthMs / 1000), function(tmr:FlxTimer) {
+		if (tmr.loopsLeft % 2 == 0)
+		{
+			longus.playAnimation('idle', true);
+			tomato.playAnimation('idle', true);
+			grey.playAnimation('idle', true);
+			rhm.playAnimation('idle', true);
+		}
+		if (tmr.loopsLeft % 1 == 0) blue.playAnimation('idle', true);
+	}, 5);
+
+        pinkVignette = new FlxSprite(0, 0).loadGraphic(Paths.image(ext + 'vignette', 'shared'));
+        pinkVignette.cameras = [PlayState.instance.camHUD];
+        pinkVignette.alpha = 0.0001;
+        pinkVignette.antialiasing = true;
+        pinkVignette.blend = BlendMode.ADD;
+	
+        pinkVignette2 = new FlxSprite(0, 0).loadGraphic(Paths.image(ext + 'vignette2', 'shared'));
+        pinkVignette2.cameras = [PlayState.instance.camHUD];
+        pinkVignette2.antialiasing = true;
+        pinkVignette2.alpha = 0.0001;
+
+        heartsImage = new FlxSprite(-25, 0);
+        heartsImage.cameras = [PlayState.instance.camCutscene];
+        heartsImage.frames = Paths.getSparrowAtlas(ext + 'hearts', 'shared');
+        heartsImage.animation.addByPrefix('boil', 'Symbol 2', 24, true);
+        heartsImage.animation.play('boil');
+        heartsImage.antialiasing = true;
+        heartsImage.alpha = 0.0001;
+        heartsImage.shader = heartColorShader;
+
+	heartEmitter = new FlxEmitter(-1200, 1000);
+	
+	for (i in 0...100)
+	{
+		var p = new FlxParticle();
+		p.frames = Paths.getSparrowAtlas('emitters/littleheart');
+		p.animation.addByPrefix('littleheart', 'littleheart', 24, true);
+		p.animation.play('littleheart');
+		p.exists = false;
+		p.animation.curAnim.curFrame = FlxG.random.int(0, 2);
+		p.shader = heartColorShader.shader;
+		heartEmitter.add(p);
+	}
+	heartEmitter.launchMode = FlxEmitterMode.SQUARE;
+	heartEmitter.velocity.set(-50, -400, 50, -800, -100, 0, 100, -800);
+	heartEmitter.scale.set(3.4, 3.4, 3.4, 3.4, 0, 0, 0, 0);
+	heartEmitter.drag.set(0, 0, 0, 0, 5, 5, 10, 10);
+	heartEmitter.width = 4200.45;
+	heartEmitter.alpha.set(1, 1);
+	heartEmitter.lifespan.set(4, 4.5);
+	heartEmitter.start(false, FlxG.random.float(0.3, 0.4), 100000);
+	heartEmitter.emitting = false;
+
+        PlayState.instance.add(pinkVignette);
+        PlayState.instance.add(pinkVignette2);
+        PlayState.instance.add(heartsImage);
+        PlayState.instance.add(heartEmitter);
+
+        pinkCanPulse = false;
+    }
+
+    function onBeatHit(event)
+    {
+        super.onBeatHit(event);
+
+        if (event.beat % 2 == (PlayState.instance.currentSong.id.toLowerCase() == 'pinkwave' ? 0 : 1) && pinkCanPulse)
+        {
+		pinkVignette.alpha = 1;
+		if (vignetteTween != null) vignetteTween.cancel();
+		vignetteTween = FlxTween.tween(pinkVignette, {alpha: 0.2}, 1.2, {ease: FlxEase.sineOut});
+		
+		if (whiteTween != null) whiteTween.cancel();
+		heartColorShader.setFloat('flash', 0.5);
+		whiteTween = FlxTween.num(0.5, 0, 0.75, {ease: FlxEase.sineOut}, function(num) {heartColorShader.setFloat('flash', num);});
+        }
+
+		if (event.beat % 2 == 0)
+		{
+			longus.playAnimation('idle', true);
+			tomato.playAnimation('idle', true);
+			grey.playAnimation('idle', true);
+			rhm.playAnimation('idle', true);
+		}
+		if (event.beat % 1 == 0)
+		{
+			blue.playAnimation('idle', true);
+		}
+    }
+
+    function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        if(event.eventData.eventKind == 'pink toggle')
+        {
+            if (!pinkCanPulse)
+			{
+				pinkCanPulse = true;
+				
+				heartsImage.alpha = 1;
+				pinkVignette.alpha = 1;
+				pinkVignette2.alpha = 0.3;
+				
+				var fadeTime:Float = Std.parseFloat(event.eventData.getFloat('fade')) * 1.2;
+				if (Math.isNaN(fadeTime)) fadeTime = 0;
+				
+				heartColorShader.setFloat('u_flash', 1);
+				FlxTween.num(1, 0, fadeTime, {ease: FlxEase.cubeInOut}, function(num) {heartColorShader.setFloat('u_flash', num);});
+				heartEmitter.emitting = true;
+				return;
+			}
+			else
+			{
+				var fadeTime:Float = Std.parseFloat(event.eventData.getFloat('fade')) * 2;
+				if (Math.isNaN(fadeTime)) fadeTime = 0;
+				
+				if (vignetteTween != null) vignetteTween.cancel();
+				if (whiteTween != null) whiteTween.cancel();
+				
+				heartsImage.alpha = 1;
+				pinkVignette.alpha = 1;
+				pinkVignette2.alpha = 0.4;
+				
+				heartColorShader.setFloat('u_flash', 1);
+				
+				FlxTween.tween(heartsImage, {alpha: 0}, fadeTime, {ease: FlxEase.cubeInOut});
+				FlxTween.num(1, 0, fadeTime, {ease: FlxEase.cubeInOut}, function(num) {heartColorShader.setFloat('u_flash', num);});
+				FlxTween.tween(pinkVignette, {alpha: 0}, fadeTime, {ease: FlxEase.cubeInOut});
+				FlxTween.tween(pinkVignette2, {alpha: 0}, fadeTime, {ease: FlxEase.cubeInOut});
+				
+				pinkCanPulse = false;
+				heartEmitter.emitting = false;
+				return;
+			}
+        }
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        cloud1.x = FlxMath.lerp(cloud1.x, cloud1.x - 1, FlxMath.bound(event.elapsed * 9, 0, 1));
+        cloud2.x = FlxMath.lerp(cloud2.x, cloud2.x - 3, FlxMath.bound(event.elapsed * 9, 0, 1));
+        cloud3.x = FlxMath.lerp(cloud3.x, cloud3.x - 2, FlxMath.bound(event.elapsed * 9, 0, 1));
+        cloud4.x = FlxMath.lerp(cloud4.x, cloud4.x - 0.1, FlxMath.bound(event.elapsed * 9, 0, 1));
+        cloudbig.x = FlxMath.lerp(cloudbig.x, cloudbig.x - 0.5, FlxMath.bound(event.elapsed * 9, 0, 1));
+    }
+}

@@ -1,0 +1,242 @@
+import funkin.modding.module.Module;
+import Std;
+import funkin.ui.options.OptionsState;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.Preferences;
+import funkin.Highscore;
+import flixel.FlxG;
+import flixel.text.FlxBitmapText;
+import flixel.util.FlxColor;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import IconColourFinder;
+
+class LegacyOptions extends Module
+{
+    var save = null;
+
+    var enabled:Bool = true;
+
+    function bindSave(){
+        save = Save.instance;
+    }
+
+    function new(){
+        super("LegacyOptions");
+        bindSave();
+
+        if(save.modOptions["Shaders"] == null)
+            save.modOptions["Shaders"] = true;
+
+        if(save.modOptions["Low Quality"] == null)
+            save.modOptions["Low Quality"] = false;
+
+        if(save.modOptions["Anti-Aliasing"] == null)
+            save.modOptions["Anti-Aliasing"] = true;
+
+        if(save.modOptions["GPU Caching"] == null)
+            save.modOptions["GPU Caching"] = false;
+
+        if(save.modOptions["Disable Reset Key"] == null)
+            save.modOptions["Disable Reset Key"] = false;
+
+        if(save.modOptions["Hide HUD"] == null)
+            save.modOptions["Hide HUD"] = false;
+
+        if(save.modOptions["HUD Rank Display"] == null)
+            save.modOptions["HUD Rank Display"] = "Both";
+
+        if(save.modOptions["V4 Colored UI"] == null)
+            save.modOptions["V4 Colored UI"] = false;
+
+        if(save.modOptions["Photosensitive Mode"] == null)
+            save.modOptions["Photosensitive Mode"] = false;
+
+        if(save.modOptions["Camera Zoom on Beat"] == null)
+            save.modOptions["Camera Zoom on Beat"] = true;
+
+        if(save.modOptions["Score Text Zoom on Hit"] == null)
+            save.modOptions["Score Text Zoom on Hit"] = false;
+
+        if(save.modOptions["Opponent Notes"] == null)
+            save.modOptions["Opponent Notes"] = true;
+
+        if(save.modOptions["Quants Enabled"] == null)
+            save.modOptions["Quants Enabled"] = false;
+
+        if(save.modOptions["Note Splashes"] == null)
+            save.modOptions["Note Splashes"] = true;
+    }
+
+
+    var inOptions:Bool = false;
+
+    var lastAntiAlias:Bool = true;
+    var lastGpuCache:Bool = false;
+    var lastHealth:Float = 1.0;
+
+    var lastV4Color:Int = -1;
+
+    override function onUpdate(event){
+        super.onUpdate(event);
+        if (FlxG.camera != null && save.modOptions["Anti-Aliasing"] != lastAntiAlias)
+        {
+            lastAntiAlias = save.modOptions["Anti-Aliasing"];
+            FlxG.camera.antialiasing = lastAntiAlias;
+        }
+        if (save.modOptions["GPU Caching"] != lastGpuCache)
+        {
+            lastGpuCache = save.modOptions["GPU Caching"];
+            if (FlxG.stage != null) FlxG.stage.cacheAsBitmap = lastGpuCache;
+        }
+
+        if (PlayState.instance != null)
+        {
+            lastHealth = PlayState.instance.health;
+            updateHUD();
+            applyV4UI();
+            if (PlayState.instance.opponentStrumline != null)
+                PlayState.instance.opponentStrumline.visible = save.modOptions["Opponent Notes"];
+        }
+    }
+
+    override function onGameOver(event)
+    {
+        if (!save.modOptions["Disable Reset Key"]) return;
+        var ps = PlayState.instance;
+        if (ps == null) return;
+        if (lastHealth <= 0.0) return;
+
+        event.eventCanceled = true;
+        ps.health = lastHealth;
+        ps.deathCounter -= 1;
+        if (FlxG.sound.music != null) FlxG.sound.music.resume();
+        if (ps.vocals != null) ps.vocals.resume();
+    }
+
+    override function onStateChangeEnd(event){
+        super.onStateChangeEnd(event);
+        if(Std.isOfType(event.targetState, OptionsState))
+        {
+            var prefs = event.targetState.optionsCodex.pages.get("preferences");
+
+            bindSave();
+
+            prefs.createPrefItemCheckbox("Shaders", "If disabled, disables shaders to improve performance.", function(value) {
+                save.modOptions["Shaders"] = value;
+            }, save.modOptions["Shaders"]);
+
+            prefs.createPrefItemCheckbox("Low Quality", "If disabled, disables specific items from background to improve performance.", function(value) {
+                save.modOptions["Low Quality"] = value;
+            }, save.modOptions["Low Quality"]);
+
+            prefs.createPrefItemCheckbox("Anti-Aliasing", "Enables Anti-Aliasing", function(value) {
+                save.modOptions["Anti-Aliasing"] = value;
+            }, save.modOptions["Anti-Aliasing"]);
+
+            prefs.createPrefItemCheckbox("GPU Caching", "Enables GPU Caching", function(value) {
+                save.modOptions["GPU Caching"] = value;
+            }, save.modOptions["GPU Caching"]);
+
+            prefs.createPrefItemCheckbox("Disable Reset Key", "Prevents the reset key from killing the player mid-song", function(value) {
+                save.modOptions["Disable Reset Key"] = value;
+            }, save.modOptions["Disable Reset Key"]);
+
+            prefs.createPrefItemCheckbox("Hide HUD", "Hides most HUD elements.", function(value) {
+                save.modOptions["Hide HUD"] = value;
+            }, save.modOptions["Hide HUD"]);
+
+            prefs.createPrefItemEnum("HUD Rank Display", "What should be displayed on the HUD?", ["Accuracy" => "Accuracy", "Rank" => "Rank", "Both" => "Both"], function(value) {
+                save.modOptions["HUD Rank Display"] = value;
+            }, save.modOptions["HUD Rank Display"]);
+
+            prefs.createPrefItemCheckbox("V4 Colored UI", "Colors UI elements based on the opponent's icon color. (Some colors might be hard to read)", function(value) {
+                save.modOptions["V4 Colored UI"] = value;
+                lastV4Color = -1;
+            }, save.modOptions["V4 Colored UI"]);
+
+            prefs.createPrefItemCheckbox("Photosensitive Mode", "Tones down screen flashes and other visual effects (such as quickly moving backgrounds). Enable this if you're prone to photosensitive epilepsy.", function(value) {
+                save.modOptions["Photosensitive Mode"] = value;
+                Preferences.flashingLights = !value;
+            }, save.modOptions["Photosensitive Mode"]);
+
+            prefs.createPrefItemCheckbox("Camera Zoom on Beat", "Enables the camera to zoom in on a beat hit. Uncheck to disable.", function(value) {
+                save.modOptions["Camera Zoom on Beat"] = value;
+                Preferences.zoomCamera = value;
+            }, save.modOptions["Camera Zoom on Beat"]);
+
+            prefs.createPrefItemCheckbox("Score Text Zoom on Hit", "Enables the Score text zooming everytime you hit a note.", function(value) {
+                save.modOptions["Score Text Zoom on Hit"] = value;
+            }, save.modOptions["Score Text Zoom on Hit"]);
+
+            prefs.createPrefItemCheckbox("Opponent Notes", "Shows the opponent's notes.", function(value) {
+                save.modOptions["Opponent Notes"] = value;
+            }, save.modOptions["Opponent Notes"]);
+
+            prefs.createPrefItemCheckbox("Quants Enabled", "Colors notes in-game based on their step value. Helpful for timing your note hits.", function(value) {
+                save.modOptions["Quants Enabled"] = value;
+            }, save.modOptions["Quants Enabled"]);
+
+            prefs.createPrefItemCheckbox("Note Splashes", "Hitting 'Sick!' or 'Sussy!' notes show note splash particles.", function(value) {
+                save.modOptions["Note Splashes"] = value;
+            }, save.modOptions["Note Splashes"]);
+        }
+    }
+
+    override function onSongStart(event)
+    {
+        super.onSongStart(event);
+        lastV4Color = -1;
+    }
+
+    override function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+    }
+
+    override function onNoteHit(event)
+    {
+        super.onNoteHit(event);
+
+        var noteSplashOn = save.modOptions["Note Splashes"];
+        if (!noteSplashOn) { event.doesNotesplash = false; return; }
+        event.doesNotesplash = true;
+
+
+    }
+
+    function updateHUD()
+    {
+        if (PlayState.instance == null) return;
+        var visible = !save.modOptions["Hide HUD"];
+        if (PlayState.instance.healthBar != null && PlayState.instance.healthBar.visible != visible)
+            PlayState.instance.healthBar.visible = visible;
+        if (PlayState.instance.healthBarBG != null && PlayState.instance.healthBarBG.visible != visible)
+            PlayState.instance.healthBarBG.visible = visible;
+        if (PlayState.instance.iconP1 != null && PlayState.instance.iconP1.visible != visible)
+            PlayState.instance.iconP1.visible = visible;
+        if (PlayState.instance.iconP2 != null && PlayState.instance.iconP2.visible != visible)
+            PlayState.instance.iconP2.visible = visible;
+
+        for (member in PlayState.instance.members)
+        {
+            if (Std.isOfType(member, FlxBitmapText) && member != PlayState.instance.scoreText && member.visible != visible)
+                member.visible = visible;
+        }
+    }
+
+    function applyV4UI()
+    {
+        if (!save.modOptions["V4 Colored UI"]) return;
+        var ps = PlayState.instance;
+        if (ps == null || ps.iconP2 == null || ps.healthBar == null) return;
+
+        var color = IconColourFinder.findIconColour(ps.iconP2);
+        if (color == lastV4Color) return;
+        lastV4Color = color;
+
+        ps.healthBar.createFilledBar(color, color);
+        if (ps.healthBarBG != null) ps.healthBarBG.color = color;
+    }
+}

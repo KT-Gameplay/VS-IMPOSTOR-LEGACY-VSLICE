@@ -1,0 +1,216 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.addons.effects.FlxSkewedSprite;
+import flixel.FlxG;
+import openfl.filters.ShaderFilter;
+import flixel.FlxSprite;
+import Math;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
+import funkin.Paths;
+import funkin.save.Save;
+
+class BarsStage extends Stage
+{
+    public function new()
+    {
+        super('bars');
+    }
+
+    var grid:FlxSkewedSprite;
+    var gridUnder:FlxSkewedSprite;
+    var gridShader;
+    var gridUnderShader;
+    var vhsShader;
+    var vhsFrame:Int = 0;
+    var fgBaseY:Float = 0;
+    var fg2BaseY:Float = 0;
+    var dadBaseY:Float = 0;
+    var bfBaseY:Float = 0;
+    var waveTime:Float = 0;
+    var gridScrollY:Float = 0;
+    var dankBlack:FlxSprite;
+    var fg;
+    var fg2;
+
+    override function buildStage()
+    {
+        super.buildStage();
+
+        grid = new FlxSkewedSprite(0, -1000, Paths.image('BG/bars/gridBars', 'shared'));
+        grid.alpha = 0.3;
+        grid.antialiasing = false;
+        grid.origin.set(grid.frameWidth * 0.5, 0);
+        grid.scale.set(2.8, 1.7);
+        grid.scrollFactor.set(0.1, 0.1);
+        grid.screenCenter(0x01);
+        grid.y -= 450;
+        grid.x -= 1700;
+        grid.zIndex = 1;
+        add(grid);
+        grid.updateHitbox();
+
+        gridUnder = new FlxSkewedSprite(0, 0, Paths.image('BG/bars/gridBars', 'shared'));
+        gridUnder.alpha = 0.3;
+        gridUnder.antialiasing = false;
+        gridUnder.origin.set(gridUnder.frameWidth * 0.5, 0);
+        gridUnder.scale.set(grid.scale.x, grid.scale.y);
+        gridUnder.scrollFactor.set(grid.scrollFactor.x, grid.scrollFactor.y);
+        gridUnder.flipY = true;
+        gridUnder.screenCenter(0x01);
+        gridUnder.x = grid.x;
+        gridUnder.y = grid.y + grid.height + 0;
+        gridUnder.zIndex = 2;
+        add(gridUnder);
+        gridUnder.updateHitbox();
+
+        fg = this.getNamedProp('fg');
+        fg2 = this.getNamedProp('fg2');
+
+        fg.updateHitbox();
+        fg2.updateHitbox();
+
+        fgBaseY = fg.y;
+        fg2BaseY = fg2.y;
+    }
+
+    function onSongLoaded(event)
+    {
+        super.onSongLoaded(event);
+
+        dadBaseY = this.getDad().y;
+        bfBaseY = this.getBoyfriend().y;
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart();
+
+        FlxG.camera.pixelPerfectRender = true;
+
+        gridShader = new FlxRuntimeShader(Assets.getText(Paths.frag('gridperspective')));
+        gridUnderShader = new FlxRuntimeShader(Assets.getText(Paths.frag('gridperspective')));
+
+        gridShader.setFloat('uTopWidth', 1.9);
+        gridShader.setFloat('uBottomWidth', 0.4);
+        gridShader.setFloat('uDepthPow', 1.15);
+        gridShader.setFloat('uScrollY', 0);
+        grid.shader = gridShader;
+
+        gridUnderShader.setFloat('uTopWidth', 1.9);
+        gridUnderShader.setFloat('uBottomWidth', 0.4);
+        gridUnderShader.setFloat('uDepthPow', 1.15);
+        gridUnderShader.setFloat('uScrollY', 0);
+        gridUnder.shader = gridUnderShader;
+
+        LegacyUtils.camSpecialThing([650, 475], [1000, 475]);
+        PlayState.instance.camHUD.alpha = 0.001;
+
+        PlayState.instance.tweenCameraToPosition(800, 300, 0);
+
+        if (Save.instance.modOptions["Shaders"])
+        {
+            vhsShader = new FlxRuntimeShader(Assets.getText(Paths.frag('vhs')));
+            vhsShader.setInt('uFrame', 0);
+            vhsShader.setFloat('uInterlace', 1.0);
+		
+            FlxG.camera.filters = [new ShaderFilter(vhsShader)];
+        }
+
+        for (character in [this.getBoyfriend(), this.getDad()])
+        {
+            character.antialiasing = false;
+            character.setPosition(Math.round(character.x), Math.round(character.y));
+            character.origin.set(Math.round(character.origin.x), Math.round(character.origin.y)); // fuck you ! fuck you ! fuck y
+        }
+
+        PlayState.instance.iconP1.antialiasing = false;
+        PlayState.instance.iconP2.antialiasing = false;
+	
+        showdankBlack();
+    }
+
+    function showdankBlack():Void
+    {
+        if (dankBlack == null)
+        {
+            dankBlack = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
+            dankBlack.setGraphicSize(FlxG.width, FlxG.height);
+            dankBlack.updateHitbox();
+            dankBlack.scrollFactor.set();
+            dankBlack.camera = PlayState.instance.camCutscene;
+            PlayState.instance.add(dankBlack);
+        }
+        else
+        {
+            dankBlack.revive();
+            dankBlack.visible = true;
+        }
+	
+        dankBlack.alpha = 1;
+    }
+
+    function onSongStart(event)
+    {
+        super.onSongStart(event);
+
+        if (dankBlack != null)
+        {
+            FlxTween.tween(dankBlack, {alpha: 0}, 0.2,
+            {
+				ease: FlxEase.quadOut,
+				onComplete: function(_) {
+					dankBlack.visible = false;
+					dankBlack.kill();
+				}
+			});
+        }
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+        waveTime += event.elapsed;
+	
+        if (vhsShader != null)
+        {
+            vhsFrame += 1;
+            vhsShader.setInt('uFrame', vhsFrame);
+            vhsShader.setFloat('uInterlace', 1.0);
+        }
+	
+        gridScrollY += event.elapsed * 0.02;
+        gridShader.setFloat('uScrollY', -gridScrollY);
+        gridUnderShader.setFloat('uScrollY', -gridScrollY);
+	
+        var wave = Math.sin(waveTime * 1.5) * 6;
+        fg.y = fgBaseY + wave;
+        fg2.y = fg2BaseY - wave;
+	
+        this.getDad().y = dadBaseY + wave;
+        this.getBoyfriend().y = bfBaseY - wave;
+    }
+
+    function onDestroy(event)
+    {
+        FlxG.camera.filters = [];
+    }
+
+    function onGameOver(event)
+    {
+        FlxG.camera.filters = [];
+    }
+
+    function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        if(event.eventData.eventKind == 'bye')
+        {
+            showdankBlack();
+            return;
+        }
+    }
+}

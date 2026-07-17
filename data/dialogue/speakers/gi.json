@@ -1,0 +1,29 @@
+{
+    "name": "Green",
+    "side": 0,
+    "asset": "green",
+    "boxColor": [0, 121, 28],
+    "boxShadeColor": [0, 57, 62],
+    "icon": "green",
+    "sound": "gi",
+    "animations": [
+        {
+            "anim": "ihappy",
+            "name": "GI happy",
+            "loop": false,
+            "offsets": [0,20]
+        },
+        {
+            "anim": "ineutral",
+            "name": "GI neutral",
+            "loop": false,
+            "offsets": [0,20]
+        },
+        {
+            "anim": "iupset",
+            "name": "GI upset",
+            "loop": false,
+            "offsets": [0,20]
+        }
+    ]
+}

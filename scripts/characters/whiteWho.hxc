@@ -1,0 +1,26 @@
+import funkin.play.character.AnimateAtlasCharacter;
+import funkin.play.PlayState;
+
+class WhiteWhoCharacter extends AnimateAtlasCharacter
+{
+    public function new()
+    {
+        super('whiteWho');
+    }
+
+    override public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = '')
+    {
+        super.playSingAnimation(dir, miss, this.idleSuffix == '-alt' ? 'alt' : suffix);
+    }
+
+    function onCountdownStart(event) // improvising
+    {
+        super.onCountdownStart(event);
+        
+        if(PlayState.instance.currentChart.songName.toLowerCase() == 'who')
+        {
+            PlayState.instance.tweenCameraZoom(0.7, 0, true);
+            PlayState.instance.tweenCameraToPosition(1100, 1150, 0);
+        }
+    }
+}

@@ -1,0 +1,80 @@
+{
+  "version": "1.0.0",
+  "name": "green-crewmate",
+  "assetPath": "shared:characters/story/green/crewmate",
+  "startingAnimation": "idle",
+  "singTime": 6.1,
+  "scale": 1,
+  "flipX": false,
+  "offsets": [
+    -227,
+    240
+  ],
+  "cameraOffsets": [
+    159,
+    -28
+  ],
+  "healthIcon": {
+    "id": "green-crewmate",
+    "scale": 1,
+    "flipX": false,
+    "isPixel": false
+  },
+  "healthbarColors": [
+    161,
+    161,
+    161
+  ],
+  "renderType": "multianimateatlas",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "right",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "bopL",
+      "prefix": "be careful",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "bopR",
+      "prefix": "of wandering eyes",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "wave",
+      "prefix": "wave",
+      "fps": 24,
+      "looped": false
+    }
+  ]
+}

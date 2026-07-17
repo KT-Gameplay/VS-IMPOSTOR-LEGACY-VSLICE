@@ -1,0 +1,149 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 0.9,
+	"name": "maroon",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "maroon",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/triple/maroon/maroon",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "right",
+			"offsets": [
+				166,
+				-137
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down",
+			"offsets": [
+				251,
+				-157
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left",
+			"offsets": [
+				258,
+				-231
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up",
+			"offsets": [
+				378,
+				-135
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13
+			],
+			"prefix": "idle",
+			"offsets": [
+				249,
+				-190
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "hey",
+			"offsets": [
+				235,
+				-149
+			],
+			"frameRate": 24,
+			"name": "hey",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [
+				14,
+				15,
+				16,
+				17,
+				18
+			],
+			"prefix": "idle-loop",
+			"offsets": [
+				249,
+				-190
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": true,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [
+				14,
+				15,
+				16,
+				17,
+				18
+			],
+			"prefix": "idle",
+			"offsets": [
+				249,
+				-190
+			],
+			"frameRate": 24,
+			"name": "idle-hold",
+			"looped": true,
+			"animType": "symbol"
+		}
+	]
+}

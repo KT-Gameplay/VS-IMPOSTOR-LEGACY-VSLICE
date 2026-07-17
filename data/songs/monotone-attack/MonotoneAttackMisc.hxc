@@ -1,0 +1,86 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import flixel.FlxG;
+import flixel.math.FlxMath;
+import funkin.util.Constants;
+import funkin.modding.module.ModuleHandler;
+
+// This script is made especially for the variants.
+class MonotoneAttackMisc extends Module
+{
+   public function new()
+   {
+      super("MonotoneAttackMisc");
+   }
+
+   var playerX;
+
+    var isOpp:Bool = false;
+    var MAXIMUM_HEALTH:Float = Constants.HEALTH_MAX;
+    var module = null;
+
+    function onCountdownStart(event)
+    {
+       super.onCountdownStart(event);
+       isOpp = false;
+       if(PlayState.instance.currentSong.id.toLowerCase() != "monotone-attack") return;
+
+       if(ModuleHandler.getModule('MonotoneAttackScript')?.scriptGet('attackCharacter') == 3)
+       {
+          PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
+          PlayState.instance.currentStage.getDad().initHealthIcon(true);
+       }
+
+       if(ModuleHandler.getModule('MonotoneAttackScript')?.scriptGet('attackCharacter') == 1 || ModuleHandler.getModule('MonotoneAttackScript').scriptGet('attackCharacter') == 2)
+       {
+          if(!FlxG.onMobile)
+          {
+             playerX = PlayState.instance.playerStrumline.x;
+             PlayState.instance.playerStrumline.x = PlayState.instance.opponentStrumline.x;
+             PlayState.instance.opponentStrumline.x = playerX;
+          }
+          
+          isOpp = true;
+          PlayState.instance.healthBar.flipX = true;
+          PlayState.instance.currentStage.getBoyfriend()._data.healthIcon.flipX = true;
+          PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
+          PlayState.instance.currentStage.getDad()._data.healthIcon.flipX = true;
+          PlayState.instance.currentStage.getDad().initHealthIcon(true);
+       }
+       else {isOpp = false;}
+    }
+
+    function onSongRetry(event)
+    {
+       super.onSongRetry(event);
+       if(!isOpp) return;
+
+        if(!FlxG.onMobile)
+          {
+             playerX = PlayState.instance.playerStrumline.x;
+             PlayState.instance.playerStrumline.x = PlayState.instance.opponentStrumline.x;
+             PlayState.instance.opponentStrumline.x = playerX;
+          }
+    }
+
+    function onUpdate(event)
+    {
+      if(PlayState.instance == null) return;
+      super.onUpdate(event);
+      if(PlayState.instance.currentSong.id.toLowerCase() != "monotone-attack") return;
+      if(!isOpp) return;
+
+      PlayState.instance.iconP1.autoUpdate = false;
+      PlayState.instance.iconP2.autoUpdate = false;
+
+      PlayState.instance.iconP2.updateHealthIcon(MAXIMUM_HEALTH - PlayState.instance.health);
+      PlayState.instance.iconP1.updateHealthIcon(PlayState.instance.health);
+
+      PlayState.instance.iconP1.x = PlayState.instance.healthBar.x
+          + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 0, 100) * 0.01))
+          - (PlayState.instance.iconP1.width - 26);
+
+      PlayState.instance.iconP2.x = PlayState.instance.healthBar.x
+          + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 0, 100) * 0.01) - 26);
+    }
+}

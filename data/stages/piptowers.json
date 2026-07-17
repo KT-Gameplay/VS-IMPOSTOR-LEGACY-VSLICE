@@ -1,0 +1,84 @@
+{
+ "version": "1.0.2",
+ "name": "Towers",
+ "props": [
+  {
+   "assetPath": "BG/chips/back",
+   "atlasSettings": null,
+   "name": "sky",
+   "position": [-1100, -800],
+   "scale": 1,
+   "scroll": [0, 0],
+   "startingAnimation": ""
+  },
+  {
+   "assetPath": "BG/chips/backBuildings",
+   "atlasSettings": null,
+   "name": "back",
+   "position": [-1100, -800],
+   "scale": 1,
+   "scroll": [0.2, 0.2],
+   "startingAnimation": "",
+   "zIndex": 1
+  },
+  {
+   "assetPath": "BG/chips/bg2",
+   "atlasSettings": null,
+   "name": "sign",
+   "position": [-1100, -800],
+   "scale": 1,
+   "scroll": [0.4, 0.4],
+   "startingAnimation": "",
+   "zIndex": 2
+  },
+  {
+   "assetPath": "BG/chips/mainBuildings",
+   "atlasSettings": null,
+   "name": "main",
+   "position": [-1100, -800],
+   "scale": 1,
+   "scroll": [0.4, 0.4],
+   "startingAnimation": "",
+   "zIndex": 3
+  },
+  {
+   "assetPath": "BG/chips/glow",
+   "atlasSettings": null,
+   "blend": "add",
+   "name": "glow",
+   "position": [-1100, -800],
+   "scale": 1,
+   "scroll": [0.5, 0.5],
+   "startingAnimation": "",
+   "zIndex": 4
+  },
+  {
+   "assetPath": "BG/chips/balcony",
+   "atlasSettings": null,
+   "name": "balcony",
+   "position": [-1100, -800],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 5
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-260, -90],
+   "position": [1166.5, 926],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [170, -90],
+   "position": [488.5, 712],
+   "zIndex": 200
+  },
+  "gf": {
+   "alpha": 0,
+   "cameraOffsets": [-110, 0],
+   "position": [751.5, 787],
+   "zIndex": -1
+  }
+ },
+ "cameraZoom": 0.52
+}

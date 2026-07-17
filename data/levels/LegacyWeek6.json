@@ -1,0 +1,13 @@
+{
+    "version": "1.0.0",
+    "name": "Deadly Delusion",
+    "titleAsset": "storymenu/titles/deadlydelusion",
+  "capsule": {
+    "name": "Deadly Delusion"
+  },
+    "props": [],
+    "background": "#FFFFFF",
+    "songs": [
+        "delusion", "blackout", "neurotic"
+    ]
+}

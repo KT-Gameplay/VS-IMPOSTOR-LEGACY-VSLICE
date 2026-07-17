@@ -1,0 +1,32 @@
+{
+ "version": "1.0.2",
+ "name": "Henry",
+ "props": [
+  {
+   "assetPath": "BG/henry/stage",
+   "atlasSettings": null,
+   "name": "bg",
+   "position": [-1600, -300],
+   "scale": 1,
+   "startingAnimation": ""
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [1291, 964],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [446.5, 970],
+   "zIndex": 200
+  },
+  "gf": {
+   "cameraOffsets": [0, 0],
+   "position": [876, 875],
+   "zIndex": 100
+  }
+ },
+ "cameraZoom": 0.9
+}

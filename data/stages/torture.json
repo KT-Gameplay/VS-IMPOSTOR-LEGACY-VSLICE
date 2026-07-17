@@ -1,0 +1,106 @@
+{
+ "version": "1.0.2",
+ "name": "Torture",
+ "props": [
+  {
+   "assetPath": "BG/torture/tort_floor",
+   "atlasSettings": null,
+   "name": "floor",
+   "position": [-1376.3, 494.65],
+   "scale": 1,
+   "startingAnimation": ""
+  },
+  {
+   "assetPath": "BG/torture/torture_wall",
+   "atlasSettings": null,
+   "name": "wall",
+   "position": [-921.95, -850],
+   "scale": 1,
+   "scroll": [0.8, 0.8],
+   "startingAnimation": "",
+   "zIndex": 1
+  },
+  {
+    "animations": [
+        {
+            "name": "thing",
+            "prefix": "RozeCamio"
+        }
+    ],
+   "alpha": 0.01,
+   "assetPath": "BG/torture/torture_roze",
+   "atlasSettings": null,
+   "name": "rozebud",
+   "position": [-390, -190],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 2
+  },
+  {
+   "assetPath": "BG/torture/torture_glasses_preblended",
+   "atlasSettings": null,
+   "name": "glasses",
+   "position": [551.8, 594.3],
+   "scale": 1,
+   "scroll": [1.2, 1.2],
+   "startingAnimation": "",
+   "zIndex": 310
+  },
+  {
+   "alpha": 0.31,
+   "assetPath": "BG/torture/windowlights",
+   "atlasSettings": null,
+   "blend": "add",
+   "name": "window lights",
+   "position": [-159.2, -605.95],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 311
+  },
+  {
+    "animations": [
+        {
+            "name": "idle",
+            "prefix": "mole idle",
+            "looped": true
+        }
+    ],
+   "assetPath": "BG/torture/monty",
+   "atlasSettings": null,
+   "name": "montymole",
+   "position": [14.05, 439.7],
+   "scale": 1,
+   "scroll": [1.6, 1.6],
+   "startingAnimation": "idle",
+   "zIndex": 314
+  },
+  {
+   "alpha": 0.25,
+   "assetPath": "BG/torture/torture_glow2",
+   "atlasSettings": null,
+   "blend": "add",
+   "name": "lights",
+   "position": [-410, -480.45],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 315
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [639, 653],
+   "zIndex": 100
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [1334, 933],
+   "zIndex": 200
+  },
+  "gf": {
+   "cameraOffsets": [0, 0],
+   "position": [-33.5, 930],
+   "zIndex": 200
+  }
+ }
+}

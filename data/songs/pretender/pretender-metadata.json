@@ -1,0 +1,41 @@
+{
+ "version": "2.2.4",
+ "songName": "Pretender",
+ "artist": "EthanTheDoodler",
+ "charter": "Orbyy",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "pretender",
+   "girlfriend": "gfmira",
+   "opponent": "grey",
+   "opponentVocals": [
+    "grey"
+   ],
+   "playerVocals": []
+  },
+  "stage": "pretender",
+  "noteStyle": "impostor",
+  "ratings": {
+   "normal": 0,
+   "hard": 0
+  },
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 250,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

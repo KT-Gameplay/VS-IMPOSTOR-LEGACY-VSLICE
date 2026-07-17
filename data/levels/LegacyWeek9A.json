@@ -1,0 +1,13 @@
+{
+    "version": "1.0.0",
+    "name": "Rosy Rival",
+    "titleAsset": "storymenu/titles/rosyrivals",
+  "capsule": {
+    "name": "Rosy Rival"
+  },
+    "props": [],
+    "background": "#FFFFFF",
+    "songs": [
+        "sussy-bussy", "rivals", "chewmate"
+    ]
+}

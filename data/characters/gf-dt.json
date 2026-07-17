@@ -1,0 +1,59 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 1,
+	"scale": 1,
+	"name": "gf-dt",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "danceRight",
+	"healthIcon": {
+		"id": "face",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/gf/doubleTroubleGf",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "intro",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "intro",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "dance left",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "danceLeft",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "dance right",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "danceRight",
+			"looped": false
+		}
+	]
+}

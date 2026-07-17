@@ -1,0 +1,40 @@
+{
+ "version": "1.0.2",
+ "name": "Nuzzus",
+ "props": [
+  {
+   "assetPath": "BG/nuzzus/nuzzus",
+   "atlasSettings": null,
+   "isPixel": true,
+   "name": "bg",
+   "position": [-4, 0],
+   "scale": 5,
+   "startingAnimation": "idle",
+   "zIndex": 10,
+   "animations": [
+    {
+        "name":"idle",
+        "prefix": "bg",
+        "looped": true
+    }
+   ]
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [1076, 619]
+  },
+  "dad": {
+   "cameraOffsets": [75, -150],
+   "position": [630, 875],
+   "zIndex": 20
+  },
+  "gf": {
+   "alpha": 0,
+   "cameraOffsets": [0, 0],
+   "position": [751.5, 787],
+   "zIndex": 100
+  }
+ }
+}

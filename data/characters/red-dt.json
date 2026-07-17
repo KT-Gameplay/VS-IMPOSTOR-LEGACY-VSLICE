@@ -1,0 +1,191 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "red-dt",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "face",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/freeplay/doubleTroubleRed",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "idle",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "balance left",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singLEFT-balance",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "balance right",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singRIGHT-balance",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "balance down",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singDOWN-balance",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "balance up",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singUP-balance",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left",
+			"offsets": [
+				20,
+				0
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right",
+			"offsets": [
+				-20,
+				0
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "gulp",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "snap",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "idle mad",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle-mad",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left mad",
+			"offsets": [
+				20,
+				0
+			],
+			"frameRate": 24,
+			"name": "singLEFT-mad",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right mad",
+			"offsets": [
+				-20,
+				0
+			],
+			"frameRate": 24,
+			"name": "singRIGHT-mad",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down mad",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singDOWN-mad",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up mad",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "singUP-mad",
+			"looped": false
+		}
+	]
+}

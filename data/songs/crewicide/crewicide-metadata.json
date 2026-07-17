@@ -1,0 +1,37 @@
+{
+ "version": "2.2.4",
+ "songName": "Crewicide",
+ "artist": "Punkett",
+ "charter": "Gonk",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "gf",
+   "opponent": "dave",
+   "opponentVocals": [
+    "dave"
+   ],
+   "playerVocals": []
+  },
+  "stage": "dave",
+  "noteStyle": "impostor",
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 200,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

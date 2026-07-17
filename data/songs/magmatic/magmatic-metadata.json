@@ -1,0 +1,41 @@
+{
+ "version": "2.2.4",
+ "songName": "Magmatic",
+ "artist": "Rozebud, Cval",
+ "charter": "Gonk",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "bfpolus",
+   "girlfriend": "gfpolus",
+   "opponent": "maroon",
+   "opponentVocals": [
+    "maroon"
+   ],
+   "playerVocals": []
+  },
+  "stage": "maroon",
+  "noteStyle": "impostor",
+  "ratings": {
+   "normal": 0,
+   "hard": 0
+  },
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 158,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

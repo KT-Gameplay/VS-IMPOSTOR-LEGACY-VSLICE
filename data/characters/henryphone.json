@@ -1,0 +1,136 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		-390,
+		44
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "henryphone",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"assetPath": "characters/henry/henry_i_phone",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "Henry Down",
+			"offsets": [
+				172,
+				-58
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Miss Down",
+			"offsets": [
+				154,
+				-48
+			],
+			"frameRate": 24,
+			"name": "singDOWNmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Up",
+			"offsets": [
+				54,
+				87
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Left",
+			"offsets": [
+				179,
+				62
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Right",
+			"offsets": [
+				83,
+				20
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Idle",
+			"offsets": [
+				10,
+				90
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Miss Left",
+			"offsets": [
+				192,
+				0
+			],
+			"frameRate": 24,
+			"name": "singLEFTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Miss Right",
+			"offsets": [
+				68,
+				-32
+			],
+			"frameRate": 24,
+			"name": "singRIGHTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Miss Up",
+			"offsets": [
+				55,
+				83
+			],
+			"frameRate": 24,
+			"name": "singUPmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Greatest Plan Intro",
+			"offsets": [
+				4,
+				313
+			],
+			"frameRate": 24,
+			"name": "intro",
+			"looped": false
+		}
+	]
+}

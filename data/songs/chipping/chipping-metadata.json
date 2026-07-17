@@ -1,0 +1,37 @@
+{
+ "version": "2.2.4",
+ "songName": "Chipping",
+ "artist": "ziffyclumper",
+ "charter": "",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "pip_evil",
+   "girlfriend": "gf",
+   "opponent": "cval",
+   "opponentVocals": [
+    "cval"
+   ],
+   "playerVocals": []
+  },
+  "stage": "piptowers",
+  "noteStyle": "impostor",
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 140,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

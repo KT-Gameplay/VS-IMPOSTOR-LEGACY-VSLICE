@@ -1,0 +1,118 @@
+import funkin.play.stage.Stage;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.play.PlayState;
+import flixel.addons.display.FlxRuntimeShader;
+import openfl.filters.ShaderFilter;
+import Math;
+
+import funkin.save.Save;
+
+class BoilingStage extends Stage
+{
+    public function new()
+    {
+        super('boiling');
+    }
+
+    var redscreen:FlxSprite;
+    var lava;
+    
+    var heatwaveShader = null;
+    var chromShader = null;
+    var chromTween:FlxTween;
+    var chromValue;
+
+    var shaderBitmap:FlxSprite;
+
+    function buildStage()
+    {
+        super.buildStage();
+
+        lava = getNamedProp('lava'); // apparently the lava can rise it seems.
+
+        if(redscreen != null)
+        {
+            PlayState.instance.remove(redscreen);
+            redscreen = null;
+        }
+        
+        redscreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFF24400);
+        redscreen.scrollFactor.set();
+        redscreen.screenCenter();
+        redscreen.alpha = 0.001;
+        redscreen.cameras = [PlayState.instance.camHUD];
+        PlayState.instance.add(redscreen);         
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        heatwaveShader = new FlxRuntimeShader(Assets.getText(Paths.frag("heatwave")));
+        chromShader = new FlxRuntimeShader(Assets.getText(Paths.frag("chromatic")));
+
+        if(shaderBitmap == null) shaderBitmap = new FlxSprite().loadGraphic(Paths.image('shader/heatwave'));
+        heatwaveShader.setBitmapData("distortTexture", shaderBitmap.graphic.bitmap);
+
+        chromShader.setFloat("amount", -0.2);
+        chromValue = -0.2;
+        FlxG.camera.filters = [new ShaderFilter(heatwaveShader), new ShaderFilter(chromShader)];
+
+        redscreen.alpha = 0.001;
+
+        lava.y = -694;
+        FlxTween.tween(lava, {y: -750}, 200);
+
+        LegacyUtils.camSpecialThing([1760, 380], [1900, 435]);
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        var iTime:Float;
+        iTime += event.elapsed;
+        
+        heatwaveShader.setFloat("iTime", iTime);
+    }
+
+    function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        if(event.eventData.eventKind == "setChrom")
+        {
+            var value = event.eventData.getFloat('amount');
+            if(Math.isNaN(value)) value = 0;
+            var speed = event.eventData.getFloat('speed');
+            if(Math.isNaN(speed)) speed = 0;
+
+            if(chromTween != null) chromTween.cancel();
+
+            chromTween = FlxTween.num(chromValue, value, speed,{ease: FlxEase.sineOut}, function(num:Float) 
+                {
+                    if (chromTween.active)
+                    {
+                        chromShader.setFloat('amount', num);
+                    }
+                });
+        }
+        
+        if(event.eventData.eventKind == "byebye")
+        {
+            FlxTween.tween(redscreen, {alpha: 1}, 2, {ease: FlxEase.expoInOut});
+
+            if(chromTween != null) chromTween.cancel();
+            chromTween = FlxTween.num(-0.5, -5, 2,{ease: FlxEase.sineOut}, function(num:Float) 
+                {
+                    if (chromTween.active)
+                    {
+                        chromShader.setFloat('amount', num);
+                    }
+                });
+        }
+    }
+}

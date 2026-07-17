@@ -1,0 +1,182 @@
+import funkin.modding.module.Module;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.ui.options.OptionsState;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.Paths;
+import funkin.Preferences;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.ui.FlxBar;
+import flixel.ui.FlxBarFillDirection;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxStringUtil;
+
+class TimeBarModule extends Module
+{
+	static final DISABLED = 'Disabled';
+	static final SONG_NAME = 'Song Name';
+	static final TIME_ELAPSED = 'Time Elapsed';
+	static final TIME_LEFT = 'Time Left';
+
+	var timeBarBG:FlxSprite;
+	var timeBar:FlxBar;
+	var timeTxt:FlxText;
+
+	var songPercent:Float = 0;
+
+	public function new()
+	{
+		super('TimeBar');
+
+		if (Save.instance.modOptions['Time Bar'] == null)
+			Save.instance.modOptions['Time Bar'] = SONG_NAME;
+	}
+
+	override function onStateChangeEnd(event)
+	{
+		super.onStateChangeEnd(event);
+		if (event.targetState == null) return;
+
+		if (Std.isOfType(event.targetState, OptionsState))
+		{
+			var prefs = event.targetState.optionsCodex.pages.get('preferences');
+			prefs.createPrefItemEnum('Time Bar', 'Choose what the time bar displays.',
+				[DISABLED => DISABLED, SONG_NAME => SONG_NAME, TIME_ELAPSED => TIME_ELAPSED, TIME_LEFT => TIME_LEFT],
+				function(value:String)
+				{
+					Save.instance.modOptions['Time Bar'] = value;
+					Save.instance.flush();
+				},
+				Save.instance.modOptions['Time Bar']);
+			return;
+		}
+	}
+
+	override function onCountdownStart(ev:ScriptEvent)
+	{
+		super.onCountdownStart(ev);
+		var mode = Save.instance.modOptions['Time Bar'];
+		if (mode == DISABLED) return;
+		if (PlayState.instance == null) return;
+		createTimeBar();
+	}
+
+	function createTimeBar()
+	{
+		var downNotes:Bool = Preferences.downscroll;
+		if (FlxG.onMobile) downNotes = true;
+
+		var yPos:Float = downNotes ? FlxG.height - 23 - 20 : 20;
+
+		timeBarBG = new FlxSprite(0, yPos);
+		try
+		{
+			timeBarBG.loadGraphic(Paths.image("ui/timeBar"));
+		}
+		catch (e:Dynamic)
+		{
+			timeBarBG.makeGraphic(400, 19, 0xFF2E412E);
+		}
+		timeBarBG.scrollFactor.set();
+
+		var barX = timeBarBG.x + 4;
+		var barY = timeBarBG.y + 4;
+		var barW = Std.int(timeBarBG.width - 8);
+		var barH = Std.int(timeBarBG.height - 8);
+
+		timeBar = new FlxBar(barX, barY, FlxBarFillDirection.LEFT_TO_RIGHT, barW, barH, this, "songPercent", 0, 1);
+		timeBar.createFilledBar(0xFF2E412E, 0xFF44D844);
+		timeBar.numDivisions = 800;
+		timeBar.scrollFactor.set();
+
+		timeTxt = new FlxText(barX, barY - 1, barW, "", 12);
+		timeTxt.setFormat(Paths.font("vcr.ttf"), 12, 0xFFFFFFFF, "left", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+		timeTxt.borderSize = 1;
+		timeTxt.scrollFactor.set();
+
+		timeTxt.cameras = timeBar.cameras = timeBarBG.cameras = [PlayState.instance.camHUD];
+
+		timeBarBG.visible = false;
+		timeBar.visible = false;
+		timeTxt.visible = false;
+
+		PlayState.instance.add(timeBarBG);
+		PlayState.instance.add(timeBar);
+		PlayState.instance.add(timeTxt);
+	}
+
+	override function onSongStart(ev:ScriptEvent)
+	{
+		super.onSongStart(ev);
+
+		if (timeBarBG != null)
+		{
+			var strumX = PlayState.instance.opponentStrumline.x;
+			timeBarBG.x = strumX - 10;
+			timeBar.x = timeBarBG.x + 4;
+			timeTxt.x = timeBarBG.x + 4;
+		}
+
+		var objects = [timeBarBG, timeBar, timeTxt];
+		for (obj in objects)
+		{
+			if (obj != null)
+			{
+				obj.alpha = 0;
+				obj.visible = true;
+				FlxTween.tween(obj, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+			}
+		}
+	}
+
+	override function onUpdate(ev:UpdateScriptEvent)
+	{
+		super.onUpdate(ev);
+		var mode = Save.instance.modOptions['Time Bar'];
+		if (mode == DISABLED)
+		{
+			if (timeBarBG != null) { timeBarBG.visible = false; timeBar.visible = false; timeTxt.visible = false; }
+			return;
+		}
+
+		if (timeBar != null && FlxG.sound.music != null)
+		{
+			songPercent = FlxG.sound.music.time / FlxG.sound.music.length;
+			songPercent = Math.max(0, Math.min(1, songPercent));
+
+			timeBar.value = songPercent;
+			timeBar.updateBar();
+
+			switch (mode)
+			{
+				case SONG_NAME:
+					timeTxt.text = PlayState.instance.currentChart.songName.toUpperCase();
+				case TIME_ELAPSED:
+					timeTxt.text = FlxStringUtil.formatTime(FlxG.sound.music.time / 1000, false);
+				case TIME_LEFT:
+					timeTxt.text = FlxStringUtil.formatTime((FlxG.sound.music.length - FlxG.sound.music.time) / 1000, false);
+				default:
+					timeTxt.text = PlayState.instance.currentChart.songName.toUpperCase();
+			}
+		}
+	}
+
+	override function onDestroy(ev:ScriptEvent)
+	{
+		super.onDestroy(ev);
+
+		if (timeBarBG != null) timeBarBG.destroy();
+		if (timeBar != null) timeBar.destroy();
+		if (timeTxt != null) timeTxt.destroy();
+
+		timeBarBG = null;
+		timeBar = null;
+		timeTxt = null;
+	}
+}

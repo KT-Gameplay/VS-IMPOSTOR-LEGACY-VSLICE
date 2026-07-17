@@ -1,0 +1,33 @@
+{
+ "version": "1.0.2",
+ "name": "Jerma",
+ "props": [
+  {
+   "assetPath": "BG/jerma/jerma",
+   "atlasSettings": null,
+   "name": "bg",
+   "position": [0, 0],
+   "scale": 1,
+   "startingAnimation": ""
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-160, -100],
+   "position": [1401, 1159],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [652, 1240],
+   "zIndex": 200
+  },
+  "gf": {
+   "alpha": 0,
+   "cameraOffsets": [0, 0],
+   "position": [739.5, 791],
+   "zIndex": 100
+  }
+ },
+ "cameraZoom": 0.8
+}

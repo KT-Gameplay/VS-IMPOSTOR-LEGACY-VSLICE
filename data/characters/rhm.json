@@ -1,0 +1,103 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		-17,
+		115
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "rhm",
+	"cameraOffsets": [
+		0,
+		-20
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "rhm",
+		"isPixel": false
+	},
+	"assetPath": "characters/henry/rhm",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "RHM Idle",
+			"offsets": [
+				-109,
+				190
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "RHM Right",
+			"offsets": [
+				-152,
+				150
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "RHM Up",
+			"offsets": [
+				-99,
+				366
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "RHM left pose",
+			"offsets": [
+				15,
+				190
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "RHM down new",
+			"offsets": [
+				-83,
+				120
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "RHM intro new",
+			"offsets": [
+				-94,
+				190
+			],
+			"frameRate": 24,
+			"name": "intro",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "rhm animation",
+			"offsets": [
+				-150,
+				-340
+			],
+			"frameRate": 24,
+			"name": "animation",
+			"looped": false
+		}
+	]
+}

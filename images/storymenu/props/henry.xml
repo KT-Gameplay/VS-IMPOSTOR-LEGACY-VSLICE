@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="henry.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="idle0000" x="367" y="0" width="366" height="699" frameX="2" frameY="-28" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0001" x="367" y="0" width="366" height="699" frameX="2" frameY="-28" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0002" x="0" y="0" width="367" height="701" frameX="2" frameY="-26" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0003" x="0" y="0" width="367" height="701" frameX="2" frameY="-26" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0004" x="0" y="701" width="357" height="708" frameX="-2" frameY="-19" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0005" x="0" y="701" width="357" height="708" frameX="-2" frameY="-19" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0006" x="733" y="0" width="345" height="729" frameX="-3" frameY="2" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0007" x="733" y="0" width="345" height="729" frameX="-3" frameY="2" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0008" x="1078" y="0" width="344" height="729" frameX="-3" frameY="2" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0009" x="1078" y="0" width="344" height="729" frameX="-3" frameY="2" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0010" x="1078" y="0" width="344" height="729" frameX="-3" frameY="2" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0011" x="1078" y="0" width="344" height="729" frameX="-3" frameY="2" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0012" x="1078" y="0" width="344" height="729" frameX="-3" frameY="2" frameWidth="363" frameHeight="725"/>
+	<SubTexture name="idle0013" x="1078" y="0" width="344" height="729" frameX="-3" frameY="2" frameWidth="363" frameHeight="725"/>
+</TextureAtlas>

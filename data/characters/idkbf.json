@@ -1,0 +1,117 @@
+{
+	"renderType": "multisparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 0.8,
+	"name": "idkbf",
+	"cameraOffsets": [
+		-80,
+		390
+	],
+	"flipX": true,
+	"isPixel": true,
+	"singTime": 10,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "idkbf",
+		"isPixel": false
+	},
+	"assetPath": "characters/bf/idkbf",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "idle",
+			"offsets": [
+				30,
+				-291
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right",
+			"offsets": [
+				26,
+				-290
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down",
+			"offsets": [
+				32,
+				-293
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left",
+			"offsets": [
+				31,
+				-291
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up",
+			"offsets": [
+				-25,
+				-282
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "first death",
+			"offsets": [
+				26,
+				-291
+			],
+			"frameRate": 24,
+			"assetPath": "characters/gameover/idk_bf_dead",
+			"name": "firstDeath",
+			"looped": false
+		},
+		{
+			"frameIndices": [16, 17],
+			"prefix": "first death",
+			"offsets": [
+				26,
+				-291
+			],
+			"frameRate": 24,
+			"assetPath": "characters/gameover/idk_bf_dead",
+			"name": "deathLoop",
+			"looped": false
+		},
+		{
+			"frameIndices": [16, 17],
+			"prefix": "first death",
+			"offsets": [
+				26,
+				-291
+			],
+			"frameRate": 24,
+			"assetPath": "characters/gameover/idk_bf_dead",
+			"name": "deathConfirm",
+			"looped": false
+		}
+	]
+}

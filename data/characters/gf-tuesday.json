@@ -1,0 +1,70 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 1,
+	"scale": 1,
+	"name": "gf-tuesday",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "danceRight",
+	"healthIcon": {
+		"id": "gf",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/gf/gfSus",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "dance left",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "danceLeft",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "dance right",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "danceRight",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "sad",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "sad",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "cheer",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "cheer",
+			"looped": false
+		}
+	]
+}

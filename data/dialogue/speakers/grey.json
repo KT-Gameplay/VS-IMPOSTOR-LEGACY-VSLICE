@@ -1,0 +1,17 @@
+{
+    "name": "Grey",
+    "side": 0,
+    "asset": "grey",
+    "boxColor": [98, 101, 121],
+    "boxShadeColor": [48, 51, 73],
+    "icon": "gray",
+    "sound": "grey",
+    "animations": [
+        {
+            "anim": "neutral",
+            "name": "GC neutral",
+            "loop": false,
+            "offsets": [0, 30]
+        }
+    ]
+}

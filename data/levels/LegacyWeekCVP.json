@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "name": "Extras",
+  "titleAsset": "storymenu/titles/tutorial",
+  "capsule": {
+    "name": "Cval vs. Pip"
+  },
+  "visible": false,
+  "props": [
+  ],
+  "background": "#F9CF51",
+  "songs": ["chippin", "chipping", "torture"]
+}

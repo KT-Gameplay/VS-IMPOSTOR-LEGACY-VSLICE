@@ -1,0 +1,179 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.util.FlxColor;
+
+class JadsStage extends Stage
+{
+    public function new()
+    {
+        super('jads');
+    }
+
+    public var woo_party:Int = 0;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        LegacyUtils.camSpecialThing([600, 440], [1150, 440]);
+        woo_party = 0;
+    }
+
+    function onStepHit(event)
+    {
+        super.onStepHit(event);
+
+        switch(PlayState.instance.currentSong.id.toLowerCase())
+        {
+            case 'lemon-lime':
+                modchartLime(event.step);
+
+            case 'chlorophyll':
+                modchartChloro(event.step);
+
+            case 'inflorescence':
+                modchartInfloro(event.step);
+
+            case 'stargazer':
+                modchartStar(event.step);
+        }
+
+        if (event.step % 4 > 0) return;
+
+        switch (woo_party)
+        {
+            case 1:
+                PlayState.instance.cameraBopMultiplier = 1 + 0.008;		
+                PlayState.instance.camHUD.zoom += 0.008;
+					
+            case 2:
+                PlayState.instance.cameraBopMultiplier = 1 + 0.016;
+                PlayState.instance.camHUD.zoom += 0.016;
+			
+            case 3:
+                PlayState.instance.cameraBopMultiplier = 1 + 0.008;			
+                PlayState.instance.camHUD.zoom += 0.016;
+			
+            case 4:
+                PlayState.instance.cameraBopMultiplier = 1 + 0.02;
+                PlayState.instance.camHUD.zoom += 0.02;
+				PlayState.instance.camGame.stopFade();
+				PlayState.instance.camGame.flash(FlxColor.WHITE, 5);
+				PlayState.instance.camGame._fxFlashAlpha = 0.1;
+			}
+    }
+
+    function onSongEnd(event)
+    {
+        super.onSongEnd(event);
+
+        woo_party = 0;
+    }
+
+    function modchartLime(step:Int)
+    {
+        switch (step)
+        {
+            case 0, 4, 11, 16, 23, 28, 32, 36, 43, 48, 55, 60, 79, 111:
+			PlayState.instance.cameraBopMultiplier = 1 + 0.03;
+			PlayState.instance.camHUD.zoom += 0.03;
+            case 64:
+			woo_party = 1;
+
+            case 120, 508, 768:
+			woo_party = 0;
+
+            case 252, 384:
+			woo_party = 1;
+
+            case 128, 256, 512:
+			woo_party = 2;
+			PlayState.instance.camGame.flash(FlxColor.WHITE, 0.5);
+        }
+    }
+
+    function modchartChloro(step:Int)
+    {
+        switch (step)
+	{
+		case 128: 
+			woo_party = 1;
+
+		case 256, 384, 768, 896:
+			woo_party = 0;
+
+		case 512, 1024:
+			woo_party = 1;
+
+		case 752, 758, 764:
+			woo_party = 0;
+			PlayState.instance.cameraBopMultiplier = 1 + 0.03;
+			PlayState.instance.camHUD.zoom += 0.03;
+
+		case 260, 388, 772, 900:
+			woo_party = 2;
+			PlayState.instance.camGame.flash(FlxColor.WHITE, .5);
+	}
+    }
+
+    function modchartInfloro(step:Int)
+    {
+        switch (step)
+	{
+		case 64, 96, 640:
+			woo_party = 1;
+
+		case 92, 124, 1408:
+			woo_party = 0;
+
+		case 128, 900:
+			woo_party = 2;
+
+		case 1417, 1422, 1427, 1438:
+			PlayState.instance.cameraBopIntensity = 0;
+			//PlayState.instance.decayRate *= 0.6;
+			PlayState.instance.cameraBopMultiplier = 1 + 0.015;
+			PlayState.instance.camHUD.zoom += 0.015;
+	}
+    }
+
+    function modchartStar(step:Int)
+    {
+        switch (step)
+	{
+		case 240, 246, 252:
+			woo_party = 0;
+			PlayState.instance.camGame.stopFade();
+			PlayState.instance.camGame.flash(FlxColor.WHITE, 1);
+			PlayState.instance.camGame._fxFlashAlpha = 0.25;
+			PlayState.instance.cameraBopMultiplier = 1 + 0.03;
+			PlayState.instance.camHUD.zoom += 0.03;
+
+		case 128, 768:
+			woo_party = 1;
+
+		case 1660:
+			woo_party = 0;
+
+		case 1024:
+			woo_party = 2;
+
+		case 256, 516, 646, 1280, 1414:
+			woo_party = 2;
+			PlayState.instance.camGame.stopFade();
+			PlayState.instance.camGame.flash(FlxColor.WHITE, .5);
+
+		case 512, 640, 1264, 1408:
+			woo_party = 0;
+
+		case 1152, 1216:
+			woo_party = 4;
+
+		case 1200:
+			woo_party = 2;
+
+		case 1536:
+			woo_party = 0;
+	}
+    }
+}

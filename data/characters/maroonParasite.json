@@ -1,0 +1,111 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"applyStageMatrix": false,
+	"scale": 1.2,
+	"name": "maroonP",
+	"cameraOffsets": [
+		-210,
+		260
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"shouldBop": true,
+		"isPixel": false,
+		"scale": 1,
+		"flipX": false,
+		"id": "maroon-parasite"
+	},
+	"assetPath": "shared:characters/triple/maroon/maroonParasite",
+	"atlasSettings": {
+		"applyStageMatrix": false,
+		"useRenderTexture": false,
+		"filterQuality": 1,
+		"cacheOnLoad": false,
+		"swfMode": true
+	},
+	"animations": [
+		{
+			"offsets": [
+				249,
+				40
+			],
+			"frameIndices": [],
+			"prefix": "idle",
+			"flipX": false,
+			"animType": "symbol",
+			"looped": false,
+			"name": "idle",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				243,
+				66
+			],
+			"frameIndices": [],
+			"prefix": "right",
+			"flipX": false,
+			"animType": "symbol",
+			"looped": false,
+			"name": "singRIGHT",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				284,
+				215
+			],
+			"frameIndices": [],
+			"prefix": "down",
+			"flipX": false,
+			"animType": "symbol",
+			"looped": false,
+			"name": "singDOWN",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				300,
+				72
+			],
+			"frameIndices": [],
+			"prefix": "left",
+			"flipX": false,
+			"animType": "symbol",
+			"looped": false,
+			"name": "singLEFT",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				451,
+				282
+			],
+			"frameIndices": [],
+			"prefix": "up",
+			"flipX": false,
+			"animType": "symbol",
+			"looped": false,
+			"name": "singUP",
+			"flipY": false,
+			"frameRate": 24
+		}
+	]
+}

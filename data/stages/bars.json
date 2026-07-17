@@ -1,0 +1,58 @@
+{
+ "version": "1.0.2",
+ "name": "Bars",
+ "props": [
+  {
+   "assetPath": "BG/bars/grahdient",
+   "atlasSettings": null,
+   "isPixel": true,
+   "name": "grahdient",
+   "position": [-500, 0],
+   "scale": [
+	2,
+	1
+],
+   "scroll": [0, 0],
+   "startingAnimation": ""
+  },
+  {
+   "assetPath": "BG/bars/stage",
+   "atlasSettings": null,
+   "isPixel": true,
+   "name": "fg",
+   "position": [-200, 375],
+   "scale": 6,
+   "startingAnimation": "",
+   "zIndex": 3
+  },
+  {
+   "assetPath": "BG/bars/stage2",
+   "atlasSettings": null,
+   "isPixel": true,
+   "name": "fg2",
+   "position": [900, 375],
+   "scale": 6,
+   "startingAnimation": "",
+   "zIndex": 4
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [1473, 887],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [305, 850],
+   "zIndex": 200
+  },
+  "gf": {
+   "alpha": 0,
+   "cameraOffsets": [0, 0],
+   "position": [751.5, 787],
+   "zIndex": -1
+  }
+ },
+ "cameraZoom": 3
+}

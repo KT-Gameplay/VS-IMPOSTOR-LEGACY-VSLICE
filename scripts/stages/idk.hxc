@@ -1,0 +1,20 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+
+class IdkStage extends Stage
+{
+   function new()
+   {
+      super("idk");
+   }
+
+   function onCountdownStart(event)
+   {
+    super.onCountdownStart(event);
+
+    PlayState.instance.tweenCameraToPosition(420, 300, 0); // for this shit bruh
+
+    PlayState.instance.iconP1.antialiasing = false;
+    PlayState.instance.iconP2.antialiasing = false; // setting isPixel in the json does some weird shit
+   }
+}

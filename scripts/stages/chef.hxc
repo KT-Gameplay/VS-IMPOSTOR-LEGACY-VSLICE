@@ -1,0 +1,87 @@
+import funkin.play.stage.Stage;
+import flixel.FlxSprite;
+import funkin.Conductor;
+import funkin.play.PlayState;
+import flixel.util.FlxTimer;
+import Std;
+
+class ChefStage extends Stage
+{
+    public function new()
+    {
+        super('chef');
+    }
+
+    var ext = 'BG/chef/';
+
+    var wall:FlxSprite;
+    var backshit:FlxSprite;
+    var over:FlxSprite;
+    var gray:FlxSprite;
+    var saster:FlxSprite;
+
+    override function buildStage()
+    {
+        super.buildStage();
+
+        wall = new FlxSprite(0, 0).loadGraphic(Paths.image(ext + 'Back Wall Kitchen', 'shared'));
+        wall.setGraphicSize(Std.int(wall.width * 0.8)); // i fucking hate Std.int();
+        wall.zIndex = 0;
+        add(wall);
+
+        backshit = new FlxSprite(-50, 170).loadGraphic(Paths.image(ext + 'Back Table Kitchen', 'shared'));
+        backshit.setGraphicSize(Std.int(backshit.width * 0.8));
+        backshit.zIndex = 2;
+        add(backshit);
+
+        oven = new FlxSprite(1600, 400).loadGraphic(Paths.image(ext + 'oven', 'shared'));
+        oven.setGraphicSize(Std.int(oven.width * 0.8));
+        oven.zIndex = 3;
+        add(oven);
+
+        gray = new FlxSprite(1000, 525);
+        gray.frames = Paths.getSparrowAtlas(ext + 'Boppers', 'shared');
+        gray.animation.addByPrefix('bop', 'grey', 24, false);
+        gray.animation.play('bop');
+        gray.setGraphicSize(Std.int(gray.width * 0.8));
+        gray.zIndex = 4;
+        add(gray);
+
+        saster = new FlxSprite(1300, 525);
+        saster.frames = Paths.getSparrowAtlas(ext + 'Boppers', 'shared');
+        saster.animation.addByPrefix('bop', 'saster', 24, false);
+        saster.animation.play('bop');
+        saster.setGraphicSize(Std.int(saster.width * 1.2));
+        saster.zIndex = 5;
+        add(saster);
+
+        refresh();
+    }
+
+    function onBeatHit(event)
+    {
+        super.onBeatHit(event);
+
+        if (event.beat % 2 == 0)
+        {
+            gray.animation.play('bop');
+            saster.animation.play('bop');
+        }
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        var fakeStartTimer = new FlxTimer().start((Conductor.instance.beatLengthMs / 1000), function(tmr:FlxTimer) {
+            if (tmr.loopsLeft % 2 == 0)
+            {
+                gray.animation.play('bop');
+                saster.animation.play('bop');
+            }
+        }, 5);
+
+        LegacyUtils.camSpecialThing([1200, 800], [1400, 800]);
+        PlayState.instance.tweenCameraToPosition(1200, 800, 0);
+    }
+}

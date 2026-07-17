@@ -1,0 +1,17 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+
+class DrippypopSong extends Song
+{
+    public function new()
+    {
+        super('drippypop');
+    }
+
+    function onStepHit(event)
+    {
+        super.onStepHit(event);
+
+        if(event.step >= 1136) PlayState.instance.currentStage.getGirlfriend().idleSuffix = '-alt';
+    }
+}

@@ -1,0 +1,144 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
+import funkin.Paths;
+import Std;
+import Math;
+import flixel.tweens.FlxTween;
+
+class WhoStage extends Stage
+{
+    public function new()
+    {
+        super('who');
+    }
+
+    var whoAngered:FlxSprite;
+    var meeting:FlxSprite;
+    var furiousRage:FlxSprite;
+    var emergency:FlxSprite;
+    var starsBG:FlxBackdrop;
+    var starsFG:FlxBackdrop;
+
+    override function buildStage()
+    {
+        super.buildStage();
+
+        starsBG = new FlxBackdrop(Paths.image('who/starBG'), 0x11, 1, 1);
+        starsBG.setPosition(111.3, 67.95);
+        starsBG.visible = false;
+        starsBG.zIndex = 0;
+        add(starsBG);
+
+        starsFG = new FlxBackdrop(Paths.image('who/starFG'), 0.11, 5, 5);
+        starsFG.setPosition(54.3, 59.45);
+        starsFG.visible = false;
+        starsFG.zIndex = 1;
+        add(starsFG);
+
+        whoAngered = new FlxSprite(-1000, 975);
+        whoAngered.loadGraphic(Paths.image("who/mad mad dude"));
+        whoAngered.visible = false;
+        whoAngered.zIndex = 2;
+        add(whoAngered);
+
+        meeting = new FlxSprite(0, -100);
+        meeting.frames = Paths.getSparrowAtlas('who/meeting');
+        meeting.animation.addByPrefix('buzz', 'meeting buzz', 16, false);
+        meeting.setGraphicSize(Std.int(meeting.width * 1.4));
+        meeting.updateHitbox();
+        meeting.screenCenter();
+        meeting.cameras = [PlayState.instance.camCutscene];
+        meeting.visible = false;
+        PlayState.instance.add(meeting);
+
+        furiousRage = new FlxSprite(0, 0);
+        furiousRage.loadGraphic(Paths.image("who/KILLYOURSELF"));
+        furiousRage.setGraphicSize(Std.int(furiousRage.width * 0.9));
+        furiousRage.cameras = [PlayState.instance.camCutscene];
+        furiousRage.screenCenter(0x01);
+        furiousRage.visible = false;
+        PlayState.instance.add(furiousRage);
+
+        emergency = new FlxSprite(0, 350);
+        emergency.loadGraphic(Paths.image("who/emergency"));
+        emergency.setGraphicSize(Std.int(emergency.width * 0.7));
+        emergency.cameras = [PlayState.instance.camCutscene];
+        emergency.screenCenter(0x01);
+        emergency.visible = false;
+        PlayState.instance.add(emergency);
+
+        for (i in [starsBG, starsFG, meeting, furiousRage, emergency, whoAngered])
+        {
+            i.antialiasing = true;
+        }
+
+        refresh();
+    }
+
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        if (starsFG != null && starsFG.visible)
+        {
+            starsFG.x += event.elapsed * 45;
+            starsBG.x += event.elapsed * 25;
+        }
+    }
+
+    function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        if(event.eventData.eventKind == 'who buzz')
+        {
+            var val2:Int = Std.parseInt(event.eventData.getInt('value'));
+            if (Math.isNaN(val2)) val2 = 0;
+            PlayState.instance.disableKeys = true;
+
+            switch (val2)
+			{
+				case 0:
+					PlayState.instance.camHUD.visible = false;
+					meeting.visible = true;
+					meeting.animation.play('buzz');
+					meeting.animation.finishCallback = function(pog:String) {
+						furiousRage.visible = true;
+						emergency.visible = true;
+					}
+
+				case 1:
+					furiousRage.visible = false;
+					emergency.visible = false;
+					PlayState.instance.currentStage.getNamedProp('bg').visible = false;
+					meeting.visible = false;
+					PlayState.instance.currentStage.getBoyfriend().visible = false;
+					PlayState.instance.currentStage.getDad().visible = false;
+					starsBG.visible = true;
+					starsFG.visible = true;
+					whoAngered.visible = true;
+					FlxTween.angle(whoAngered, 0, 720, 10);
+					FlxTween.tween(whoAngered, {x: 3000}, 10);
+					PlayState.instance.tweenCameraZoom(0.5, 0, true);
+					PlayState.instance.tweenCameraToPosition(1100, 1150, 0);
+                    PlayState.instance.cameraZoomRate = 0;
+			}
+        }
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        starsBG.visible = false;
+        starsFG.visible = false;
+        whoAngered.visible = false;
+        meeting.visible = false;   
+        furiousRage.visible = false;
+        emergency.visible = false;
+        PlayState.instance.cameraZoomRate = 4;
+    }
+}

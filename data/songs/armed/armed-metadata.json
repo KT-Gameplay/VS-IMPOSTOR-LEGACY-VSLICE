@@ -1,0 +1,42 @@
+{
+ "version": "2.2.4",
+ "songName": "Armed",
+ "artist": "Punkett, EthanTheDoodler",
+ "charter": "Gonk",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "reginald",
+   "opponent": "rhm",
+   "opponentVocals": [
+    "rhm"
+   ],
+   "playerVocals": []
+  },
+  "stage": "henry",
+  "noteStyle": "impostor",
+  "ratings": {
+   "easy": 0,
+   "normal": 0,
+   "hard": 0
+  },
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 215,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

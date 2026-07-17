@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "name": "Toogus",
+  "directory": "",
+  "cameraZoom": 0.9,
+  "props": [],
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [
+        1270, 850
+      ],
+      "cameraOffsets": [
+        -200, -140
+      ]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [
+        829, 400
+      ],
+      "cameraOffsets": [
+        -200, 160
+      ]
+    },
+    "gf": {
+      "zIndex": 100,
+      "position": [
+        800, 750
+      ],
+      "cameraOffsets": [
+        0, 70
+      ]
+    }
+  }
+}

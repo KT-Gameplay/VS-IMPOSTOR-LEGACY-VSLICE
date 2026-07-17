@@ -1,0 +1,42 @@
+{
+ "version": "1.0.2",
+ "name": "Tomongus",
+ "props": [
+  {
+   "assetPath": "BG/tomongus/stars",
+   "atlasSettings": null,
+   "isPixel": true,
+   "name": "stars",
+   "position": [-200, 0],
+   "scale": 6,
+   "startingAnimation": ""
+  },
+  {
+   "assetPath": "BG/tomongus/fg",
+   "atlasSettings": null,
+   "isPixel": true,
+   "name": "bg",
+   "position": [-200, 0],
+   "scale": 6,
+   "startingAnimation": "",
+   "zIndex": 1
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [1037, 791],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [251, 767],
+   "zIndex": 200
+  },
+  "gf": {
+   "cameraOffsets": [0, 0],
+   "position": [725, 676],
+   "zIndex": 100
+  }
+ }
+}

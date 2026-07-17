@@ -1,0 +1,65 @@
+{
+ "version": "2.2.4",
+ "songName": "Boiling Point",
+ "artist": "EthanTheDoodler, Rareblin",
+ "charter": "Gonk",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "bf-lava",
+   "girlfriend": "gf",
+   "opponent": "maroonParasite",
+   "opponentVocals": [
+    "maroonP"
+   ],
+   "playerVocals": []
+  },
+  "stage": "boiling",
+  "noteStyle": "impostor",
+  "ratings": {
+   "normal": 0,
+   "hard": 0
+  },
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 200,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 67200,
+   "b": 224,
+   "bpm": 133.3,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 97807.6519,
+   "b": 292,
+   "bpm": 200,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 127807.6519,
+   "b": 392,
+   "bpm": 220,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 146353.1065,
+   "b": 460,
+   "bpm": 230,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

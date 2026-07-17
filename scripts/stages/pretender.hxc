@@ -1,0 +1,105 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.addons.display.FlxBackdrop;
+import flixel.FlxSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.math.FlxMath;
+import Math;
+import Std;
+import funkin.Conductor;
+import flixel.util.FlxTimer;
+import funkin.Paths;
+import flixel.FlxG;
+
+class PretenderStage extends Stage
+{
+    public function new()
+    {
+        super("pretender");
+    }
+
+    var cloud1:FlxBackdrop;
+    var cloud2:FlxBackdrop;
+    var cloud3:FlxBackdrop;
+    var cloud4:FlxBackdrop;
+    var cloudbig:FlxBackdrop;
+
+    var ext = 'BG/pretender/';
+    var gf;
+    var blue;
+
+    override function buildStage()
+    {
+        super.buildStage();
+
+        cloud1 = new FlxBackdrop(Paths.image(ext + 'cloud 1', 'shared'));
+        cloud1.setPosition(0, -1000);
+        cloud1.zIndex = 3;
+        add(cloud1);
+	
+        cloud2 = new FlxBackdrop(Paths.image(ext + 'cloud 2', 'shared'));
+        cloud2.setPosition(0, -1200);
+        cloud2.zIndex = 4;
+        add(cloud2);
+	
+        cloud3 = new FlxBackdrop(Paths.image(ext + 'cloud 3', 'shared'));
+        cloud3.setPosition(0, -1400);
+        cloud3.zIndex = 5;
+        add(cloud3);
+	
+        cloud4 = new FlxBackdrop(Paths.image(ext + 'cloud 4', 'shared'));
+        cloud4.setPosition(0, -1600);
+        cloud4.zIndex = 6;
+        add(cloud4);
+	
+	    cloudbig = new FlxBackdrop(Paths.image(ext + 'bigcloud', 'shared'));
+        cloudbig.setPosition(0, -1200);
+        cloud1.zIndex = 7;
+        add(cloudbig);
+
+        gf = getNamedProp('gfDeadPretender');
+        blue = getNamedProp('bluemira');
+
+        refresh();
+    }
+
+    override function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        PlayState.instance.tweenCameraToPosition(450, 300, 0);
+        var fakeStartTimer = new FlxTimer().start((Conductor.instance.beatLengthMs / 1000), function(tmr:FlxTimer) {
+		if (tmr.loopsLeft % 2 == 0)
+		{
+			blue.playAnimation('bop', true);
+		}
+		if (tmr.loopsLeft % 1 == 0) gf.playAnimation('bop', true);
+	}, 5);
+    }
+
+    function onBeatHit(event)
+    {
+        super.onBeatHit(event);
+
+		if (event.beat % 4 == 0)
+		{
+			blue.playAnimation('bop', true);
+		}
+		if (event.beat % 1 == 0)
+		{
+			gf.playAnimation('bop', true);
+		}
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        cloud1.x = FlxMath.lerp(cloud1.x, cloud1.x - 1, FlxMath.bound(event.elapsed * 9, 0, 1));
+        cloud2.x = FlxMath.lerp(cloud2.x, cloud2.x - 3, FlxMath.bound(event.elapsed * 9, 0, 1));
+        cloud3.x = FlxMath.lerp(cloud3.x, cloud3.x - 2, FlxMath.bound(event.elapsed * 9, 0, 1));
+        cloud4.x = FlxMath.lerp(cloud4.x, cloud4.x - 0.1, FlxMath.bound(event.elapsed * 9, 0, 1));
+        cloudbig.x = FlxMath.lerp(cloudbig.x, cloudbig.x - 0.5, FlxMath.bound(event.elapsed * 9, 0, 1));
+    }
+}

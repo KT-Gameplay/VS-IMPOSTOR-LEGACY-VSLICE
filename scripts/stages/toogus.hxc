@@ -1,0 +1,523 @@
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import openfl.display.BlendMode;
+import funkin.Paths;
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.modding.events.ScriptEvent;
+
+class ToogusStage extends Stage
+{
+	var ext:String = 'BG/mira-cafe/';
+
+	public var loBlack:FlxSprite;
+	public var bfvent:FlxSprite;
+	public var ldSpeaker:FlxSprite;
+	public var cyanToogus:FlxSprite;
+
+	public var bg:FlxSprite;
+	public var fg:FlxSprite;
+	public var tn:FlxSprite;
+
+	var walkers:Array<ToogusWalker> = [];
+	var camTween:FlxTween;
+	var camFollowTween:FlxTween;
+	var cyanTween:FlxTween;
+	var cyanStartX:Float = 0;
+
+	public function new()
+	{
+		super('toogus');
+	}
+
+	function refreshZ():Void
+	{
+		if (bg != null) bg.zIndex = 0;
+		if (cyanToogus != null) cyanToogus.zIndex = 600;
+		if (fg != null) fg.zIndex = 5;
+
+		for (i in 0...walkers.length)
+		{
+			var w = walkers[i];
+			if (w != null)
+				w.zIndex = 6 + i;
+		}
+
+		if (bfvent != null) bfvent.zIndex = 20;
+		if (tn != null) tn.zIndex = 21;
+		if (ldSpeaker != null) ldSpeaker.zIndex = 22;
+		if (loBlack != null) loBlack.zIndex = 23;
+	}
+
+	function moveCyanToogus():Void
+	{
+		if (cyanToogus == null)
+			return;
+
+		if (cyanTween != null)
+		{
+			cyanTween.cancel();
+			cyanTween = null;
+		}
+
+		cyanStartX = cyanToogus.x;
+
+		cyanTween = FlxTween.tween(cyanToogus, { x: cyanStartX + 3100 }, 16, {
+			ease: FlxEase.linear,
+			onComplete: function(twn:FlxTween)
+			{
+				cyanToogus.x = cyanStartX;
+				cyanTween = null;
+			}
+		});
+	}
+
+	function comeIn():Void
+	{
+		for (walker in walkers)
+		{
+			var w = walker;
+
+			new FlxTimer().start(FlxG.random.float(.5, 2), function(_)
+			{
+				w.actionTimer = FlxG.random.float(.5, 1);
+
+				function funny():Void
+				{
+					final randX:Float = FlxMath.remapToRange(FlxG.random.float(.2, .8), 0, 1, -700, 1700);
+
+					w.idle = false;
+					w.leaving = false;
+					w.walkSpeed = FlxG.random.float(18, 40);
+					w.right = (w.x < randX);
+					w.setTargetX(randX);
+					w.beginWalking();
+					w.actionTimer = Math.abs((w.x - randX) / w.walkSpeed / 9);
+
+					w.onAction.addOnce(function()
+					{
+						w.idle = true;
+						w.setIdleFrame();
+						w.right = (w.x < randX);
+						w.actionTimer = FlxG.random.float(5, 10);
+					});
+				}
+
+				if (w.hibernating)
+				{
+					w.onEnter.addOnce(funny);
+					w.reviveWalker();
+				}
+				else
+				{
+					funny();
+				}
+			});
+		}
+	}
+
+	function walkAway():Void
+	{
+		for (walker in walkers)
+		{
+			var w = walker;
+
+			new FlxTimer().start(FlxG.random.float(.5, 2), function(_)
+			{
+				w.actionTimer = 999;
+
+				if (!w.hibernating)
+				{
+					w.idle = false;
+					w.leaving = true;
+					w.walkSpeed = FlxG.random.float(18, 40);
+					w.right = (w.x >= FlxMath.remapToRange(FlxG.random.float(.4, .6), 0, 1, -700, 1700));
+					w.beginLeaving();
+					w.onAway.addOnce(function() w.kill());
+				}
+				else
+				{
+					w.kill();
+				}
+			});
+		}
+	}
+
+	function comeBack():Void
+	{
+		for (walker in walkers)
+		{
+			walker.reviveWalker();
+			walker.setNewActionTime();
+			walker.setIdleFrame();
+		}
+	}
+
+	override function buildStage():Void
+	{
+		super.buildStage();
+
+		bg = new FlxSprite(-127, 37);
+		bg.loadGraphic(Paths.image(ext + 'mirabg', 'shared'));
+		bg.setGraphicSize(Std.int(bg.width * 1.06));
+		bg.updateHitbox();
+		bg.scrollFactor.set(1, 1);
+		add(bg);
+
+		fg = new FlxSprite(-1649, 49);
+		fg.loadGraphic(Paths.image(ext + 'mirafg', 'shared'));
+		fg.setGraphicSize(Std.int(fg.width * 1.06));
+		fg.updateHitbox();
+		fg.scrollFactor.set(1, 1);
+		add(fg);
+
+      if(PlayState.instance.currentSong.id.toLowerCase() == "sussus-toogus")
+      {
+		var defs:Array<WalkerDef> = [
+			new WalkerDef(ext + 'walkers', 'blue', .7),
+			new WalkerDef(ext + 'walkers', 'brown', .72),
+			new WalkerDef(ext + 'walkers', 'lime', .74),
+			new WalkerDef(ext + 'walkers', 'tan', .76),
+			new WalkerDef(ext + 'walkers', 'white', .78),
+			new WalkerDef(ext + 'walkers', 'yellow', .8),
+			new WalkerDef(ext + 'foe', 'clowfoe', .86)
+		];
+
+		for (i in 0...defs.length)
+		{
+			var def = defs[i];
+			var walker = new ToogusWalker([-700, 1700], 210 + i * -16, def.scale, def.atlas, def.prefix);
+			walker.x = (FlxG.random.bool(50) ? walker.xRange[0] + 50 : walker.xRange[1] - 50);
+			walker.zIndex = 6 + i;
+			walker.hibernating = false;
+			walker.visible = true;
+			walker.idle = true;
+			walker.leaving = false;
+			walker.actionTimer = FlxG.random.float(.5, 3);
+			walker.setIdleFrame();
+			walkers.push(walker);
+			add(walker);
+		}
+     }
+
+		bfvent = new FlxSprite(70, 200);
+		bfvent.frames = Paths.getSparrowAtlas(ext + 'bf_mira_vent', 'shared');
+		bfvent.animation.addByPrefix('vent', 'bf vent', 24, false);
+		bfvent.animation.play('vent');
+		bfvent.alpha = 0;
+		add(bfvent);
+
+		tn = new FlxSprite(-1659, 42);
+		tn.loadGraphic(Paths.image(ext + 'table_bg', 'shared'));
+		tn.setGraphicSize(Std.int(tn.width * 1.06));
+		tn.updateHitbox();
+		tn.scrollFactor.set(1, 1);
+		add(tn);
+
+		ldSpeaker = new FlxSprite(400, 385);
+		ldSpeaker.frames = Paths.getSparrowAtlas(ext + 'stereo_taken', 'shared');
+		ldSpeaker.animation.addByPrefix('boom', 'stereo boom', 24, false);
+		ldSpeaker.alpha = 0;
+		add(ldSpeaker);
+
+		cyanToogus = new FlxSprite(-1200, 180);
+		cyanToogus.frames = Paths.getSparrowAtlas(ext + 'cyan_toogus', 'shared');
+		cyanToogus.animation.addByPrefix('idle', 'Cyan Dancy', 24, true);
+		cyanToogus.animation.play('idle', true);
+		cyanToogus.scrollFactor.set(1, 1);
+		cyanToogus.zIndex = 600;
+		add(cyanToogus);
+
+		loBlack = new FlxSprite().makeGraphic(4000, 2000, FlxColor.BLACK);
+		loBlack.alpha = 0.001;
+		loBlack.scrollFactor.set();
+		loBlack.screenCenter();
+		add(loBlack);
+
+		refreshZ();
+	}
+
+	override function onCreatePost():Void
+	{
+		super.onCreatePost();
+		refreshZ();
+	}
+
+	override function onStepHit(event:ScriptEvent):Void
+	{
+		super.onStepHit(event);
+
+		if (event == null)
+			return;
+
+     if(PlayState.instance.currentSong.id.toLowerCase() == "sussus-toogus")
+     {
+		switch (event.step)
+		{
+			case 704:
+				comeIn();
+
+			case 896:
+				moveCyanToogus();
+
+			case 1016:
+				comeBack();
+
+			case 1792:
+				walkAway();
+		}
+    }
+	}
+
+	override function onDestroy(event:ScriptEvent):Void
+	{
+		if (camTween != null)
+		{
+			camTween.cancel();
+			camTween = null;
+		}
+
+		if (camFollowTween != null)
+		{
+			camFollowTween.cancel();
+			camFollowTween = null;
+		}
+
+		if (cyanTween != null)
+		{
+			cyanTween.cancel();
+			cyanTween = null;
+		}
+
+		super.onDestroy(event);
+	}
+}
+
+class WalkerDef
+{
+	public var atlas:String;
+	public var prefix:String;
+	public var scale:Float;
+
+	public function new(atlas:String, prefix:String, scale:Float)
+	{
+		this.atlas = atlas;
+		this.prefix = prefix;
+		this.scale = scale;
+	}
+}
+
+class SimpleSignal
+{
+	var listeners:Array<Void->Void> = [];
+
+	public function new() {}
+
+	public function add(fn:Void->Void):Void
+	{
+		if (fn != null)
+			listeners.push(fn);
+	}
+
+	public function addOnce(fn:Void->Void):Void
+	{
+		if (fn == null)
+			return;
+
+		var wrapped:Void->Void = null;
+		wrapped = function()
+		{
+			listeners.remove(wrapped);
+			fn();
+		};
+
+		listeners.push(wrapped);
+	}
+
+	public function dispatch():Void
+	{
+		var copy = listeners.copy();
+		for (fn in copy)
+		{
+			if (fn != null)
+				fn();
+		}
+	}
+}
+
+class ToogusWalker extends FlxSprite
+{
+	public var xRange:Array<Float>;
+	public var walkSpeed:Float = 24;
+	public var actionTimer:Float = 0;
+	public var hibernating:Bool = false;
+	public var idle:Bool = true;
+	public var right:Bool = true;
+	public var leaving:Bool = false;
+	public var onAction:SimpleSignal = new SimpleSignal();
+	public var onEnter:SimpleSignal = new SimpleSignal();
+	public var onAway:SimpleSignal = new SimpleSignal();
+
+	var currentTargetX:Float = 0;
+
+	public function new(xRange:Array<Float>, y:Float, sprScale:Float, atlas:String, prefix:String)
+	{
+		super(xRange[0], y);
+
+		this.xRange = xRange;
+		this.walkSpeed = FlxG.random.float(18, 40);
+		this.currentTargetX = xRange[0];
+
+		frames = Paths.getSparrowAtlas(atlas, 'shared');
+
+		if (animation != null)
+		{
+			animation.addByPrefix('walk', prefix, 24, true);
+			animation.play('walk', true, false, 0);
+			animation.pause();
+		}
+
+		scale.set(sprScale, sprScale);
+		updateHitbox();
+		scrollFactor.set(1, 1);
+		visible = true;
+		alpha = 1;
+		flipX = false;
+	}
+
+	public function setTargetX(value:Float):Void
+	{
+		currentTargetX = value;
+	}
+
+	public function setIdleFrame():Void
+	{
+		if (animation == null)
+			return;
+
+		animation.play('walk', true, false, 19);
+		animation.pause();
+		visible = true;
+	}
+
+	public function beginWalking():Void
+	{
+		visible = true;
+		leaving = false;
+
+		if (animation != null)
+		{
+			animation.play('walk', true, false, 0);
+			animation.resume();
+		}
+
+		flipX = !right;
+	}
+
+	public function beginLeaving():Void
+	{
+		visible = true;
+		leaving = true;
+
+		if (animation != null)
+		{
+			animation.play('walk', true, false, 0);
+			animation.resume();
+		}
+
+		flipX = !right;
+	}
+
+	public function setNewActionTime():Void
+	{
+		actionTimer = FlxG.random.float(.5, 1);
+	}
+
+	public function reviveWalker():Void
+	{
+		super.revive();
+		visible = true;
+		alpha = 1;
+		alive = true;
+		exists = true;
+		hibernating = false;
+		setIdleFrame();
+		onEnter.dispatch();
+	}
+
+	override public function kill():Void
+	{
+		super.kill();
+		visible = false;
+		idle = true;
+		leaving = false;
+		setIdleFrame();
+	}
+
+	override public function update(elapsed:Float):Void
+	{
+		super.update(elapsed);
+
+		if (!exists || !alive)
+			return;
+
+		if (leaving)
+		{
+			var leaveDir:Float = right ? 1 : -1;
+			flipX = !right;
+			x += leaveDir * walkSpeed * elapsed * 9;
+
+			if (x < xRange[0] - 250 || x > xRange[1] + 250)
+			{
+				leaving = false;
+				onAway.dispatch();
+				kill();
+			}
+
+			return;
+		}
+
+		if (idle)
+		{
+			actionTimer -= elapsed;
+
+			if (actionTimer <= 0)
+			{
+				var randX:Float = FlxMath.remapToRange(FlxG.random.float(.2, .8), 0, 1, xRange[0], xRange[1]);
+				currentTargetX = randX;
+				walkSpeed = FlxG.random.float(18, 40);
+				right = (x < randX);
+				flipX = !right;
+				idle = false;
+
+				if (animation != null)
+				{
+					animation.play('walk', true, false, 0);
+					animation.resume();
+				}
+
+				actionTimer = Math.abs((x - randX) / walkSpeed / 9);
+			}
+
+			return;
+		}
+
+		var dir:Float = right ? 1 : -1;
+		flipX = !right;
+		x += dir * walkSpeed * elapsed * 9;
+
+		if ((right && x >= currentTargetX) || (!right && x <= currentTargetX))
+		{
+			x = currentTargetX;
+			idle = true;
+			actionTimer = FlxG.random.float(5, 10);
+			setIdleFrame();
+			onAction.dispatch();
+		}
+	}
+}

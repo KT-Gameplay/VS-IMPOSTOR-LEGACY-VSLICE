@@ -1,0 +1,56 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+
+class ChangeSuffixEvent extends SongEvent
+{
+    public function new()
+    {
+        super('ChangeSuffix', {
+      processOldEvents: true
+    });
+    }
+
+    override public function handleEvent(data)
+    {
+        if(PlayState.instance == null) return;
+
+        var char = data.getString('char');
+        var suffix = data.getString('suffix');
+
+        switch(char)
+        {
+            case 'bf':
+                PlayState.instance.currentStage.getBoyfriend().idleSuffix = suffix;
+
+            case 'gf':
+                PlayState.instance.currentStage.getGirlfriend()?.idleSuffix = suffix;
+
+            case 'dad':
+                PlayState.instance.currentStage.getDad().idleSuffix = suffix;
+        }
+    }
+
+    override public function getTitle():String
+    {
+        return 'Change Suffix';
+    }
+
+    override public function getEventSchema()
+    {
+        return [
+            {
+                name: 'char',
+                title: 'Character',
+                type: 'enum',
+                defaultValue: 'bf',
+                keys: ['Boyfriend' => 'bf', 'Girlfriend' => 'gf', 'Dad' => 'dad']
+            },
+            {
+                name: 'suffix',
+                title: 'Suffix',
+                type: 'string',
+                defaultValue: '-alt'
+            }
+        ];
+    }
+}

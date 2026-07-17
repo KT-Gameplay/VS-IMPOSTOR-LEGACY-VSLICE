@@ -1,0 +1,210 @@
+import funkin.modding.module.Module;
+import flixel.FlxSprite;
+import funkin.play.PlayState;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.FunkinMemory;
+import funkin.Paths;
+import funkin.Conductor;
+import flixel.group.FlxTypedGroup;
+
+class LegacyPopUps extends Module
+{
+    public function new()
+    {
+        super('LegacyPopUps', {state: PlayState});
+        for (i in 0...10)
+        {
+            FunkinMemory.cacheTexture(Paths.image('notestyles/num' + i));
+            FunkinMemory.cacheTexture(Paths.image('notestyles/num' + i + '-pixel'));
+			FunkinMemory.cacheTexture(Paths.image('notestyles/num' + i + '-nuzzus'));
+        }
+
+        // normal
+        FunkinMemory.cacheTexture(Paths.image('notestyles/epic'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/sick'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/good'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/bad'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/shit'));
+
+        // pixel
+        FunkinMemory.cacheTexture(Paths.image('notestyles/epic-pixel'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/sick-pixel'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/good-pixel'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/bad-pixel'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/shit-pixel'));
+
+    	// nuzzus
+		FunkinMemory.cacheTexture(Paths.image('notestyles/epic-nuzzus'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/sick-nuzzus'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/good-nuzzus'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/bad-nuzzus'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/shit-nuzzus'));
+    }
+
+    public var ratingGraphic:Null<FlxSprite>;
+    public var ratingNumGroup;
+    public var suffix:String = '';
+    public var ratingScale = 0;
+    public var combosScale = 0;
+    public var combosPadding:Float = 0;
+    public var comboX:Float = 0;
+	public var ratingPop:Float = 0;
+	public var combosPop:Float = 0;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+        if(PlayState.instance.noteStyle.id.toLowerCase() != 'impostor' && PlayState.instance.noteStyle.id.toLowerCase() != 'pixelimpostor') return;
+ 
+        if(PlayState.instance.noteStyle.id.toLowerCase() == 'pixelimpostor' && PlayState.instance.currentSong.id.toLowerCase() != 'sussus-nuzzus') suffix = "-pixel";
+        else if(PlayState.instance.currentSong.id.toLowerCase() == 'sussus-nuzzus') suffix = "-nuzzus";
+        else suffix = "";
+
+        ratingGraphic = new FlxSprite().loadGraphic(Paths.image('notestyles/epic'));
+        ratingGraphic.cameras = [PlayState.instance.camHUD];
+        PlayState.instance.add(ratingGraphic);
+        ratingGraphic.alpha = 0.001;
+        PlayState.instance.remove(PlayState.instance.comboPopUps);
+        if(suffix == "-pixel")
+        ratingGraphic.antialiasing = false;
+
+	ratingNumGroup = new FlxTypedGroup();
+        ratingNumGroup.cameras = [PlayState.instance.camHUD];
+	PlayState.instance.add(ratingNumGroup);
+
+	ratingPop = (.47 / .42);
+	combosPop = (.35 / .33);
+
+
+	switch (suffix)
+	{
+		case '-pixel':
+			ratingScale = 3;
+			combosScale = 3;
+		case '-nuzzus':
+			ratingScale = 2;
+			combosScale = 2;
+		default:
+			ratingScale = .42;
+			combosScale = .33;
+			combosPadding = -30;
+	}
+    }
+
+    override function onNoteHit(event)
+    {
+        if(PlayState.instance == null) return;
+        if(PlayState.instance.noteStyle.id != 'impostor' && PlayState.instance.noteStyle.id != 'pixelImpostor') return;
+        super.onNoteHit(event);
+
+        switch (event.judgement)
+        {  
+            case 'sick':
+                if(Math.abs(event.hitDiff) <= 22.5) popUpScore('notestyles/epic', event.comboCount);
+                else popUpScore('notestyles/sick', event.comboCount);
+
+            case 'good':
+                popUpScore('notestyles/good', event.comboCount);
+
+            case 'bad':
+                popUpScore('notestyles/bad', event.comboCount);
+
+            case 'shit':
+                popUpScore('notestyles/shit', event.comboCount);
+            }
+    }
+
+    public function popUpScore(judgement:String, combo:Int)
+    {
+	final ratingImage = judgement + suffix;
+
+	final posX = FlxG.width * 0.35;
+
+	FlxTween.cancelTweensOf(ratingGraphic, ['scale.x', 'scale.y', 'alpha']);
+	ratingGraphic.alpha = 1;
+	ratingGraphic.loadGraphic(Paths.image(ratingImage));
+	ratingGraphic.screenCenter();
+	ratingGraphic.x = posX - 40;
+	ratingGraphic.y -= 60;
+
+	ratingGraphic.scale.set(ratingScale * ratingPop, ratingScale * ratingPop);
+	ratingGraphic.updateHitbox();
+	FlxTween.tween(ratingGraphic.scale, {x: ratingScale, y: ratingScale}, 0.5, {ease: FlxEase.expoOut});
+
+	
+	FlxTween.tween(ratingGraphic, {alpha: 0}, 0.5, {startDelay: Conductor.instance.stepLengthMs * 0.01, ease: FlxEase.expoOut});
+
+	for (i in ratingNumGroup)
+	{
+		if (i.alive)
+		{
+			i.kill();
+		}
+	}
+
+	var seperatedScore:Array<Int> = [];
+			
+	if (combo >= 1000)
+	{
+		seperatedScore.push(Math.floor(combo / 1000) % 10);
+	}
+	seperatedScore.push(Math.floor(combo / 100) % 10);
+	seperatedScore.push(Math.floor(combo / 10) % 10);
+	seperatedScore.push(combo % 10);
+
+	var daLoop:Int = 0;
+	for (i in seperatedScore)
+	{
+		var numScore:FlxSprite = ratingNumGroup.recycle(FlxSprite);
+		FlxTween.cancelTweensOf(numScore);
+
+		numScore.loadGraphic(Paths.image('notestyles/num' + Std.int(i) + suffix));
+		numScore.alpha = 1;
+		numScore.screenCenter();
+		numScore.x = posX + (43 * daLoop) - 90;
+		numScore.y += 80;
+		if(suffix == "-pixel")
+		numScore.antialiasing = false;
+
+		numScore.scale.set(combosScale * combosPop, combosScale * combosPop);
+		FlxTween.cancelTweensOf(numScore, ['scale.x', 'scale.y']);
+		FlxTween.tween(numScore.scale, {x: combosScale, y: combosScale}, 0.5, {ease: FlxEase.expoOut});
+
+		numScore.updateHitbox();
+		ratingNumGroup.add(numScore);
+		FlxTween.tween(numScore, {alpha: 0}, 0.5, {startDelay: Conductor.instance.stepLengthMs * 0.01, ease: FlxEase.expoOut});
+
+		daLoop++;
+	}
+
+	if (ratingGraphic != null)
+	{
+		ratingGraphic.x = ((FlxG.width / 2) - (ratingGraphic.width / 2) + comboX);
+		ratingGraphic.y = (PlayState.instance.playerStrumline.isDownscroll ? (FlxG.height - ratingGraphic.height - 50) : 55);
+	}
+
+	if (ratingNumGroup != null && ratingNumGroup.members != null)
+	{
+		var activeMembers = [for (member in ratingNumGroup.members) if (member != null && member.exists && member.alive) member];
+
+		var totalDigits = activeMembers.length;
+		var daLoop = 0;
+		var xOffset = 0;
+
+		var totalWidth = 0;
+		for (m in activeMembers)
+			totalWidth += ((m.frameWidth + combosPadding) * combosScale);
+		xOffset = ((FlxG.width - totalWidth) / 2);
+
+		for (numScore in activeMembers)
+		{
+			numScore.x = (xOffset - (numScore.frameWidth + combosPadding) * combosScale / 2 /* i call this the Evil factor */ + comboX);
+			numScore.y = (PlayState.instance.playerStrumline.isDownscroll ? (FlxG.height - numScore.height - 117.5) : 122.5);
+			xOffset += ((numScore.frameWidth + combosPadding) * combosScale);
+
+			daLoop++;
+		}
+	}
+    }
+}

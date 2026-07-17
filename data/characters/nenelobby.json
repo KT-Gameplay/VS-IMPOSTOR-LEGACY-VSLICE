@@ -1,0 +1,124 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 1,
+	"scale": 1,
+	"name": "nenelobby",
+	"cameraOffsets": [
+		-150,
+		100
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "danceRight",
+	"healthIcon": {
+		"id": "face",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/nene/Nenelobby",
+	"animations": [
+		{
+			"frameIndices": [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14
+			],
+			"prefix": "Idle",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "danceLeft",
+			"looped": false
+		},
+		{
+			"frameIndices": [
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29
+			],
+			"prefix": "Idle",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "danceRight",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "knife high held",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "idleKnife",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "knife lower",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "lowerKnife",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "knife raise",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "raiseKnife",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "knife toss",
+			"offsets": [
+				20,
+				15
+			],
+			"frameRate": 24,
+			"name": "kill",
+			"looped": false
+		}
+	]
+}

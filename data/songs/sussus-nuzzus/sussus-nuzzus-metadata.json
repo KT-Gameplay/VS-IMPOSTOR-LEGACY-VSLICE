@@ -1,0 +1,40 @@
+{
+ "version": "2.2.4",
+ "songName": "Sussus Nuzzus",
+ "artist": "Lunaxis",
+ "charter": "EthanTheDoodler",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "gf",
+   "opponent": "nuzzus",
+   "opponentVocals": [
+    "nuzzus"
+   ],
+   "playerVocals": []
+  },
+  "stage": "nuzzus",
+  "noteStyle": "pixelImpostor",
+  "ratings": {
+   "hard": 0
+  },
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 180,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

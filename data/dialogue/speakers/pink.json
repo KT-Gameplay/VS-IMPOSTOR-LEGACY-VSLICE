@@ -1,0 +1,35 @@
+{
+    "name": "Pink",
+    "side": 0,
+    "asset": "pink",
+    "boxColor": [253, 66, 173],
+    "boxShadeColor": [157, 0, 185],
+    "icon": "pink",
+    "sound": "pink",
+    "animations": [
+        {
+            "anim": "happy",
+            "name": "PC happy",
+            "loop": false,
+            "offsets": [0, 75]
+        },
+        {
+            "anim": "sad",
+            "name": "PC sad",
+            "loop": false,
+            "offsets": [0, 75]
+        },
+        {
+            "anim": "excited",
+            "name": "PC excited",
+            "loop": false,
+            "offsets": [0, 75]
+        },
+        {
+            "anim": "neutral",
+            "name": "PC neutral",
+            "loop": false,
+            "offsets": [0, 75]
+        }
+    ]
+}

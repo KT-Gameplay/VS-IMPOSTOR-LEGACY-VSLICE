@@ -1,0 +1,32 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+
+class RoomcodeSong extends Song
+{
+    public function new()
+    {
+        super('roomcode');
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        PlayState.instance.tweenCameraToPosition(750, 580, 0);
+        LegacyUtils.camSpecialThing([500, 580], [1000, 580]);
+    }
+
+    function onStepHit(event)
+    {
+        super.onStepHit(event);
+
+        switch(event.step)
+        {
+            case 16, 32, 48, 64, 80, 96, 112, 118, 119, 120, 122, 123: // fuck u chart editor
+                PlayState.instance.currentCameraZoom *= 1.01;
+
+            case 126:
+                PlayState.instance.currentCameraZoom *= 1.05;
+        }
+    }
+}

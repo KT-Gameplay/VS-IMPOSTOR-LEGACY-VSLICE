@@ -1,0 +1,47 @@
+{
+    "name": "Girlfriend",
+    "side": 1,
+    "asset": "gf",
+    "boxColor": [238, 106, 109],
+    "boxShadeColor": [211, 29, 84],
+    "icon": "gf",
+    "sound": "gf",
+    "animations": [
+        {
+            "anim": "happy",
+            "name": "GF happy",
+            "loop": false,
+            "offsets": [0, 0]
+        },
+        {
+            "anim": "mad",
+            "name": "GF mad",
+            "loop": false,
+            "offsets": [0, 0]
+        },
+        {
+            "anim": "glint",
+            "name": "GF glint",
+            "loop": false,
+            "offsets": [0, 0]
+        },
+        {
+            "anim": "neutral",
+            "name": "GF neutral",
+            "loop": false,
+            "offsets": [0, 0]
+        },
+        {
+            "anim": "q",
+            "name": "GF q",
+            "loop": false,
+            "offsets": [0, 0]
+        },
+        {
+            "anim": "suspect",
+            "name": "GF suspect",
+            "loop": false,
+            "offsets": [0, 0]
+        }
+    ]
+}

@@ -1,0 +1,136 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 6,
+	"name": "bfsus-pixel",
+	"cameraOffsets": [
+		180,
+		-140
+	],
+	"flipX": true,
+	"isPixel": true,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "bf-pixel",
+		"isPixel": false
+	},
+	"assetPath": "characters/bf/pixel/bfSus",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "idle",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "missleft",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "singLEFTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "missdown",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "singDOWNmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "missup",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "singUPmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "missright",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "singRIGHTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "shoot",
+			"offsets": [
+				10,
+				0
+			],
+			"frameRate": 24,
+			"name": "shoot",
+			"looped": false
+		}
+	]
+}

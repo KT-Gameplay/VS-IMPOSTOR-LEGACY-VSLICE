@@ -1,0 +1,84 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 0.6,
+	"name": "esculent",
+	"cameraOffsets": [
+		-130,
+		290
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "esculent",
+		"isPixel": false
+	},
+	"atlasSettings": {
+		"useRenderTexture": true
+	},
+	"assetPath": "shared:characters/freeplay/esculent",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "right",
+			"offsets": [
+				243,
+				32
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left",
+			"offsets": [
+				289,
+				-6
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down",
+			"offsets": [
+				231,
+				34
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up",
+			"offsets": [
+				241,
+				60
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "idle",
+			"offsets": [
+				235,
+				73
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": true
+		}
+	]
+}

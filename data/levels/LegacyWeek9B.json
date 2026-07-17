@@ -1,0 +1,13 @@
+{
+    "version": "1.0.0",
+    "name": "LIME GREEN JADSPOSTOR",
+    "titleAsset": "storymenu/titles/extra",
+  "capsule": {
+    "name": "LIME GREEN JADSPOSTOR"
+  },
+    "props": [],
+    "background": "#FFFFFF",
+    "songs": [
+        "lemon-lime", "chlorophyll", "inflorescence", "stargazer"
+    ]
+}

@@ -1,0 +1,92 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "piptorture",
+	"cameraOffsets": [
+		-610,
+		90
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "pip",
+		"isPixel": false
+	},
+	"assetPath": "characters/misc/cvp/piptorture",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "piple",
+			"offsets": [
+				0,
+				80
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "pip down",
+			"offsets": [
+				19,
+				71
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "pip up",
+			"offsets": [
+				23,
+				112
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "pip righ",
+			"offsets": [
+				-8,
+				86
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "pip lef",
+			"offsets": [
+				56,
+				89
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "piprozebud",
+			"offsets": [
+				10,
+				121
+			],
+			"frameRate": 24,
+			"name": "rozebud?",
+			"looped": false
+		}
+	]
+}

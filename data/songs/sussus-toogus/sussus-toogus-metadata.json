@@ -1,0 +1,41 @@
+{
+ "version": "2.2.4",
+ "songName": "Sussus Toogus",
+ "artist": "EthanTheDoodler, Fabs",
+ "charter": "ashley",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "gf",
+   "opponent": "green-crewmate",
+   "opponentVocals": [
+    "green-crewmate"
+   ],
+   "playerVocals": []
+  },
+  "stage": "toogus",
+  "noteStyle": "impostor",
+  "ratings": {
+   "normal": 0,
+   "hard": 0
+  },
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 150,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

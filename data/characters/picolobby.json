@@ -1,0 +1,181 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"applyStageMatrix": false,
+	"scale": 1,
+	"name": "picolobby",
+	"cameraOffsets": [
+		50,
+		70
+	],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"shouldBop": true,
+		"isPixel": false,
+		"scale": 1,
+		"flipX": false,
+		"id": "pico"
+	},
+	"assetPath": "shared:characters/pico/picoroomcode",
+	"atlasSettings": {
+		"applyStageMatrix": false,
+		"useRenderTexture": false,
+		"filterQuality": 1,
+		"cacheOnLoad": false,
+		"swfMode": true
+	},
+	"animations": [
+		{
+			"offsets": [
+				16,
+				12
+			],
+			"frameIndices": [],
+			"prefix": "Pico Idle Dance",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "idle",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				19,
+				19
+			],
+			"frameIndices": [],
+			"prefix": "pico Up note",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				20,
+				13
+			],
+			"frameIndices": [],
+			"prefix": "Pico Down Note",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				20,
+				13
+			],
+			"frameIndices": [],
+			"prefix": "Pico Down Note MISS",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWNmiss",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				19,
+				19
+			],
+			"frameIndices": [],
+			"prefix": "pico Up note miss",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "singUPmiss",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				15,
+				12
+			],
+			"frameIndices": [],
+			"prefix": "Pico Note Right",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				11,
+				9
+			],
+			"frameIndices": [],
+			"prefix": "Pico Note LEFT",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				15,
+				12
+			],
+			"frameIndices": [],
+			"prefix": "Pico Note Right Miss",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHTmiss",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				14,
+				11
+			],
+			"frameIndices": [],
+			"prefix": "Pico NOTE LEFT miss",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFTmiss",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				16,
+				12
+			],
+			"frameIndices": [],
+			"prefix": "Pico HEY!!",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "hey",
+			"flipY": false,
+			"frameRate": 24
+		}
+	]
+}

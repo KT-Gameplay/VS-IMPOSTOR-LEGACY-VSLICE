@@ -1,0 +1,13 @@
+{
+    "version": "1.0.0",
+    "name": "MIRA Mania",
+    "titleAsset": "storymenu/titles/extra",
+  "capsule": {
+    "name": "MIRA Mania"
+  },
+    "props": [],
+    "background": "#FFFFFF",
+    "songs": [
+        "sussus-toogus"
+    ]
+}

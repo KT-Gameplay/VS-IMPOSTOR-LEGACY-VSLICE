@@ -1,0 +1,43 @@
+import funkin.play.PlayState;
+import flixel.effects.particles.FlxEmitter;
+import flixel.effects.particles.FlxEmitterMode;
+import flixel.effects.particles.FlxParticle;
+import funkin.play.stage.Stage;
+
+class MaroonStage extends Stage
+{
+    public function new()
+    {
+        super('maroon');
+    }
+
+    var snowEmitter:FlxEmitter;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        snowEmitter = new FlxEmitter(1000, 800, 2700);
+        for (i in 0...2700)
+        {
+            var particle = new FlxParticle();
+            particle.frames = Paths.getSparrowAtlas('emitters/snow_particles');
+            particle.animation.addByPrefix('snow', 'snow', 0, false);
+            particle.animation.frameIndex = FlxG.random.int(0, 7);
+            particle.scrollFactor.set(FlxG.random.float(1, 1.5), FlxG.random.float(1, 1.5));
+            snowEmitter.add(particle);
+            particle.alpha = 0.3;
+        }
+        snowEmitter.start(false, 0.5);
+        snowEmitter.width = 2700;
+        snowEmitter.launchAngle.set(100, 160);
+        snowEmitter.angularVelocity.set(-80, 100);
+        snowEmitter.lifespan.set(10); //fuck it
+        snowEmitter.speed.set(500, 700);
+        snowEmitter.alpha.set(1, null, 0, 1);
+        snowEmitter.cameras = [PlayState.instance.camGame];
+        PlayState.instance.add(snowEmitter);
+
+        //LegacyUtils.camSpecialThing([1600, 1300], [1800, 1300]);
+    }
+}

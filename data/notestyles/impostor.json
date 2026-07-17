@@ -1,0 +1,969 @@
+{
+  "version": "1.1.0",
+  "fallback": "funkin",
+  "name": "Impostor'",
+  "assets": {
+    "judgementBad": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/bad",
+      "scale": 0.65,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber7": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num7",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "holdNote": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "NOTE_hold_assets",
+      "scale": 0.7,
+      "data": {},
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber8": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num8",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "note": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "shared:notes",
+      "scale": 0.7,
+      "data": {
+        "down": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "noteDown",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "right": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "noteRight",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "left": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "noteLeft",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "up": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "noteUp",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        }
+      },
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber9": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num9",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "judgementGood": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/good",
+      "scale": 0.65,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "judgementSick": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/sick",
+      "scale": 0.65,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "judgementShit": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/shit",
+      "scale": 0.65,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "countdownOne": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "shared:ui/countdown/funkin/set",
+      "scale": 1,
+      "data": {
+        "audioPath": "shared:gameplay/countdown/funkin/introONE"
+      },
+      "alpha": 1,
+      "animated": false
+    },
+    "holdNoteCover": {
+      "isPixel": false,
+      "offsets": [
+        18,
+        80
+      ],
+      "assetPath": "notestyles/sustainHold",
+      "scale": 0.7,
+      "data": {
+        "right": {
+          "start": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "right start",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "hold": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "right loop",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 48,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "end": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "right end",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "assetPath": null
+        },
+        "enabled": true,
+        "down": {
+          "start": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "down start",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "hold": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "down loop",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 48,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "end": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "down end",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "assetPath": null
+        },
+        "up": {
+          "start": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "up start",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "hold": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "up loop",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 48,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "end": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "up end",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "assetPath": null
+        },
+        "left": {
+          "start": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "left start",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "hold": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "left loop",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 48,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "end": {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "left end",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          "assetPath": null
+        }
+      },
+      "alpha": 1,
+      "animated": false
+    },
+    "noteSplash": {
+      "isPixel": false,
+      "offsets": [
+        20,
+        -20
+      ],
+      "assetPath": "notestyles/noteSplashes",
+      "scale": 1,
+      "data": {
+        "upSplashes": [
+          {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "up 1",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "up 2",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          }
+        ],
+        "blendMode": "none",
+        "framerateDefault": 24,
+        "leftSplashes": [
+          {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "left 1",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "left 2",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          }
+        ],
+        "enabled": true,
+        "rightSplashes": [
+          {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "right 1",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "right 2",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          }
+        ],
+        "framerateVariance": 2,
+        "downSplashes": [
+          {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "down 1",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          },
+          {
+            "renderType": "",
+            "offsets": [
+              0,
+              0
+            ],
+            "frameIndices": [],
+            "prefix": "down 2",
+            "looped": false,
+            "flipX": false,
+            "animType": "framelabel",
+            "flipY": false,
+            "frameRate": 24,
+            "assetPath": null,
+            "atlasSettings": null
+          }
+        ]
+      },
+      "alpha": 0.8,
+      "animated": false
+    },
+    "countdownGo": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "shared:ui/countdown/funkin/go",
+      "scale": 1,
+      "data": {
+        "audioPath": "shared:gameplay/countdown/funkin/introGO"
+      },
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber0": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num0",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber1": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num1",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "noteStrumline": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "shared:noteStrumline",
+      "scale": 0.7,
+      "data": {
+        "leftConfirmHold": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [
+            3
+          ],
+          "prefix": "confirmLeft0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "downStatic": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "staticDown0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "upPress": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "pressUp0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "leftConfirm": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "confirmLeft0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "downPress": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "pressDown0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "upStatic": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "staticUp0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "rightStatic": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "staticRight0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "rightConfirmHold": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [
+            3
+          ],
+          "prefix": "confirmRight0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "upConfirmHold": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [
+            3
+          ],
+          "prefix": "confirmUp0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "leftPress": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "pressLeft0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "rightConfirm": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "confirmRight0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "downConfirmHold": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [
+            3
+          ],
+          "prefix": "confirmDown0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "upConfirm": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "confirmUp0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "leftStatic": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "staticLeft0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "downConfirm": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "confirmDown0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        },
+        "rightPress": {
+          "renderType": "",
+          "offsets": [
+            0,
+            0
+          ],
+          "frameIndices": [],
+          "prefix": "pressRight0",
+          "looped": false,
+          "flipX": false,
+          "animType": "framelabel",
+          "flipY": false,
+          "frameRate": 24,
+          "assetPath": null,
+          "atlasSettings": null
+        }
+      },
+      "alpha": 1,
+      "animated": false
+    },
+    "countdownTwo": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "shared:ui/countdown/funkin/ready",
+      "scale": 1,
+      "data": {
+        "audioPath": "shared:gameplay/countdown/funkin/introTWO"
+      },
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber2": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num2",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber3": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num3",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "countdownThree": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": null,
+      "scale": 1,
+      "data": {
+        "audioPath": "shared:gameplay/countdown/funkin/introTHREE"
+      },
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber4": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num4",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber5": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num5",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    },
+    "comboNumber6": {
+      "isPixel": false,
+      "offsets": [
+        0,
+        0
+      ],
+      "assetPath": "default:ui/popup/funkin/num6",
+      "scale": 0.45,
+      "data": null,
+      "alpha": 1,
+      "animated": false
+    }
+  },
+  "author": "Clowfoe"
+}

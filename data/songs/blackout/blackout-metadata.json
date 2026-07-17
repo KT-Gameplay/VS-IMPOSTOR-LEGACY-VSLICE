@@ -1,0 +1,52 @@
+{
+ "version": "2.2.4",
+ "songName": "Blackout",
+ "artist": "Cval",
+ "charter": "Thales",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "bfairship",
+   "girlfriend": "gf-gray",
+   "opponent": "grey",
+   "opponentVocals": [
+    "grey"
+   ],
+   "playerVocals": []
+  },
+  "stage": "gray",
+  "noteStyle": "impostor",
+  "ratings": {
+   "hard": 0
+  },
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 185,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 124540.5405,
+   "b": 384,
+   "bpm": 90,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 151207.2072,
+   "b": 424,
+   "bpm": 204,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

@@ -1,0 +1,134 @@
+{
+	"renderType": "multianimateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 0.8,
+	"name": "blue-ow",
+	"cameraOffsets": [
+		80,
+		400
+	],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 10,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "blue-ow",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/freeplay/blue_ow",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "blue idle",
+			"offsets": [
+				56,
+				-283
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "blue right",
+			"offsets": [
+				49,
+				-284
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "blue down",
+			"offsets": [
+				59,
+				-302
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "blue left",
+			"offsets": [
+				80,
+				-284
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "blue up",
+			"offsets": [
+				43,
+				-258
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "hit down",
+			"offsets": [
+				60,
+				-302
+			],
+			"frameRate": 24,
+			"name": "singDOWN-alt",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "hit up",
+			"offsets": [
+				33,
+				-185
+			],
+			"frameRate": 24,
+			"name": "singUP-alt",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "hit right",
+			"offsets": [
+				23,
+				-275
+			],
+			"frameRate": 24,
+			"name": "singRIGHT-alt",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "hit left",
+			"offsets": [
+				50,
+				-185
+			],
+			"frameRate": 24,
+			"name": "singLEFT-alt",
+			"looped": false,
+			"animType": "symbol"
+		}
+	]
+}

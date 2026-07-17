@@ -1,0 +1,77 @@
+{
+ "version": "1.0.2",
+ "name": "Boiling",
+ "props": [
+  {
+   "assetPath": "BG/boiling/wallBP",
+   "atlasSettings": null,
+   "name": "lava",
+   "position": [-650, -694],
+   "scale": 1,
+   "scroll": [0.8, 0.8],
+   "animations":[
+    {
+        "name": "idle",
+        "prefix": "Back wall and lava",
+        "looped": true
+    }
+   ],
+   "startingAnimation": "idle"
+  },
+  {
+   "assetPath": "BG/boiling/platform",
+   "atlasSettings": null,
+   "name": "ground",
+   "position": [1050, 650],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 1
+  },
+  {
+   "assetPath": "BG/boiling/bubbles",
+   "atlasSettings": null,
+   "name": "bubbles",
+   "position": [800, 850],
+   "scale": 1,
+   "animations": [
+    {
+        "name": "idle",
+        "prefix": "Lava Bubbles",
+        "looped": true
+    }
+   ],
+   "startingAnimation": "idle",
+   "zIndex": 2
+  },
+  {
+   "alpha": 0.7,
+   "assetPath": "BG/boiling/overlaythjing",
+   "atlasSettings": null,
+   "blend": "add",
+   "name": "overlay",
+   "position": [1000, -50],
+   "scale": 1.5,
+   "startingAnimation": "",
+   "zIndex": 3
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-200, -100],
+   "position": [2119, 776],
+   "zIndex": 1
+  },
+  "dad": {
+   "cameraOffsets": [150, -250],
+   "position": [1685.6, 869.6],
+   "zIndex": 1
+  },
+  "gf": {
+   "alpha": 0,
+   "cameraOffsets": [0, 0],
+   "position": [-548.5, 509],
+   "zIndex": 100
+  }
+ },
+ "cameraZoom": 0.65
+}

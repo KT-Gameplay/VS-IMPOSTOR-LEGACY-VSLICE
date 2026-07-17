@@ -1,0 +1,44 @@
+{
+ "version": "1.0.2",
+ "name": "Esculent",
+ "props": [
+  {
+   "assetPath": "BG/esculent/background",
+   "atlasSettings": null,
+   "name": "bg",
+   "position": [0, 0],
+   "scale": 0.5,
+   "startingAnimation": "",
+   "zIndex": 10
+  },
+  {
+   "assetPath": "BG/esculent/scary ass shadow",
+   "atlasSettings": null,
+   "name": "shadow",
+   "position": [0, 0],
+   "scale": 0.5,
+   "startingAnimation": "",
+   "zIndex": 11
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [281, 619],
+   "zIndex": 5
+  },
+  "dad": {
+   "alpha": 0.9,
+   "cameraOffsets": [-50, -300],
+   "position": [740, 741.4],
+   "zIndex": 200
+  },
+  "gf": {
+   "alpha": 0,
+   "cameraOffsets": [0, 0],
+   "position": [666, 430],
+   "zIndex": 100
+  }
+ },
+ "cameraZoom": 1.2
+}

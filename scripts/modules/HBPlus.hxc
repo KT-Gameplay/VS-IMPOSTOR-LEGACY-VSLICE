@@ -1,0 +1,112 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.save.Save;
+import flixel.util.FlxColor;
+import haxe.Json;
+
+class HBPlus extends Module {
+
+	var playerID;
+	var opponentID;
+
+	var playerColour;
+	var oppColour;
+
+	function new() {
+		super("Health Bar +", 1, {state: PlayState});
+	}
+	
+	override function onStateChangeBegin(event)
+	{
+		super.onStateChangeBegin(event);
+		
+		playerColour = null;
+		oppColour = null;
+	}
+
+	override function onCountdownStart(event)
+	{
+		super.onCountdownStart(event);
+		
+		if (!Save.instance.modOptions["IconColouredHealthBar"] || PlayState.instance.currentSong.id.toLowerCase() == 'resurrection-dood') return;
+		
+	
+		if (PlayState.instance.healthBar != null)
+		{
+			if(PlayState.instance.currentSong.id.toLowerCase() != 'top-10' || PlayState.instance.currentSong.id.toLowerCase() != 'boiling-point')
+			{
+			if (oppColour == null)
+			{
+				oppColour = IconColourFinder.findIconColour(PlayState.instance.iconP2);
+			}		
+		}
+		else
+		{
+			var dad = Json.parse(Paths.json('characters' + PlayState.instance.currentStage.getDad().characterId)).healthbar_colors;
+
+			if(oppColour == null)
+			oppColour = FlxColor.fromRGB(dad[0], dad[1], dad[2], 255);
+		}
+
+			if (PlayState.instance.iconP2 != null)
+			{
+				opponentID = PlayState.instance.iconP2.characterId;
+			}
+
+		if (PlayState.instance.iconP1 != null)
+			{
+				playerID = PlayState.instance.iconP1.characterId;
+			}
+		if (playerColour == null)
+			{
+				playerColour = IconColourFinder.findIconColour(PlayState.instance.iconP1);
+			}
+
+			PlayState.instance.healthBar.createFilledBar(oppColour, playerColour);
+			PlayState.instance.healthBar.updateBar();
+		}
+		
+	}
+
+	override function onUpdate(event)
+	{
+		super.onUpdate(event);
+	
+		
+		if (!Save.instance.modOptions["IconColouredHealthBar"] || PlayState.instance.currentSong.id.toLowerCase() == 'resurrection-dood') return;
+		
+
+		if (PlayState.instance.healthBar != null)
+		{
+			if (PlayState.instance.iconP1 != null)
+			{
+				if (playerID != PlayState.instance.iconP1.characterId)
+				{
+					playerID = PlayState.instance.iconP1.characterId;
+
+					playerColour = IconColourFinder.findIconColour(PlayState.instance.iconP1);
+					PlayState.instance.healthBar.createFilledBar(oppColour, playerColour);
+					PlayState.instance.healthBar.updateBar();
+				}
+
+			}
+			if (PlayState.instance.iconP2 != null)
+			{
+				if (opponentID != PlayState.instance.iconP2.characterId)
+				{
+					opponentID = PlayState.instance.iconP2.characterId;
+
+					if(PlayState.instance.currentSong.id.toLowerCase() != 'top-10' || PlayState.instance.currentSong.id.toLowerCase() != 'boiling-point')
+					{oppColour = IconColourFinder.findIconColour(PlayState.instance.iconP2);}
+					else {oppColour = FlxColor.fromRGB(dad[0], dad[1], dad[2], 255);}
+
+					PlayState.instance.healthBar.createFilledBar(oppColour, playerColour);
+					PlayState.instance.healthBar.updateBar();
+
+				}
+			}
+		}
+		
+	}
+	
+}

@@ -1,0 +1,97 @@
+{
+ "version": "1.0.2",
+ "name": "Gray",
+ "props": [
+  {
+   "assetPath": "BG/grey/graybg",
+   "atlasSettings": null,
+   "name": "bg",
+   "position": [0, 0],
+   "scale": 1,
+   "startingAnimation": ""
+  },
+  {
+   "assetPath": "BG/grey/grayglowy",
+   "atlasSettings": null,
+   "name": "jar",
+   "position": [1930, 400],
+   "scale": 1,
+   "danceEvery": 0,
+   "animations": [
+    {
+        "name": "idle",
+        "prefix": "jar??",
+        "looped": true
+    }
+   ],
+   "startingAnimation": "idle",
+   "zIndex": 1
+  },
+  {
+   "assetPath": "BG/grey/grayblack",
+   "atlasSettings": null,
+   "name": "black",
+   "position": [200, 350],
+   "scale": 1,
+   "danceEvery": 2,
+   "animations": [
+    {
+        "name": "idle",
+        "prefix": "who instance 1",
+        "looped": true,
+        "frameRate": 18
+    }
+   ],
+   "startingAnimation": "idle",
+   "zIndex": 2
+  },
+  {
+   "assetPath": "BG/grey/grayfg",
+   "atlasSettings": null,
+   "name": "fg",
+   "position": [1200, 1030],
+   "scale": 1,
+   "scroll": [1.1, 1.1],
+   "startingAnimation": "",
+   "zIndex": 450
+  },
+  {
+   "assetPath": "BG/grey/grayadd",
+   "atlasSettings": null,
+   "blend": "add",
+   "name": "lightadd",
+   "position": [-150, -200],
+   "scale": 2,
+   "startingAnimation": "",
+   "zIndex": 451
+  },
+  {
+   "assetPath": "BG/grey/graysubtract",
+   "atlasSettings": null,
+   "blend": "subtract",
+   "name": "lightsubtract",
+   "position": [-900, -200],
+   "scale": 2,
+   "startingAnimation": "",
+   "zIndex": 452
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-250, -200],
+   "position": [1960, 1039],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [-320, -200],
+   "position": [1257, 1132.5],
+   "zIndex": 200
+  },
+  "gf": {
+   "cameraOffsets": [0, 0],
+   "position": [1638, 923],
+   "zIndex": 100
+  }
+ },
+ "cameraZoom": 0.8
+}

@@ -1,0 +1,34 @@
+{
+ "version": "1.0.2",
+ "name": "Idk",
+ "props": [
+  {
+   "assetPath": "BG/idk/bg",
+   "atlasSettings": null,
+   "isPixel": true,
+   "name": "bg",
+   "position": [0, 0],
+   "scale": 1,
+   "startingAnimation": ""
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [580, 170],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [208, 153],
+   "zIndex": 200
+  },
+  "gf": {
+   "alpha": 0,
+   "cameraOffsets": [0, 0],
+   "position": [716, 780],
+   "zIndex": -1
+  }
+ },
+ "cameraZoom": 1.6
+}

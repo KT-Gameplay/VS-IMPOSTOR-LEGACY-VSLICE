@@ -1,0 +1,57 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+import flixel.FlxSprite;
+import flixel.math.FlxMath;
+import flixel.FlxG;
+
+class ReactorBeepEvent extends SongEvent
+{
+    public function new()
+    {
+        super('ReactorBeep');
+    }
+
+    var flashSprite:FlxSprite;
+
+   function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        if(flashSprite != null)
+        {
+            PlayState.instance.remove(flashSprite);
+            flashSprite = null;
+        }
+
+        flashSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFB30000);
+        flashSprite.screenCenter();
+        flashSprite.alpha = 0.001;
+        flashSprite.cameras = [PlayState.instance.camCutscene];
+        PlayState.instance.add(flashSprite);
+    }
+
+   function onUpdate(event)
+    {
+        if(PlayState.instance == null) return;
+        super.onUpdate(event);
+
+        if(flashSprite?.alpha != 0.001) flashSprite?.alpha = FlxMath.lerp(flashSprite?.alpha, 0.001, event.elapsed * 3);
+    }
+
+    override function handleEvent(data):Void 
+    {
+        if (PlayState.instance == null) return;
+
+        flashSprite.alpha = 0.3;
+    }
+
+    public override function getTitle():String
+    {
+    return 'Reactor Beep';
+    }
+
+  public override function getEventSchema():SongEventSchema
+  {
+    return [];
+  }
+}

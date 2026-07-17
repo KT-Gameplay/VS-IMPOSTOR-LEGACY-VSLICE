@@ -1,0 +1,14 @@
+import funkin.play.character.AnimateAtlasCharacter;
+
+class BlueWhoCharacter extends AnimateAtlasCharacter
+{
+    public function new()
+    {
+        super('blueWho');
+    }
+
+    override public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = '')
+    {
+        super.playSingAnimation(dir, miss, this.idleSuffix == '-alt' ? 'alt' : suffix);
+    }
+}

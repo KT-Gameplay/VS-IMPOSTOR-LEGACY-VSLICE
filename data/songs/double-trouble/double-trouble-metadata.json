@@ -1,0 +1,39 @@
+{
+ "version": "2.2.4",
+ "songName": "Double Trouble",
+ "artist": "Rareblin",
+ "charter": "Rareblin",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "gf-dt",
+   "opponent": "green-dt",
+   "opponentVocals": ["green-dt"],
+   "playerVocals": []
+  },
+  "stage": "dt",
+  "noteStyle": "impostor",
+  "ratings": {
+   "normal": 0,
+   "hard": 0
+  },
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 120.5,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

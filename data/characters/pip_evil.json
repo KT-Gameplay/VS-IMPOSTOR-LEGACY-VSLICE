@@ -1,0 +1,134 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "pip-evil",
+	"cameraOffsets": [
+		-200,
+		-100
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "pip",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/misc/cvp/pipAtlas",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "EPip Down",
+			"offsets": [
+				-19,
+				-3
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "export me/EPip Right",
+			"offsets": [
+				27,
+				20
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "export me/EPip Left",
+			"offsets": [
+				-15,
+				32
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "export me/EPip Up",
+			"offsets": [
+				7,
+				64
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "export me/EPip Idle",
+			"offsets": [
+				19,
+				20
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "export me/MPip Down",
+			"offsets": [
+				-19,
+				-16
+			],
+			"frameRate": 24,
+			"name": "singDOWNmiss",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "export me/MPip Up",
+			"offsets": [
+				7,
+				64
+			],
+			"frameRate": 24,
+			"name": "singUPmiss",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "export me/MPip Right",
+			"offsets": [
+				27,
+				20
+			],
+			"frameRate": 24,
+			"name": "singLEFTmiss",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "export me/MPip Left",
+			"offsets": [
+				-38,
+				32
+			],
+			"frameRate": 24,
+			"name": "singRIGHTmiss",
+			"looped": false,
+			"animType": "symbol"
+		}
+	]
+}

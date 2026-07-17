@@ -1,0 +1,250 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.data.character.CharacterDataParser;
+import flixel.FlxSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
+import funkin.util.ReflectUtil;
+import Reflect;
+
+class DoubleNoteGhost extends Module
+{
+	function new()
+	{
+		super("DoubleNoteGhost");
+	}
+
+	var dir = null;
+	var dir2 = null;
+	var dir3 = null;
+	var strumT = null;
+	var strumT2 = null;
+	var strumT3 = null;
+	var animSaved = null;
+	var animSaved2 = null;
+	var animSaved3 = null;
+	var kindSaved = null;
+	var kindSaved2 = null;
+	var kindSaved3 = null;
+
+	var dadGhost:FlxSprite = null;
+	var bfGhost:FlxSprite = null;
+	var gfGhost:FlxSprite = null;
+
+	var dadGhostTween:FlxTween = null;
+	var bfGhostTween:FlxTween = null;
+	var gfGhostTween:FlxTween = null;
+
+	function getAnimFromDirection(player:Dynamic, dir:Int):String
+	{
+		var dirNames = ["LEFT", "DOWN", "UP", "RIGHT"];
+		var suffix = "";
+		try
+		{
+			suffix = player.idleSuffix;
+			if (suffix == null) suffix = "";
+		}
+		catch (e:Dynamic) {}
+		return "sing" + dirNames[dir % 4] + suffix;
+	}
+
+	function onNoteHit(event)
+	{
+		if (PlayState.instance == null) return;
+
+		if (!event.note.noteData.getMustHitNote())
+		{
+			var dad = PlayState.instance.currentStage.getDad();
+			if (dad != null && strumT2 != null && strumT2 == event.note.strumTime && dir2 != null && dir2 != event.note.direction % 4 && kindSaved2 == event.note.noteData.kind)
+				ghostTrail('dad', animSaved2, dir2);
+			strumT2 = event.note.strumTime;
+			dir2 = event.note.direction % 4;
+			animSaved2 = getAnimFromDirection(dad, dir2);
+			kindSaved2 = event.note.noteData.kind;
+		}
+
+		if (event.note.noteData.getMustHitNote())
+		{
+			var bf = PlayState.instance.currentStage.getBoyfriend();
+			if (bf != null && strumT != null && strumT == event.note.strumTime && dir != null && dir != event.note.direction % 4 && kindSaved == event.note.noteData.kind)
+				ghostTrail('bf', animSaved, dir);
+			strumT = event.note.strumTime;
+			dir = event.note.direction % 4;
+			animSaved = getAnimFromDirection(bf, dir);
+			kindSaved = event.note.noteData.kind;
+		}
+
+		var kind = event.note.noteData.kind;
+		if (kind == "GF" || kind == "GF Sing" || kind == "Both")
+		{
+			var gf = PlayState.instance.currentStage.getGirlfriend();
+			if (gf != null && strumT3 != null && strumT3 == event.note.strumTime && dir3 != null && dir3 != event.note.direction % 4 && kindSaved3 == kind)
+				ghostTrail('gf', animSaved3, dir3);
+			strumT3 = event.note.strumTime;
+			dir3 = event.note.direction % 4;
+			animSaved3 = getAnimFromDirection(gf, dir3);
+			kindSaved3 = kind;
+		}
+	}
+
+	override function onCountdownStart(event)
+	{
+		super.onCountdownStart(event);
+
+		dir = null;
+		dir2 = null;
+		dir3 = null;
+		strumT = null;
+		strumT2 = null;
+		strumT3 = null;
+		animSaved = null;
+		animSaved2 = null;
+		animSaved3 = null;
+		kindSaved = null;
+		kindSaved2 = null;
+		kindSaved3 = null;
+
+		if (PlayState.instance.currentStage.namedProps.exists('dadGhost')) return;
+
+		var dad = PlayState.instance.currentStage.getDad();
+		var bf = PlayState.instance.currentStage.getBoyfriend();
+		var gf = PlayState.instance.currentStage.getGirlfriend();
+
+		dadGhost = new FlxSprite();
+		bfGhost = new FlxSprite();
+
+		if (gf != null)
+			gfGhost = new FlxSprite();
+
+		PlayState.instance.currentStage.add(bfGhost);
+		PlayState.instance.currentStage.add(dadGhost);
+		if (gfGhost != null) PlayState.instance.currentStage.add(gfGhost);
+
+		dadGhost.visible = false;
+		PlayState.instance.currentStage.namedProps.set('dadGhost', dadGhost);
+
+		bfGhost.visible = false;
+		PlayState.instance.currentStage.namedProps.set('bfGhost', bfGhost);
+
+		if (gfGhost != null)
+		{
+			gfGhost.visible = false;
+			PlayState.instance.currentStage.namedProps.set('gfGhost', gfGhost);
+		}
+	}
+
+	function onPause(event)
+	{
+		if (dadGhostTween != null) { dadGhostTween.cancel(); dadGhostTween = null; }
+		if (bfGhostTween != null) { bfGhostTween.cancel(); bfGhostTween = null; }
+		if (gfGhostTween != null) { gfGhostTween.cancel(); gfGhostTween = null; }
+		if (dadGhost != null) dadGhost.visible = false;
+		if (bfGhost != null) bfGhost.visible = false;
+		if (gfGhost != null) gfGhost.visible = false;
+	}
+
+	function ghostTrail(char:String, animToPlay:String, direction:Int = 0)
+	{
+		var ghost = dadGhost;
+		var player = PlayState.instance.currentStage.getDad();
+		var tweenRef = dadGhostTween;
+
+		if (char == 'bf')
+		{
+			ghost = bfGhost;
+			player = PlayState.instance.currentStage.getBoyfriend();
+			tweenRef = bfGhostTween;
+		}
+		if (char == 'dad')
+		{
+			ghost = dadGhost;
+			player = PlayState.instance.currentStage.getDad();
+			tweenRef = dadGhostTween;
+		}
+		if (char == 'gf')
+		{
+			ghost = gfGhost;
+			player = PlayState.instance.currentStage.getGirlfriend();
+			tweenRef = gfGhostTween;
+		}
+
+		if (ghost == null) return;
+
+		ghost.zIndex = player.zIndex - 1;
+		PlayState.instance.currentStage.refresh();
+
+		var ghostIsAnim = player._data != null && (Std.string(player._data.renderType).toLowerCase() == "animateatlas" || Std.string(player._data.renderType).toLowerCase() == "multianimateatlas");
+
+		if (ghostIsAnim)
+		{
+			var prevAnim = player.getCurrentAnimation();
+			if (prevAnim == null) prevAnim = "idle";
+			player.playAnimation(animToPlay, true, true);
+			ghost.makeGraphic(Std.int(player.frameWidth), Std.int(player.frameHeight), FlxColor.TRANSPARENT, true);
+			ghost.stamp(player, 0, 0);
+			ghost.offset.set(player.offset.x + ((player.animOffsets[0] - player.globalOffsets[0]) * player.scale.x), player.offset.y + ((player.animOffsets[1] - player.globalOffsets[1]) * player.scale.y));
+			player.playAnimation(prevAnim, true, true);
+		}
+		else
+		{
+			ghost.frames = player.frames;
+			ghost.animation.copyFrom(player.animation);
+			ghost.animation.play(animToPlay, true);
+		}
+
+		ghost.antialiasing = player.antialiasing;
+		ghost.x = player.x;
+		ghost.y = player.y;
+
+		if (!ghostIsAnim)
+		{
+			ghost.scale.set(player.scale.x, player.scale.y);
+			ghost.offset.set(player.offset.x + ((player.animOffsets[0] - player.globalOffsets[0]) * player.scale.x), player.offset.y + ((player.animOffsets[1] - player.globalOffsets[1]) * player.scale.y));
+			ghost.origin.set(player.origin.x, player.origin.y);
+			ghost.flipX = player.flipX;
+			ghost.flipY = player.flipY;
+		}
+
+		var colorArr = null;
+		if (player._data != null && player._data.healthColorArray != null)
+			colorArr = player._data.healthColorArray;
+		if (colorArr == null)
+			colorArr = Reflect.field(player, "healthColorArray");
+		if (colorArr != null && colorArr.length >= 3)
+		{
+			var r = Std.int(Math.min(colorArr[0] + 50, 255));
+			var g = Std.int(Math.min(colorArr[1] + 50, 255));
+			var b = Std.int(Math.min(colorArr[2] + 50, 255));
+			ghost.color = (r << 16) | (g << 8) | b;
+		}
+
+		ghost.alpha = 1.0;
+		ghost.visible = true;
+
+		if (tweenRef != null) tweenRef.cancel();
+
+		var targetX = ghost.x;
+		var targetY = ghost.y;
+		switch (direction % 4)
+		{
+			case 0: targetX -= 40;
+			case 1: targetY += 40;
+			case 2: targetY -= 40;
+			case 3: targetX += 40;
+		}
+
+		var newTween = FlxTween.tween(ghost, {alpha: 0, x: targetX, y: targetY}, 0.75, {
+			ease: FlxEase.quadOut,
+			onComplete: function(twn:FlxTween) {
+				if (char == 'dad') dadGhostTween = null;
+				if (char == 'bf') bfGhostTween = null;
+				if (char == 'gf') gfGhostTween = null;
+			}
+		});
+
+		if (char == 'dad') dadGhostTween = newTween;
+		if (char == 'bf') bfGhostTween = newTween;
+		if (char == 'gf') gfGhostTween = newTween;
+	}
+}

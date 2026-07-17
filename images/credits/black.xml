@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="black.png">
+	<!-- Created with Adobe Flash CS6 12.0.0.481 -->
+	<SubTexture name="black0000" x="1" y="1" width="602" height="515"/>
+	<SubTexture name="black0001" x="1" y="519" width="602" height="515"/>
+	<SubTexture name="black0002" x="606" y="1" width="602" height="515"/>
+	<SubTexture name="black0003" x="606" y="519" width="602" height="515"/>
+	<SubTexture name="black0004" x="1211" y="1" width="602" height="515"/>
+	<SubTexture name="black0005" x="1211" y="1" width="602" height="515"/>
+	<SubTexture name="black0006" x="1" y="1" width="602" height="515"/>
+	<SubTexture name="black0007" x="1" y="519" width="602" height="515"/>
+	<SubTexture name="black0008" x="606" y="1" width="602" height="515"/>
+</TextureAtlas>

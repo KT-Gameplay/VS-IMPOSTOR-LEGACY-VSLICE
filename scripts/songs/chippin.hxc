@@ -1,0 +1,66 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import flixel.FlxG;
+import funkin.util.Constants;
+
+class ChippinSong extends Song
+{
+    public function new()
+    {
+        super('chippin');
+    }
+
+    var fugly_cam_event:Bool = false;
+    var reduceSpeed:Bool = false;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        fugly_cam_event = false;
+        LegacyUtils.camSpecialThing([600, 450], [800, 450]);
+    }
+
+    function onStepHit(event)
+    {
+        super.onStepHit(event);
+
+        if (event.step == 448)
+        {	
+            LegacyUtils.camSpecialThing([750, 300], [750, 300]);
+            fugly_cam_event = true;
+        }
+    }
+
+    function onBeatHit(event)
+    {
+        super.onBeatHit(event);
+
+        if(event.beat < 172 || event.beat >= 175.5)
+        {
+            reduceSpeed = false;
+        }
+
+        if(event.beat >= 172 && event.beat < 176)
+        {
+            reduceSpeed = true;
+        }
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        var DALAPSED:Float;
+
+        if (fugly_cam_event && PlayState.instance.currentCameraZoom > 0.4)
+        {
+            DALAPSED = event.elapsed / 0.016;
+            PlayState.instance.currentCameraZoom -= 0.0005 * DALAPSED;
+        }
+        if (PlayState.instance.currentCameraZoom <= 0.4 && fugly_cam_event) fugly_cam_event = false;
+
+        if(reduceSpeed) FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE * 0.5; // ik i can just use 0.04
+        else FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
+    }
+}

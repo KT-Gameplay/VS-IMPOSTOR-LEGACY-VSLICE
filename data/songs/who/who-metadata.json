@@ -1,0 +1,37 @@
+{
+ "version": "2.2.4",
+ "songName": "Who",
+ "artist": "EthanTheDoodler",
+ "charter": "Gibz",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "whiteWho",
+   "girlfriend": "gf",
+   "opponent": "blueWho",
+   "opponentVocals": [
+    "blueWho"
+   ],
+   "playerVocals": []
+  },
+  "stage": "who",
+  "noteStyle": "impostor",
+  "album": "volume1",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 155,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

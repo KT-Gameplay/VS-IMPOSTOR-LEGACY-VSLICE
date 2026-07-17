@@ -1,0 +1,38 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.FlxG;
+
+class TomongusStage extends Stage
+{
+    public function new()
+    {
+        super('tomongus');
+    }
+
+    override function buildStage()
+    {
+        super.buildStage();
+
+        this.getNamedProp('stars').updateHitbox();
+        this.getNamedProp('bg').updateHitbox();
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        FlxG.camera.pixelPerfectRender = true; // idk what this is
+        LegacyUtils.camSpecialThing([500, 475], [800, 475]);
+        PlayState.instance.tweenCameraToPosition(500, 475, 0);
+
+        PlayState.instance.iconP1.antialiasing = false;
+        PlayState.instance.iconP2.antialiasing = false;
+    }
+
+    function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        if(event.eventData.eventKind == 'tomongusdie') FlxG.sound.play(Paths.sound('stage/tomongus_Shot'));
+    }
+}

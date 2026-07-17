@@ -1,0 +1,19 @@
+{
+	"title": "VS Impostor Legacy",
+	"description": "a Port of VS Impostor Legacy",
+	"contributors": [
+		{
+		"name": "KT_Gameplay",
+		"role": "Porter and Scripter",
+        "url": "https://gamebanana.com/members/4774795"
+		},
+		{
+		"name": "jarekboho",
+		"role": "Coder",
+        "url": "https://gamebanana.com/members/2145650"
+		}
+	],
+	"api_version":"0.8.4",
+	"mod_version":"1.0.0",
+	"license":"CC BY 4.0,MIT"
+}

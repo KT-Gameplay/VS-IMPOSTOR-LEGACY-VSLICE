@@ -1,0 +1,76 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import Std;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.addons.display.FlxRuntimeShader;
+import openfl.filters.ShaderFilter;
+import flixel.FlxG;
+import funkin.save.Save;
+
+class GrayStage extends Stage
+{
+    public function new()
+    {
+        super("gray");
+    }
+
+    var isChrom:Bool;
+    var chromAmount:Float = 0;
+    var chromFreq:Int = 1;
+    var chromTween:FlxTween;
+    var chromShader = null;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        LegacyUtils.camSpecialThing([1300, 700], [1800, 700]);
+        
+        chromShader = new FlxRuntimeShader(Assets.getText(Paths.frag("chromatic")));
+        chromShader.setFloat("amount", -0.5);
+        if(Save.instance.modOptions["Shaders"] && PlayState.instance.currentSong.id.toLowerCase() != 'blackout') FlxG.camera.filters = [new ShaderFilter(chromShader)];
+    }
+
+    function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        if(event.eventData.eventKind == "chromToggle")
+        {
+            var theAmount:Float = Std.parseFloat(event.eventData.getFloat("amount") ?? 0);
+			var theAmount2:Int = Std.int(event.eventData.getFloat("freq") ?? (theAmount > 0 ? 1 : 0));
+
+            if (theAmount > 0)
+			{
+				isChrom = true;
+				chromAmount = theAmount;
+				chromFreq = theAmount2;
+				return;
+			}
+			else
+			{
+				isChrom = false;
+				chromAmount = 0;
+				return;
+			}
+        }
+
+        if(event.eventData.eventKind == "GreyDarkness")
+        {
+            PlayState.instance.camGame.visible = event.eventData.getBool("lol");
+        }
+    }
+
+    function onBeatHit(event)
+    {
+        super.onBeatHit(event);
+
+        if (event.beat % chromFreq == 0)
+        {
+            if (chromTween != null) chromTween.cancel();
+            chromShader.setFloat("amount", chromAmount);
+            chromTween = FlxTween.num(chromAmount, 0, 0.45, {ease: FlxEase.sineOut}, function(num) {chromShader.setFloat("amount", num);});
+        }
+    }
+}
