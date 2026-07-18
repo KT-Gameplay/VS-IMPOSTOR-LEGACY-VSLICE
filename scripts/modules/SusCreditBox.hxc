@@ -9,6 +9,7 @@ import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
 import haxe.Json;
 import funkin.Paths;
+import funkin.util.FlxTweenUtil;
 
 class SusCreditBox extends Module
 {
@@ -111,5 +112,20 @@ public function startTaskSong()
 					});
 			}
 		});
+}
+
+function onPause(event)
+{
+	super.onPause(event);
+
+	if(taskGroup != null) FlxTweenUtil.pauseTweensOf(taskGroup);
+}
+
+function onResume(event)
+{
+	super.onResume(event);
+	if(PlayState.instance.needsReset) return;
+
+	if(taskGroup != null) FlxTweenUtil.resumeTweensOf(taskGroup);
 }
 }
