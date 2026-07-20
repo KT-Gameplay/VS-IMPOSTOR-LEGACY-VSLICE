@@ -85,6 +85,11 @@ class PinkStage extends Stage
         blue = getNamedProp('blue');
 
         heartColorShader = new FlxRuntimeShader(Assets.getText(Paths.frag('colorSwap-legacy')));
+        heartColorShader.setFloat('u_saturation', 0);
+        heartColorShader.setFloat('u_hue', 0);
+        heartColorShader.setFloat('u_brightness', 0);
+        heartColorShader.setFloat('u_alpha', 1);
+        heartColorShader.setFloat('u_flash', 0);
     }
 
     override function onCountdownStart(event)
@@ -164,8 +169,8 @@ class PinkStage extends Stage
 		vignetteTween = FlxTween.tween(pinkVignette, {alpha: 0.2}, 1.2, {ease: FlxEase.sineOut});
 		
 		if (whiteTween != null) whiteTween.cancel();
-		heartColorShader.setFloat('flash', 0.5);
-		whiteTween = FlxTween.num(0.5, 0, 0.75, {ease: FlxEase.sineOut}, function(num) {heartColorShader.setFloat('flash', num);});
+		heartColorShader.setFloat('u_flash', 0.5);
+		whiteTween = FlxTween.num(0.5, 0, 0.75, {ease: FlxEase.sineOut}, function(num) {heartColorShader.setFloat('u_flash', num);});
         }
 
 		if (event.beat % 2 == 0)
