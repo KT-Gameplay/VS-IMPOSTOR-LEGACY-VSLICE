@@ -1,0 +1,175 @@
+{
+	"version": "1.0.2",
+	"name": "polus-meltdown",
+	"props": [
+		{
+			"assetPath": "stages/polus/red/polus_custom_sky",
+			"atlasSettings": null,
+			"name": "sky",
+			"position": [
+				-400,
+				-400
+			],
+			"scale": 1.4,
+			"scroll": [
+				0.5,
+				0.5
+			],
+			"startingAnimation": ""
+		},
+		{
+			"assetPath": "stages/polus/red/polusrocks",
+			"atlasSettings": null,
+			"name": "rocks",
+			"position": [
+				-700,
+				-300
+			],
+			"scale": 1,
+			"scroll": [
+				0.6,
+				0.6
+			],
+			"startingAnimation": "",
+			"zIndex": 1
+		},
+		{
+			"assetPath": "stages/polus/red/polusHills",
+			"atlasSettings": null,
+			"name": "hills",
+			"position": [
+				-1050,
+				-180.55
+			],
+			"scale": 1,
+			"scroll": [
+				0.9,
+				0.9
+			],
+			"startingAnimation": "",
+			"zIndex": 2
+		},
+		{
+			"assetPath": "stages/polus/red/polus_custom_lab",
+			"atlasSettings": null,
+			"name": "warehouse",
+			"position": [
+				48,
+				-399
+			],
+			"scale": 1,
+			"startingAnimation": "",
+			"zIndex": 3
+		},
+		{
+			"assetPath": "stages/polus/red/polus_custom_floor",
+			"atlasSettings": null,
+			"name": "ground",
+			"position": [
+				-1350,
+				80
+			],
+			"scale": 1,
+			"startingAnimation": "",
+			"zIndex": 4
+		},
+		{
+			"animations": [
+				{
+					"animType": "beat",
+					"assetPath": null,
+					"atlasSettings": null,
+					"name": "bop",
+					"prefix": "speakers lonely",
+					"renderType": null
+				}
+			],
+			"assetPath": "stages/polus/red/speakerlonely",
+			"atlasSettings": null,
+			"name": "speaker",
+			"position": [
+				189,
+				168
+			],
+			"scale": 1,
+			"startingAnimation": "bop",
+			"zIndex": 5
+		},
+		{
+			"assetPath": "stages/polus/red/bfdead",
+			"atlasSettings": null,
+			"name": "bfdead",
+			"position": [
+				423,
+				498
+			],
+			"scale": 0.8,
+			"startingAnimation": "",
+			"zIndex": 99
+		},
+		{
+			"animations": [
+				{
+					"animType": "beat",
+					"assetPath": null,
+					"atlasSettings": null,
+					"looped": true,
+					"name": "bop",
+					"prefix": "BoppersMeltdown",
+					"renderType": null
+				}
+			],
+			"assetPath": "stages/polus/red/boppers_meltdown",
+			"atlasSettings": null,
+			"name": "crowd",
+			"position": [
+				-900,
+				150
+			],
+			"scale": 1,
+			"scroll": [
+				1.5,
+				1.5
+			],
+			"startingAnimation": "bop",
+			"zIndex": 9999
+		}
+	],
+	"characters": {
+		"bf": {
+			"alpha": 0.8,
+			"cameraOffsets": [
+				-245,
+				230
+			],
+			"position": [
+				1052,
+				96
+			],
+			"zIndex": 8
+		},
+		"dad": {
+			"cameraOffsets": [
+				293,
+				-315
+			],
+			"position": [
+				125,
+				468
+			],
+			"zIndex": 200
+		},
+		"gf": {
+			"cameraOffsets": [
+				0,
+				0
+			],
+			"position": [
+				170.5,
+				-146
+			],
+			"zIndex": 50
+		}
+	},
+	"cameraZoom": 0.75
+}

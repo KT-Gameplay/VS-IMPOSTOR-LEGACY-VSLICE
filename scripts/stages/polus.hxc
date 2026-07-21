@@ -1,0 +1,48 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.save.Save;
+import flixel.effects.particles.FlxEmitter;
+import flixel.effects.particles.FlxParticle;
+import flixel.FlxG;
+
+class PolusStage extends Stage
+{
+    var snowEmitter:FlxEmitter;
+
+    public function new()
+    {
+        super('polus');
+    }
+
+    function onCreate(event)
+    {
+        super.onCreate(event);
+
+        var lowQ = Save.instance.modOptions["Low Quality"] == true;
+        var numParticles = lowQ ? 500 : 2700;
+        var interval = lowQ ? 0.1 : 0.05;
+
+        snowEmitter = new FlxEmitter(-600, -600, numParticles);
+        snowEmitter.width = 2700;
+        snowEmitter.launchAngle.set(100, 160);
+        snowEmitter.angularVelocity.set(-80, 100);
+        snowEmitter.lifespan.set(10);
+        snowEmitter.speed.set(500, 700);
+
+        for (i in 0...numParticles)
+        {
+            var p = new FlxParticle();
+            p.frames = Paths.getSparrowAtlas('emitters/snow_particles');
+            p.animation.addByPrefix('snow', 'snow', 0, false);
+            p.animation.frameIndex = FlxG.random.int(0, 7);
+            p.scrollFactor.set(FlxG.random.float(1, 1.5), FlxG.random.float(1, 1.5));
+            p.alpha = FlxG.random.float(0.3, 1);
+            snowEmitter.add(p);
+        }
+
+        snowEmitter.alpha.active = false;
+        snowEmitter.zIndex = 13;
+        snowEmitter.start(false, interval);
+        PlayState.instance.add(snowEmitter);
+    }
+}

@@ -1,0 +1,87 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "red",
+	"cameraOffsets": [
+		-130,
+		290
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "red",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/story/red/red",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "animations/impostor idle",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "animations/impostor right",
+			"offsets": [
+				-149,
+				-37
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "animations/impostor down",
+			"offsets": [
+				-22,
+				32
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "animations/imposter left",
+			"offsets": [
+				162,
+				-26
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false,
+			"animType": "symbol"
+		},
+		{
+			"frameIndices": [],
+			"prefix": "animations/impostor up2",
+			"offsets": [
+				-105,
+				23
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false,
+			"animType": "symbol"
+		}
+	],
+	"vslice_sustains": true
+}

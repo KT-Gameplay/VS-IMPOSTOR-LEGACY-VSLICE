@@ -1,0 +1,54 @@
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.cutscene.CutsceneType;
+import funkin.Paths;
+import flixel.FlxG;
+import funkin.modding.events.CountdownScriptEvent;
+import funkin.modding.events.ScriptEvent;
+
+class SussusMoogusSong extends Song
+{
+	var hasPlayedCutscene:Bool;
+
+	public function new()
+	{
+		super('sussus-moogus');
+		hasPlayedCutscene = false;
+	}
+
+	public override function onCountdownStart(event:CountdownScriptEvent):Void
+	{
+		super.onCountdownStart(event);
+
+		if (!PlayStatePlaylist.isStoryMode)
+		{
+			hasPlayedCutscene = true;
+		}
+
+		if (!hasPlayedCutscene)
+		{
+			hasPlayedCutscene = true;
+			event.cancel();
+			startIntroVideo();
+		}
+	}
+
+	function startIntroVideo()
+	{
+		VideoCutscene.play(Paths.videos('week1/sussus-moogus'), CutsceneType.STARTING);
+	}
+
+	function onSongRetry(event:ScriptEvent)
+	{
+		super.onSongRetry(event);
+		hasPlayedCutscene = true;
+	}
+
+	function onCreate(event:ScriptEvent):Void
+	{
+		super.onCreate(event);
+		hasPlayedCutscene = false;
+	}
+}

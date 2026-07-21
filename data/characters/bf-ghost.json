@@ -1,0 +1,270 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [
+		-40,
+		275
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "bf-ghost",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"looped": true,
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"assetPath": "shared:characters/bf/bfGhost",
+	"animations": [
+		{
+			"name": "singLEFT",
+			"prefix": "left",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "down",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singUP",
+			"prefix": "up",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "right",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singLEFTmiss",
+			"prefix": "left miss",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singDOWNmiss",
+			"prefix": "down miss",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singUPmiss",
+			"prefix": "up miss",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singRIGHTmiss",
+			"prefix": "right miss",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singLEFT-hold",
+			"prefix": "left loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singDOWN-hold",
+			"prefix": "down loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singUP-hold",
+			"prefix": "up loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singRIGHT-hold",
+			"prefix": "right loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singLEFTmiss-hold",
+			"prefix": "left miss loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singDOWNmiss-hold",
+			"prefix": "down miss loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singUPmiss-hold",
+			"prefix": "up miss loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "singRIGHTmiss-hold",
+			"prefix": "right miss loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "idle",
+			"prefix": "idle",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "idle-hold",
+			"prefix": "idle loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "hey",
+			"prefix": "hey",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "hey-hold",
+			"prefix": "hey loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "scared",
+			"prefix": "fear",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "scared-hold",
+			"prefix": "fear loop",
+			"frameRate": 24,
+			"looped": true,
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": []
+		}
+	],
+	"vslice_sustains": true
+}
