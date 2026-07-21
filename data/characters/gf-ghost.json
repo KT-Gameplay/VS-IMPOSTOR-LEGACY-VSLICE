@@ -1,0 +1,129 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		200,
+		160
+	],
+	"danceEvery": 1,
+	"scale": 1,
+	"name": "gf-ghost",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "gf",
+		"isPixel": false
+	},
+	"assetPath": "characters/gf/ghostgf",
+	"animations": [
+		{
+			"name": "sad",
+			"prefix": "gf sad",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				35,
+				23
+			],
+			"frameIndices": [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12
+			]
+		},
+		{
+			"name": "danceRight",
+			"prefix": "gf idle",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				35,
+				14
+			],
+			"frameIndices": [
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29
+			]
+		},
+		{
+			"name": "danceLeft",
+			"prefix": "gf idle",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				35,
+				14
+			],
+			"frameIndices": [
+				30,
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14
+			]
+		},
+		{
+			"name": "cheer",
+			"prefix": "gf cheer",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				38,
+				23
+			],
+			"frameIndices": []
+		},
+		{
+			"name": "scared",
+			"prefix": "gf fade in",
+			"frameRate": 24,
+			"looped": false,
+			"offsets": [
+				33,
+				6
+			],
+			"frameIndices": []
+		}
+	],
+	"vslice_sustains": false
+}
