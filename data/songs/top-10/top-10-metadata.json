@@ -1,0 +1,17 @@
+{
+	"timeFormat": "ms",
+	"artist": "Top 10 Awesome",
+	"charter": "loggo",
+	"playData": {
+		"stage": "polus",
+		"noteStyle": "funkin",
+		"difficulties": ["easy", "normal", "hard"],
+		"characters": {"girlfriend": "bf", "opponent": "top", "player": "bf"}
+	},
+	"songName": "Top 10",
+	"timeChanges": [
+		{"t": 0, "bpm": 130}
+	],
+	"generatedBy": "Psych Engine v1.0.4 - Chart Editor V-Slice Exporter",
+	"version": "2.2.3"
+}
