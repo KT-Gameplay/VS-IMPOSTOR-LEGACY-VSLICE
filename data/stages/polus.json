@@ -1,0 +1,149 @@
+{
+	"version": "1.0.2",
+	"name": "polus",
+	"props": [
+		{
+			"assetPath": "stages/polus/red/polus_custom_sky",
+			"atlasSettings": null,
+			"name": "sky",
+			"position": [
+				-400,
+				-400
+			],
+			"scale": 1.4,
+			"scroll": [
+				0.5,
+				0.5
+			],
+			"startingAnimation": ""
+		},
+		{
+			"assetPath": "stages/polus/red/polusrocks",
+			"atlasSettings": null,
+			"name": "rocks",
+			"position": [
+				-700,
+				-300
+			],
+			"scale": 1,
+			"scroll": [
+				0.6,
+				0.6
+			],
+			"startingAnimation": "",
+			"zIndex": 1
+		},
+		{
+			"assetPath": "stages/polus/red/polusHills",
+			"atlasSettings": null,
+			"name": "hills",
+			"position": [
+				-1050,
+				-180.55
+			],
+			"scale": 1,
+			"scroll": [
+				0.9,
+				0.9
+			],
+			"startingAnimation": "",
+			"zIndex": 2
+		},
+		{
+			"assetPath": "stages/polus/red/polus_custom_lab",
+			"atlasSettings": null,
+			"name": "warehouse",
+			"position": [
+				50,
+				-400
+			],
+			"scale": 1,
+			"startingAnimation": "",
+			"zIndex": 3
+		},
+		{
+			"assetPath": "stages/polus/red/polus_custom_floor",
+			"atlasSettings": null,
+			"name": "ground",
+			"position": [
+				-1350,
+				80
+			],
+			"scale": 1,
+			"startingAnimation": "",
+			"zIndex": 4
+		},
+		{
+			"alpha": 0,
+			"animations": [
+				{
+					"animType": null,
+					"assetPath": null,
+					"atlasSettings": null,
+					"name": "bop",
+					"prefix": "speakers lonely",
+					"renderType": null
+				}
+			],
+			"assetPath": "stages/polus/red/speakerlonely",
+			"atlasSettings": null,
+			"name": "speaker",
+			"position": [
+				300,
+				185
+			],
+			"scale": 1,
+			"startingAnimation": "bop",
+			"zIndex": 5
+		},
+		{
+			"alpha": 0,
+			"assetPath": "stages/polus/red/bfdead",
+			"atlasSettings": null,
+			"name": "bfdead",
+			"position": [
+				600,
+				525
+			],
+			"scale": 0.8,
+			"startingAnimation": "",
+			"zIndex": 6
+		}
+	],
+	"characters": {
+		"bf": {
+			"cameraOffsets": [
+				-100,
+				-60
+			],
+			"position": [
+				915,
+				592
+			],
+			"zIndex": 100
+		},
+		"dad": {
+			"cameraOffsets": [
+				213,
+				-365
+			],
+			"position": [
+				103.5,
+				596
+			],
+			"zIndex": 200
+		},
+		"gf": {
+			"cameraOffsets": [
+				0,
+				0
+			],
+			"position": [
+				566,
+				502
+			],
+			"zIndex": 50
+		}
+	},
+	"cameraZoom": 0.75
+}
