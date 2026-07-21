@@ -1,0 +1,16 @@
+{
+	"timeFormat": "ms",
+	"artist": "EthanTheDoodler",
+	"playData": {
+		"stage": "polus",
+		"noteStyle": "impostor",
+		"difficulties": ["easy", "normal", "hard"],
+		"characters": {"girlfriend": "gf", "opponent": "red", "player": "bf"}
+	},
+	"songName": "Sussus Moogus",
+	"timeChanges": [
+		{"t": 0, "bpm": 150}
+	],
+	"generatedBy": "Psych Engine v1.0.4 - Chart Editor V-Slice Exporter",
+	"version": "2.2.3"
+}
