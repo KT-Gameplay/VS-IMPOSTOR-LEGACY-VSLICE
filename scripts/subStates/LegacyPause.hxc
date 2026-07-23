@@ -1,0 +1,405 @@
+package legacy.menus;
+
+import flixel.group.FlxTypedSpriteGroup;
+import funkin.ui.MusicBeatSubState;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.FlxG;
+import funkin.play.PlayState;
+import funkin.Paths;
+import flixel.math.FlxMath;
+import flixel.util.FlxColor;
+import funkin.audio.FunkinSound;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.math.FlxPoint;
+import funkin.PlayerSettings;
+import funkin.play.PlayStatePlaylist;
+import funkin.ui.options.OptionsState;
+import funkin.ui.story.StoryMenuState;
+import funkin.ui.freeplay.FreeplayState;
+import flixel.addons.transition.FlxTransitionableState;
+import funkin.ui.transition.stickers.StickerSubState;
+import funkin.input.Cursor;
+import funkin.util.TouchUtil;
+import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.play.cutscene.VideoCutscene;
+import haxe.ds.StringMap;
+
+class LegacyPause extends MusicBeatSubState
+{
+	public static var songName:String = '';
+	
+	var pauseMusic:FunkinSound;
+	var pauseGroup:FlxTypedSpriteGroup;
+	var options:Array<String> = ['resumesong', 'restartsong', 'options', 'backtomenu'];
+	
+	var pauseBG:FlxSprite;
+	var optionText:Array<FlxText> = [];
+	
+	var curSelect:Int = 0;
+	
+	var viewingMode:Bool = false;
+	var looksie:FlxSprite;
+	var infoTitle:FlxText;
+	var infoSubtext:FlxText;
+	var infoPorter:FlxText;
+	var allowControl:Bool = false;
+
+	var charMap = new StringMap();
+
+	public function new()
+	{
+		super();
+		allowControl = false;
+
+		charMap.set("sussus-moogus", "red");
+		charMap.set("sabotage", "red");
+		charMap.set("meltdown", "red");
+		charMap.set("sussus-toogus", "green");
+		charMap.set("lights-down", "green");
+		charMap.set("reactor", "green");
+		charMap.set("double-trouble", "doubletrouble");
+		charMap.set("ejected", "greenp");
+		charMap.set("mando", "yellow");
+		charMap.set("d'low", "yellow");
+		charMap.set("oversight", "white");
+		charMap.set("danger", "black");
+		charMap.set("double-kill", "doublekill");
+		charMap.set("defeat", "black");
+		charMap.set("identity-crisis", "monotone");
+		charMap.set("finale", "blackp");
+		charMap.set("ashes", "maroon");
+		charMap.set("magmatic", "maroon");
+		charMap.set("boiling-point", "maroonp");
+		charMap.set("sauces-moogus", "chef");
+		charMap.set("delusion", "grey");
+		charMap.set("blackout", "grey");
+		charMap.set("neurotic", "grey");
+		charMap.set("heartbeat", "pink");
+		charMap.set("pinkwave", "pink");
+		charMap.set("pretender", "pretender");
+		charMap.set("o2", "jorsawsee");
+		charMap.set("voting-time", "voting");
+		charMap.set("turbulence", "mungusp");
+		charMap.set("victory", "voting");
+		charMap.set("roomcode", "powers");
+		charMap.set("titular", "henry");
+		charMap.set("greatest-plan", "charles");
+		charMap.set("reinforcements", "ellie");
+		charMap.set("armed", "rhm");
+		charMap.set("sussy-bussy", "mech");
+		charMap.set("rivals", "mech");
+		charMap.set("chewmate", "mech");
+		charMap.set("tomongus-tuesday", "mech");
+		charMap.set("ow", "ow");
+		charMap.set("sussus-nuzzus", "nuzzus");
+		charMap.set("triple-threat", "triplethreat");
+		charMap.set("lemon-lime", "jads");
+		charMap.set("chlorophyll", "jads");
+		charMap.set("inflorescence", "jads");
+		charMap.set("stargazer", "jads");
+		charMap.set("chippin", "cval");
+		charMap.set("chipping", "cval");
+		charMap.set("crewicide", "dave");
+		charMap.set("drippypop", "drip");
+		charMap.set("esculent", "esculent");
+		charMap.set("idk", "idk");
+		charMap.set("insane-streamer", "jerma");
+		charMap.set("monotone-attack", "attack");
+		charMap.set("top-10", "awesome");
+		charMap.set("torture", "torture");
+		charMap.set("who", "who");
+		charMap.set("trot-away", "horsemate");
+		charMap.set("suspect", "detective");
+		charMap.set("don't-lied", "purple");
+		charMap.set("49", "noob49");
+	}
+	
+	override function create()
+	{
+		Cursor.show();
+		pauseMusic = FunkinSound.load(Paths.music('legacy/pause'), 0, true, true);
+		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+		
+		pauseGroup = new FlxTypedSpriteGroup();
+		
+		pauseBG = new FlxSprite().makeGraphic(1283, 720, FlxColor.BLACK);
+		pauseBG.alpha = 0;
+		pauseGroup.add(pauseBG);
+		
+		var glow:FlxSprite = new FlxSprite(500, -12.65).loadGraphic(Paths.image('menu/freeplay/backGlow'));
+		glow.flipX = false;
+		glow.color = PlayState.instance.iconP2 != null ? IconColourFinder.findIconColour(PlayState.instance.iconP2) : FlxColor.WHITE;
+		pauseGroup.add(glow);
+		
+		var dwp:String = getDadPortrait();
+		var p:String = portraitExists(dwp) ? dwp : 'placeholder';
+		var path = charMap.exists(PlayState.instance.currentSong.id.toLowerCase()) ? charMap.get(PlayState.instance.currentSong.id.toLowerCase()) : p;
+		var portrait:FlxSprite = new FlxSprite(0, -125).loadGraphic(Paths.image('menu/freeplay/portraits/' + path));
+		portrait.offset.x += (portrait.frameWidth - 1215) * 0.5 * portrait.scale.x;
+		portrait.offset.y += (portrait.frameHeight - 1097) * 0.5 * portrait.scale.y;
+		portrait.x = FlxG.width;
+		pauseGroup.add(portrait);
+		
+		FlxTween.tween(portrait, {x: 304.65}, 0.3, {ease: FlxEase.circOut});
+		
+		var pad:Int = 15;
+		
+		infoTitle = new FlxText(0, pad, FlxG.width - pad, 'ME');
+		infoTitle.setFormat(Paths.font('liberbold.ttf', false), 24, FlxColor.WHITE, 'right', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		pauseGroup.add(infoTitle);
+		
+		infoSubtext = new FlxText(0, 30 + pad, FlxG.width - pad, 'I MADE THE SONG');
+		infoSubtext.setFormat(Paths.font('liber.ttf', false), 24, FlxColor.WHITE, 'right', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		pauseGroup.add(infoSubtext);
+		
+		assignValues();
+		
+		if (PlayState.instance.isInCutscene)
+		{
+			options.insert(2, 'leavecutscene');
+		}
+		
+		for (i in 0...options.length)
+		{
+			var opt = new FlxText(-640, 0, -1, fixGrammar(options[i]));
+			opt.setFormat(Paths.font('liber.ttf'), 48, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			opt.borderSize = 2;
+			opt.y = FlxG.height / 2 + (i * 60) - opt.height;
+			opt.ID = i;
+			pauseGroup.add(opt);
+			optionText.push(opt);
+		}
+		
+		looksie = new FlxSprite(0, FlxG.height - 100).loadGraphic(Paths.image('menu/pause/looksie'));
+		looksie.origin.set(25, 75);
+		looksie.flipX = true;
+		
+		add(pauseGroup);
+		add(looksie);
+		
+		FlxG.sound.play(Paths.sound('panelAppear'), 0.5);
+		super.create();
+		new flixel.util.FlxTimer().start(0.1, function(tmr:flixel.util.FlxTimer) {
+            allowControl = true;
+        });
+
+		VideoCutscene.pauseVideo();
+	}
+	
+	override function update(elapsed:Float)
+	{
+		if (pauseMusic != null && pauseMusic.volume < 0.5) pauseMusic.volume += 0.01 * elapsed;
+		super.update(elapsed);
+		
+		var cam = this.camera ?? PlayState.instance.camPause;
+		var mousePos:FlxPoint = FlxG.mouse.getScreenPosition(cam);
+		var controls = PlayerSettings.player1.controls;
+		
+		if(!allowControl) return;
+		if (!viewingMode)
+		{
+			if (controls.UI_UP_P || FlxG.mouse.wheel > 0) changeSelection(-1);
+			if (controls.UI_DOWN_P || FlxG.mouse.wheel < 0) changeSelection(1);
+			/*if (ClientPrefs.inDevMode)
+			{
+				if (FlxG.keys.justPressed.TAB || FlxG.gamepads.anyJustPressed(X))
+				{
+					// lockMovement = true;
+					FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+					openSubState(new CosmeticsSubstate());
+				}
+			} */
+			if (controls.ACCEPT_P) acceptChoice();
+		}
+		
+		if (controls.BACK_P)
+		{
+			if (viewingMode)
+			{
+				changeView(false);
+			}
+			else
+			{
+				FlxG.sound.play(Paths.sound('paneldisAppear'), 0.5);
+				close();
+			}
+		}
+
+		handleTouchInputs();
+		
+		// quick bugfix
+		pauseBG.alpha = FlxMath.lerp(pauseBG.alpha, 0.8, FlxMath.bound(elapsed * 15.6, 0, 1)) * pauseGroup.alpha;
+		
+		var looksieHover = looksie.overlapsPoint(mousePos, true, cam);
+		var looksieScale:Float = FlxMath.lerp(looksie.scale.x, looksieHover ? 1.25 : 1, FlxMath.bound(elapsed * 15.6, 0, 1));
+		looksie.scale.set(looksieScale, looksieScale);
+		
+		if (looksieHover && FlxG.mouse.justPressed)
+		{
+			changeView(!viewingMode);
+		}
+		
+		pauseGroup.alpha = FlxMath.lerp(pauseGroup.alpha, viewingMode ? 0 : 1, FlxMath.bound(elapsed * 15.6, 0, 1));
+		looksie.alpha = FlxMath.lerp(looksie.alpha, viewingMode ? 0.3 : 1, FlxMath.bound(elapsed * 15.6, 0, 1));
+		
+		for (item in optionText)
+		{
+			if (item.overlapsPoint(mousePos, true, cam) && FlxG.mouse.justPressed && !viewingMode)
+			{
+				if (curSelect == item.ID)
+				{
+					acceptChoice();
+				}
+				else
+				{
+					curSelect = item.ID;
+					changeSelection(0);
+				}
+			}
+			
+			item.x = FlxMath.lerp(item.x, curSelect == item.ID ? 75 : 55, FlxMath.bound(elapsed * 15.6, 0, 1));
+			item.alpha = FlxMath.lerp(item.alpha, curSelect == item.ID ? 1 : 0.3, FlxMath.bound(elapsed * 15.6, 0, 1)) * pauseGroup.alpha;
+		}
+	}
+
+	function handleTouchInputs():Void
+	{
+		if(!FlxG.onMobile) return;
+
+		var cam = this.camera ?? PlayState.instance.camPause;
+
+		for (item in optionText)
+		{
+			if (!TouchUtil.pressAction(item, cam, false)) continue;
+
+			if (item.ID == curSelect)
+			{
+				acceptChoice();
+			}
+			else
+			{
+				curSelect = item.ID;
+				changeSelection(0);
+			}
+			break;
+    }
+    }
+	
+	override function destroy()
+	{
+		if (pauseMusic != null) pauseMusic.destroy();
+		super.destroy();
+		pauseGroup.destroy();
+		pauseGroup = null;
+	}
+	
+	public static function getDadPortrait():String
+	{
+		var character = PlayState.instance.currentStage?.getDad()?.characterId;
+		return (portraitExists(character) ? character : PlayState.instance.iconP2?.characterId);
+	}
+	
+	static function portraitExists(id:String):Bool
+	{
+		return Assets.exists(Paths.image('menu/freeplay/portraits/$id'));
+	}
+	
+	function assignValues():Void
+	{
+		infoTitle.text = PlayState.instance.currentChart.songName;
+		infoSubtext.text = 'Composer: ' + PlayState.instance.currentChart.songArtist + ((PlayState.instance.currentChart.charter != 'Unknown' && PlayState.instance.currentChart.charter !=  '') ? '\n' + 'Charter: ' + PlayState.instance.currentChart.charter : '');
+	}
+	
+	function changeView(view:Bool):Void
+	{
+		FlxG.sound.play(Paths.sound('looksie'));
+		viewingMode = view;
+	}
+	
+	function changeSelection(by:Int = 0):Void
+	{
+		FlxG.sound.play(Paths.sound('hover'), 0.5);
+		curSelect = FlxMath.wrap(curSelect + by, 0, options.length - 1);
+	}
+	
+	function acceptChoice():Void
+	{
+		switch (options[curSelect])
+		{
+			case 'resumesong':
+				this.close();
+			case 'restartsong':
+				restartSong();
+			case 'leavecutscene':
+				VideoCutscene.finishVideo();
+				this.close();
+			case 'options':
+				FlxG.switchState(() -> new OptionsState());
+			case 'backtomenu':
+				returnToMain();
+		}
+	}
+	
+	public function returnToMain():Void
+	{
+		PlayState.deathCounter = 0;
+		FlxTransitionableState.skipNextTransIn = true;
+		FlxTransitionableState.skipNextTransOut = true;
+
+		var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
+		new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(null, sticker);
+
+		if (PlayStatePlaylist.isStoryMode)
+		{
+			PlayStatePlaylist.reset();
+		}
+
+		var stickerPackId:Null<String> = PlayState.instance.currentChart.stickerPack;
+
+		if (stickerPackId == null)
+		{
+			var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+			var playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
+
+			if (playerCharacter != null)
+			{
+				stickerPackId = playerCharacter.getStickerPackID();
+			}
+		}
+
+		this.openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
+	}
+	
+	public function restartSong():Void
+	{
+		PlayState.instance.needsReset = true;
+		this.close();
+	}
+
+	override function close():Void
+	{
+		super.close();
+		Cursor.hide();
+		VideoCutscene.resumeVideo();
+	}
+
+	function fixGrammar(thing:String):String
+	{
+		switch(thing)
+		{
+			case 'resumesong':
+				return 'Resume Song';
+			case 'restartsong':
+				return 'Restart Song';
+			case 'leavecutscene':
+				return 'Skip Cutscene';
+			case 'options':
+				return 'Options';
+			case 'backtomenu':
+				return 'Back to Menu';
+		}
+	}
+}

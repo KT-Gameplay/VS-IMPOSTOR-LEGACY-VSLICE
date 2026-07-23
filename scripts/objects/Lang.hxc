@@ -1,0 +1,190 @@
+import haxe.ds.StringMap;
+import funkin.modding.PolymodHandler;
+import funkin.util.FileUtil;
+import haxe.Json;
+import funkin.util.ReflectUtil;
+import haxe.io.Path;
+import flixel.FlxG;
+
+using StringTools;
+
+class Language
+{
+	public var name:Null<String> = null;
+
+	public var special:Null<Array<String>> = null;
+
+	public var translationCredits:String = '';
+
+	public var lang:StringMap = new StringMap();
+
+	public var flags:StringMap = new StringMap();
+
+	public var fontReplacements:StringMap = new StringMap();
+
+	public static function fromRaw(raw:Null<LanguageRaw>):Null<Language>
+	{
+		if (raw == null) return null;
+		var lang:Language = {};
+
+		lang.name = raw.name;
+		lang.special = raw.special;
+		lang.translationCredits = raw.translation_credits;
+		lang.lang = new StringMap();
+		for (key in ReflectUtil.fields(raw.lang)) {
+		lang.lang.set(key, ReflectUtil.field(raw.lang, key));
+		}
+
+		lang.flags = new StringMap();
+		if (raw.flags != null) {
+		for (key in ReflectUtil.fields(raw.flags)) {
+		lang.flags.set(key, ReflectUtil.field(raw.flags, key));
+		}
+		}
+
+ 		lang.fontReplacements = new StringMap();
+		if (raw.font_replacement != null) {
+		for (key in ReflectUtil.fields(raw.font_replacement)) {
+		lang.fontReplacements.set(key, ReflectUtil.field(raw.font_replacement, key));
+		}
+		}
+
+		return lang;
+	}
+}
+
+class Lang
+{
+	public static var current:Null<Language> = null;
+	public static var fallback:Null<Language> = null;
+
+	static var defaultLanguage:String = 'english';
+
+	public static function reloadLangFile():Void
+	{
+		Lang.fallback = loadLang(defaultLanguage);
+
+		Lang.current = fallback;
+	}
+
+	public static function loadLang(lang:String):Null<Language>
+	{
+		var Lang:Null<LanguageRaw> = null;
+
+		var directories:Array<String> = [];
+
+		for (mod in PolymodHandler.getAllModIds())
+			directories.push(PolymodHandler.MOD_FOLDER + '/$mod/');
+
+		for (dir in directories)
+		{
+			var path:String = '${dir}lang/$lang.json';
+
+			if (FileUtil.fileExists(path))
+			{
+				Lang = Json.parse(FileUtil.readStringFromPath(path));
+				break;
+			}
+		}
+
+		if (Lang == null)
+		{
+			FlxG.log.warn('Couldn\'t find "$lang" JSON');
+		}
+
+		return Language.fromRaw(Lang);
+	}
+
+	public static function listAllFilesInDirectory(directory:String)
+	{
+		var folders:Array<String> = [];
+		var files:Array<String> = [];
+
+		for (mod in PolymodHandler.getAllModIds())
+		{
+			final path:String = 'mods/$mod/$directory';
+			if (FileUtil.pathExists(path) && !folders.contains(path)) folders.push(path);
+		}
+
+		for (folder in folders)
+		{
+			for (file in FileUtil.readDir(folder)) files.push(Path.join([folder, file]));
+		}
+
+		return files;
+	}
+	
+	public static function getAvailableLanguages():Array<String>
+	{
+		final files = listAllFilesInDirectory('lang');
+
+		var LANGUAGES:Array<String> = [];
+
+		for (file in files)
+		{
+			if (Path.extension(file) != 'json') continue;
+
+			final lang:String = Path.withoutExtension(Path.withoutDirectory(file));
+
+			if (!LANGUAGES.contains(lang)) LANGUAGES.push(lang);
+		}
+
+		LANGUAGES.sort((a, b) -> (b > a ? -1 : 1));
+
+		return LANGUAGES;
+	}
+
+	public static inline function getFont(fnt:String):String
+	{
+		return Lang.current?.fontReplacements?.get(fnt) ?? fnt;
+	}
+
+	public static inline function hasSpecial(flag:String):Bool
+	{
+		final s = Lang.current?.special;
+		return s != null ? s.contains(flag) : false;
+	}
+
+	public static inline function hasFlag(flag:String):Bool
+	{
+		return ((Lang.current ?? Lang.fallback)?.flags.exists(flag) ?? false);
+	}
+
+	public static inline function getFlag(flag:String):Dynamic
+	{
+		return (Lang.current ?? Lang.fallback)?.flags.get(flag);
+	}
+
+	public static function arabicTextFix(textObj:flixel.text.FlxText):Void
+	{
+		if (!hasSpecial('rightToLeft')) return;
+
+		var tf = textObj.textField;
+		if (tf.numLines <= 1) return;
+
+		var lines:Array<String> = [];
+		for (i in 0...tf.numLines)
+		{
+			lines.push(StringTools.rtrim(tf.getLineText(i)));
+		}
+		lines.reverse();
+		textObj.text = lines.join("\n");
+	}
+
+	public static inline function str(line:String, ?fallbackString:String):Null<String>
+	{
+		if (Lang.current != null && Lang.current.lang != null)
+		{
+			var value = Lang.current.lang.get(line);
+			if (value != null) return value;
+		}
+
+		if (Lang.fallback != null && Lang.fallback.lang != null)
+		{
+			var value = Lang.fallback.lang.get(line);
+			if (value != null) return value;
+		}
+
+		return fallbackString != null ? fallbackString : '<MISSING_${line}>';
+	}
+}

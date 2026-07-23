@@ -1,0 +1,47 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import legacy.menus.LegacyPause;
+import Std;
+import funkin.ui.title.TitleState;
+import flixel.FlxG;
+import legacy.objects.LegacyDialogueBox;
+
+class LegacyPauseModule extends Module
+{
+    public function new()
+    {
+        super("LegacyPauseModule");
+    }
+
+    public var useLegacy:Bool = false;
+
+     public override function onSongLoaded(event:SongLoadScriptEvent)
+    {
+        if (PlayState.instance.noteStyle.id == 'impostor' || PlayState.instance.noteStyle.id == 'pixelImpostor')
+            {
+                useLegacy = true;
+            } else {useLegacy = false;}
+            
+    }
+
+    public override function onPause(event:PauseScriptEvent)
+    {
+        if (!useLegacy || PlayState.instance.isChartingMode) return;
+        if (PlayState.instance.subState != null) return;
+        
+        // Ignore base game's pause menu
+        event.cancelEvent();
+
+        // Flags to 'pause' the game
+        PlayState.instance.persistentUpdate = false;
+        PlayState.instance.persistentDraw = true;
+
+        // Create and show our pause menu
+        final pauseSubState = new LegacyPause();
+        // Set the pause menu to the pause camera in order to prevent zIndex bugs
+        pauseSubState.camera = PlayState.instance.camPause;
+        PlayState.instance.shouldSubstatePause = true;
+        PlayState.instance.openSubState(pauseSubState);
+    }
+
+}

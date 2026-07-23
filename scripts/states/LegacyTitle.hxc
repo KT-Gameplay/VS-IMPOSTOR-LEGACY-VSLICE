@@ -1,0 +1,160 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.Paths;
+import funkin.ui.title.TitleState;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.modding.module.Module;
+import flixel.math.FlxMath;
+
+class LegacyTitle extends Module {
+    public function new() {
+        super('LegacyTitle');
+    }
+
+    var state2:Dynamic = null;
+    var addedObjects:Bool = false;
+    var starFG:Null<FlxSprite> = null;
+	var starBG:Null<FlxSprite> = null;
+	var textGroup:Null<FlxGroup> = null;
+	var logo:Null<FlxSprite> = null;
+	var titleText:Null<FlxSprite> = null;
+
+    override function onStateChangeEnd(event) {
+        super.onStateChangeEnd(event);
+        state2 = event.targetState;
+        addedObjects = false;
+
+        if (Std.isOfType(event.targetState, MainMenuState))
+        {
+			
+		}
+    }
+
+    override function onUpdate(event:UpdateScriptEvent) {
+        super.onUpdate(event);
+
+        if (Std.isOfType(state2, TitleState)) {
+            if (state2.textGroup != null)
+            {
+                state2.ngSpr.loadTexture('menu/title/funkin');
+                state2.ngSpr.updateHitbox();
+                state2.ngSpr.y = FlxG.height * 0.52;
+                state2.ngSpr.screenCenter(0x01);
+                for (member in state2.textGroup.members)
+    {
+        if (member == null) continue;
+        
+
+        switch (member.text)
+        {
+            case 'Funkin Crew Inc':
+                state2.deleteCoolText();
+                state2.createCoolText(['MotorFrog']);
+
+            case 'In association':
+                state2.deleteCoolText();
+                state2.createCoolText(['This is a mod to']);
+
+            case 'newgrounds':
+                member.text = 'This game right below lol';
+                member.screenCenter(0x01);
+
+            case 'Friday':
+                state2.deleteCoolText();
+                state2.createCoolText(['Vs']);
+
+            case 'Night', 'Nigth':
+                member.text = 'Impostor';
+                member.screenCenter(0x01);
+
+            case 'Funkin':
+                member.text = 'Legacy';
+                member.screenCenter(0x01);         
+        }
+        
+    }
+}
+            if (state2.skippedIntro && !addedObjects) {
+                addedObjects = true;
+
+                black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+                black.updateHitbox();
+                black.screenCenter();
+                state2.add(black);
+
+                starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
+                state2.add(starBG);
+
+                starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
+                state2.add(starFG);
+
+                logo = new FlxSprite(-150, -10);
+                logo.frames = Paths.getSparrowAtlas('menu/title/logoBumpin');
+                logo.animation.addByPrefix('bump', 'logo bumpin', 24, false);
+                logo.animation.play('bump');
+                logo.screenCenter(0x01);
+                state2.add(logo);
+
+                titleText = new FlxSprite(300, FlxG.height * 0.855);
+                titleText.frames = Paths.getSparrowAtlas('menu/title/startText');
+                titleText.animation.addByPrefix('idle', "EnterIdle", 24, false);
+                titleText.animation.addByPrefix('press', "EnterStart", 24, false);
+                titleText.animation.play('idle');
+                titleText.y -= 55;
+                state2.add(titleText);
+
+                logo.scale.set(0.84, 0.84);
+                logo.updateHitbox();
+                logo.screenCenter(0x01);
+                logo.x += 20;            
+            }
+            if(state2.skippedIntro)
+            {
+                starBG?.x = FlxMath.lerp(starBG.x, starBG.x - 0.5, event.elapsed * 9);
+                starFG?.x = FlxMath.lerp(starFG.x, starFG.x - 1, event.elapsed * 9);
+            }
+            if(state2.transitioning)
+            {
+                if(titleText.animation.name != 'press')
+                {
+                    titleText.animation.play('press');
+                    titleText.offset.set(278, 2);
+                    new FlxTimer().start(0.5, function(_) {
+                            var numStrips:Int = 240; 
+                            var stripHeight:Float = FlxG.height / numStrips;
+                            var baseFadeDuration:Float = 0.7;
+                            var baseStripDelay:Float = 0.002;
+                            var fadeDuration:Float = baseFadeDuration * 0.63;
+                            var stripDelay:Float = baseStripDelay * 0.63;
+                            fadeStrips = [];
+                            for (i in 0...numStrips) {
+                                var strip = new FlxSprite(0, i * stripHeight)
+                                    .makeGraphic(FlxG.width, Math.ceil(stripHeight), FlxColor.BLACK);
+                                strip.scrollFactor.set(0, 0);
+                                strip.alpha = 0;
+                                state2.add(strip);
+                                fadeStrips.push(strip);
+                                FlxTween.tween(strip, { alpha: 1 }, fadeDuration, {ease: FlxEase.sineInOut, startDelay: i * stripDelay});
+                            }
+                        });
+                }
+            }
+        }
+    }
+
+    override function onBeatHit(event:SongTimeScriptEvent) {
+        super.onBeatHit(event);
+        if (Std.isOfType(state2, TitleState)) {
+            if (state2.skippedIntro && addedObjects) {
+                if (logo != null) {
+                    logo.animation.play('bump', true);
+                }
+            }
+        }
+    }
+}
