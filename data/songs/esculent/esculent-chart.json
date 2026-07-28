@@ -391,8 +391,8 @@
    "t": 219205.964585274,
    "e": "SetCameraBop",
    "v": {
-	"rate": 0,
-	"intensity": 0,
+	"rate": 999,
+	"intensity": 1,
 	"offset": 0
 }
   }
