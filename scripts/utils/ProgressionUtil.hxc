@@ -1,0 +1,330 @@
+import funkin.save.Save;
+import funkin.play.scoring.Scoring;
+import funkin.data.story.level.LevelRegistry;
+import funkin.play.scoring.ScoringRank;
+import funkin.util.ReflectUtil;
+using Lambda;
+using StringTools;
+
+typedef Completion =
+{
+	total:Int,
+	completed:Int,
+	percent:Float
+}
+
+class ProgressionUtil
+{ // Psych engine song formatting is shit
+	static final COMPLETION_COSMICUBE:String = 'impostor';
+
+	public static var allSongs(get, never):Array<String>;
+	public static var allItems(get, never):Array<String>;
+
+	public static var allImpostorSongs(get, never):Array<String>;
+	public static var allImpostorItems(get, never):Array<String>;
+
+	public static function weekIsLocked(name:String):Bool
+	{
+		var data:Null<Level> = LevelRegistry.instance.fetchEntry(name);
+		return !data.isUnlocked();
+	}
+
+	public static function weekIsClear(name:String):Bool
+	{
+		return hasBeatenLevel(name);
+	}
+
+  public static function hasBeatenLevel(levelId:String, ?difficultyList:Array<String>):Bool
+  {
+    if (difficultyList == null)
+    {
+      difficultyList = ['easy', 'normal', 'hard'];
+    }
+    for (difficulty in difficultyList)
+    {
+      var score:Null<SaveScoreData> = Save.instance.getLevelScore(levelId, difficulty);
+      if (score != null)
+      {
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          continue;
+        }
+      }
+    }
+    return false;
+  }
+
+	public static function getWeekScore(week:String, ?difficulty:String = 'hard'):Int
+	{
+		return Save.instance.getLevelScore(week, difficulty).score;
+	}
+
+	public static function getWeekAccuracy(week:String, ?difficulty:String = 'hard'):Float
+	{
+		var data:Null<Level> = LevelRegistry.instance.fetchEntry(week);
+
+		if (data != null && !weekIsLocked(week))
+		{
+			var percents:Float = 0;
+
+			for (song in data.getSongs())
+				percents += getSongAccuracy(song, difficulty);
+
+			return (percents / data.getSongs().length);
+		}
+
+		return 0;
+	}
+
+	public static function songIsClear(song:String, ?difficultyList:Array<String>):Bool
+	{
+		return hasBeatenSong(song, difficultyList);
+	}
+
+  public static function hasBeatenSong(songId:String, ?difficultyList:Array<String>, ?variation:String):Bool
+  {
+    if (difficultyList == null)
+    {
+      difficultyList = ['easy', 'normal', 'hard'];
+    }
+    if (variation == null) variation = '';
+    for (difficulty in difficultyList)
+    {
+      if (variation != '') difficulty = '${difficulty}-${variation}';
+      var score:Null<SaveScoreData> = Save.instance.getSongScore(songId, difficulty);
+      if (score != null)
+      {
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          continue;
+        }
+      }
+    }
+    return false;
+  }
+
+	public static function getSongScore(song:String, ?difficulty:String = 'hard'):Int
+	{
+		return Save.instance.getSongScore(song, difficulty).score;
+	}
+
+	public static function getSongAccuracy(song:String, ?difficulty:String = 'hard'):Float
+	{
+		var songScore:Null<SaveScoreData> = Save.instance.getSongScore(song, difficulty);
+		var completion = Math.max(0, Scoring.tallyCompletion(songScore?.tallies) * 100);
+
+		return completion;
+	}
+
+	public static function getSongMisses(song:String, ?difficulty:String = 'hard'):Int
+	{
+		return Save.instance.getSongScore(song, difficulty).tallies.missed;
+	}
+
+	public static function getSongRank(song:String, ?difficulty:String = 'hard'):String
+	{
+		return Save.instance.getSongRank(song, difficulty);
+	}
+
+	public static function songMeetsRank(song:String, rank:String, ?difficulty:String = 'hard'):Bool
+	{
+		if (rank == null) return songIsClear(song, difficulty);
+
+		var currentRank:String = getSongRank(song, difficulty);
+		return rankValue(currentRank) >= rankValueConvert(rank);
+	}
+
+	static function rankValue(rank):Int
+	{
+		return ScoringRank.getValue(rank);
+	}
+
+	public static function rankValueConvert(rank:String):Int
+	{
+		return switch (rank)
+		{
+			case 'P': 5;
+			case 'S': 4;
+			case 'A': 3;
+			case 'B': 2;
+			case 'C': 1;
+			case 'D': 0;
+			default: -1;
+		};
+	}
+
+	static function search(map:Map<String, Dynamic>, name:String):String
+	{
+		for (id in map.keys())
+		{
+			if (id == name) return id;
+
+			if (id.substring(0, id.lastIndexOf('-')) == name) return id;
+		}
+
+		return name;
+	}
+
+	public static function calculateCompletion():Completion
+	{
+		final TOTAL_SONGS = allSongs.length;
+		final cubeItems = getItemList(COMPLETION_COSMICUBE);
+		final TOTAL_COSMICUBE_ITEMS = cubeItems.length;
+		final allAwards = GameFlags.getAwards();
+		final TOTAL_AWARDS = allAwards.length;
+		final totalItems = (TOTAL_SONGS + TOTAL_COSMICUBE_ITEMS + TOTAL_AWARDS);
+
+		var completedSongs:Int = allSongs.count((song) -> songIsClear(song));
+		var unlockedItems = cubeItems.count((item) -> Save.instance.modOptions["cosmicubeUnlocks"].contains(item));
+		var unlockedAwards = allAwards.count((award) -> GameFlags.hasAchievement(award.id));
+
+		var completed = completedSongs + unlockedItems + unlockedAwards;
+		var percent = (totalItems <= 0 ? 100 : (completed / totalItems * 100));
+
+		return {completed: completed, total: totalItems, percent: percent};
+	}
+
+	public static function calculateCubeCompletion(cubeId:String):Completion
+	{
+		final cubeItems = getItemList(cubeId);
+		final totalItems = cubeItems.length;
+		var unlockedItems = cubeItems.count((item) -> Save.instance.modOptions["cosmicubeUnlocks"].contains(item));
+		var percent = (totalItems <= 0 ? 100 : (unlockedItems / totalItems * 100));
+		return {completed: unlockedItems, total: totalItems, percent: percent};
+	}
+
+	static function get_allSongs():Array<String>
+	{
+		var list:Array<String> = [];
+
+		return getSongList(null, list);
+	}
+
+	static function get_allItems():Array<String>
+	{
+		var list:Array<String> = [];
+
+		return getItemList(null, list);
+	}
+
+	static function get_allImpostorSongs():Array<String>
+	{
+		var list:Array<String> = [];
+
+		return getSongList('', list);
+	}
+
+	static function get_allImpostorItems():Array<String>
+	{
+		var list:Array<String> = [];
+
+		return getItemList(list);
+	}
+
+	public static function getSongList(?mod:String, ?array:Array<String>, ?filter:Level -> Bool):Array<String>
+	{
+		filter ??= countsTowardCompletion;
+
+		var array:Array<String> = (array ?? []);
+		array.resize(0);
+
+		for (level in LevelRegistry.instance.listSortedLevelIds())
+		{
+			var levelData:Null<Level> = LevelRegistry.instance.fetchEntry(level);
+
+			if (levelData == null) continue; // im scared
+
+			if (!filter(levelData)) continue;
+
+			for (song in levelData.getSongs())
+				array.push(song);
+		}
+
+		return array;
+	}
+
+	public static function getItemList(cubeId:String = 'impostor', ?array:Array<String>, ?filter:ShopItemData -> Bool):Array<String>
+	{
+		CosmicubeData.reload(false);
+
+		filter ??= countsTowardCompletion;
+
+		var array:Array<String> = (array ?? []);
+		array.resize(0);
+
+		for (id => cube in CosmicubeData.cosmicubeItems)
+		{
+			if (cubeId.length > 0 && id != cubeId) continue;
+
+			for (item in cube)
+			{
+				if (!filter(item)) continue;
+
+				array.push(item.fileName);
+			}
+		}
+
+		return array;
+	}
+
+	public static function getShinies():Int
+	{
+		CosmicubeData.reload(false);
+
+		var songs = allImpostorSongs;
+		var cubeItems = CosmicubeData.cosmicubeItems.get('impostor').filter(i -> !i.completionExcluded);
+		var skins = cubeItems.filter(i -> i.type == 'playerSkin' || i.type == 'speakerSkin');
+		var pets = cubeItems.filter(i -> i.type == 'pet');
+		var awards = GameFlags.getAwards();
+
+		var count:Int = 0;
+		if (songs.length > 0 && songs.filter(s -> !songIsClear(s)).length == 0) count++;
+		if (skins.length > 0 && skins.filter(i -> !Save.instance.modOptions["cosmicubeUnlocks"].contains(i.fileName)).length == 0) count++;
+		if (pets.length > 0 && pets.filter(i -> !Save.instance.modOptions["cosmicubeUnlocks"].contains(i.fileName)).length == 0) count++;
+		if (awards.length > 0 && awards.filter(a -> !GameFlags.hasAchievement(a.id)).length == 0) count++;
+		if (Save.instance.modOptions["finaleState"] == 'COMPLETE') count++;
+
+		return count;
+	}
+
+	public static inline function isCompletionExcluded(item:Dynamic):Bool
+	{
+		return item != null && ReflectUtil.field(item, "completionExcluded") == true;
+	}
+
+	public static inline function countsTowardCompletion(item:Dynamic):Bool
+	{
+		return !isCompletionExcluded(item);
+	}
+
+	public static function checkHundredAchievement():Bool
+	{
+		return (
+			ProgressionUtil.allImpostorSongs.count(s -> !ProgressionUtil.songIsClear(s)) == 0 &&
+			ProgressionUtil.allImpostorItems.count(i -> !Save.instance.modOptions["cosmicubeUnlocks"].contains(i)) == 0 &&
+			GameFlags.getAwards().filter(a -> (a.id != 'the_hundred' && !GameFlags.hasAchievement(a.id))).length == 0
+		);
+	}
+
+	public static function checkPAchievement():Bool
+	{
+		return (ProgressionUtil.allImpostorSongs.count(s -> ProgressionUtil.songMeetsRank(s, 'P')) >= 1);
+	}
+
+	public static function checkSRanksAchievement():Bool
+	{
+		return (ProgressionUtil.allImpostorSongs.count(s -> ProgressionUtil.songMeetsRank(s, 'S')) >= 5);
+	}
+}
