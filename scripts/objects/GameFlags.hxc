@@ -1,0 +1,255 @@
+import funkin.save.Save;
+import funkin.util.ReflectUtil;
+import funkin.util.FileUtil;
+import haxe.Json;
+import EReg;
+import funkin.modding.PolymodHandler;
+using StringTools;
+
+typedef AwardEntry =
+{
+	var id:String;
+	var icon:String;
+	var title:String;
+	var hint:String;
+	var desc:String;
+	var hidden:Bool;
+	var songs:Array<String>;
+	var weeks:Array<String>;
+}
+
+class GameFlags
+{
+	static var cachedAwards:Array<AwardEntry> = null;
+
+	public static function hasAchievement(id:String)
+	{
+		return Save.instance.modOptions["achievements"].contains(id);
+	}
+
+	public static function giveAchievement(id:String):Bool
+	{
+		if (hasAchievement(id)) return false;
+
+		Save.instance.modOptions["achievements"].push(id);
+		Save.instance.flush();
+		trace('Unlocked achievement: $id');
+		return true;
+	}
+
+	public static function getAchievementIcon(id:String):String
+	{
+		for (award in getAwards())
+		{
+			if (award.id == id) return award.icon;
+		}
+
+		return id;
+	}
+
+	public static function getAwards(forceReload:Bool = false):Array<AwardEntry>
+	{
+		if (cachedAwards != null && !forceReload) return cachedAwards;
+
+		cachedAwards = [];
+
+		var directories:Array<String> = [];
+
+		for (mod in PolymodHandler.getAllModIds())
+			directories.push(PolymodHandler.MOD_FOLDER + '/$mod/');
+
+		var path = 'assets/data/awards.json';
+		for (dir in directories)
+		{
+			var path2:String = '${dir}data/awards.json';
+
+			if (FileUtil.fileExists(path2))
+			{
+				path = path2;
+				break;
+			}
+		}
+
+		final jsonData:Dynamic = Json.parse(FileUtil.readStringFromPath(path));
+		if (jsonData == null) return cachedAwards;
+
+		final entries:Array<Dynamic> = ReflectUtil.field(jsonData, 'awards');
+		if (entries == null) return cachedAwards;
+
+		for (i in 0...entries.length)
+		{
+			final raw:Dynamic = entries[i];
+			if (raw == null) continue;
+
+			var id:String = ReflectUtil.field(raw, 'id');
+			if (id == null || id.trim().length == 0) id = ReflectUtil.field(raw, 'img');
+			if (id == null || id.trim().length == 0) id = sanitize(Std.string(ReflectUtil.field(raw, 'name') ?? 'award_$i').toLowerCase());
+
+			var icon:String = ReflectUtil.field(raw, 'img');
+			if (icon == null || icon.trim().length == 0) icon = id;
+
+			var title:String = ReflectUtil.field(raw, 'name');
+			if (title == null) title = id;
+
+			var hint:String = ReflectUtil.field(raw, 'hint');
+			if (hint == null) hint = '';
+
+			var desc:String = ReflectUtil.field(raw, 'desc');
+			if (desc == null) desc = '';
+
+			final songs = parseCSV(ReflectUtil.field(raw, 'songs') ?? ReflectUtil.field(raw, 'song'), true);
+			final weeks = parseCSV(ReflectUtil.field(raw, 'weeks') ?? ReflectUtil.field(raw, 'week'), false);
+
+			cachedAwards.push(
+				{
+					id: id,
+					icon: icon,
+					title: title,
+					hint: hint,
+					desc: desc,
+					hidden: (ReflectUtil.field(raw, 'hidden') == true),
+					songs: songs,
+					weeks: weeks
+				});
+		}
+
+		return cachedAwards;
+	}
+
+	public static inline function sanitize(path:String):String
+	{
+		var regex = new EReg("[^- a-zA-Z0-9./]+", "g");
+		return regex.replace(path, "").replace(" ", "-").trim().toLowerCase();
+	}
+
+	public static function unlockAwardsFromJson(?currentSong:String = null, ?extraCompletedWeeks:Array<String> = null):Array<String>
+	{
+		final unlocked:Array<String> = [];
+		final songId = currentSong != null ? sanitize(currentSong.toLowerCase()) : '';
+
+		for (award in getAwards())
+		{
+			if (hasAchievement(award.id)) continue;
+
+			final hasSongRule = award.songs.length > 0;
+			final hasWeekRule = award.weeks.length > 0;
+			if (!hasSongRule && !hasWeekRule) continue;
+
+			var songsMet:Bool = true;
+			if (hasSongRule)
+			{
+				for (song in award.songs)
+				{
+					if (songId == song) continue;
+					if (hasBeatenSong(song))
+					{
+						songsMet = false;
+						break;
+					}
+				}
+			}
+
+			var weeksMet:Bool = true;
+			if (hasWeekRule)
+			{
+				for (week in award.weeks)
+				{
+					if (hasBeatenLevel(week)) continue;
+
+					if (extraCompletedWeeks != null && extraCompletedWeeks.contains(week)) continue;
+
+					weeksMet = false;
+					break;
+				}
+			}
+
+			if (songsMet && weeksMet && giveAchievement(award.id)) unlocked.push(award.id);
+		}
+
+		return unlocked;
+	}
+
+  public static function hasBeatenSong(songId:String, ?difficultyList:Array<String>, ?variation:String):Bool
+  {
+    if (difficultyList == null)
+    {
+      difficultyList = ['easy', 'normal', 'hard'];
+    }
+    if (variation == null) variation = '';
+    for (difficulty in difficultyList)
+    {
+      if (variation != '') difficulty = '${difficulty}-${variation}';
+      var score:Null<SaveScoreData> = Save.instance.getSongScore(songId, difficulty);
+      if (score != null)
+      {
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          continue;
+        }
+      }
+    }
+    return false;
+  }
+
+  public function hasBeatenLevel(levelId:String, ?difficultyList:Array<String>):Bool
+  {
+    if (difficultyList == null)
+    {
+      difficultyList = ['easy', 'normal', 'hard'];
+    }
+    for (difficulty in difficultyList)
+    {
+      var score:Null<SaveScoreData> = Save.instance.getLevelScore(levelId, difficulty);
+      if (score != null)
+      {
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          continue;
+        }
+      }
+    }
+    return false;
+  }
+
+	static function parseCSV(raw:Dynamic, sanitizeSongName:Bool):Array<String>
+	{
+		final values:Array<String> = [];
+		if (raw == null) return values;
+
+		for (entry in Std.string(raw).split(','))
+		{
+			var trimmed = entry.trim();
+			if (trimmed.length == 0) continue;
+			if (sanitizeSongName) trimmed = sanitize(trimmed.toLowerCase());
+			if (!values.contains(trimmed)) values.push(trimmed);
+		}
+
+		return values;
+	}
+
+	public static function hasFlag(id:String)
+	{
+		return Save.instance.modOptions["tidbits"].contains(id);
+	}
+
+	public static function giveFlag(id:String)
+	{
+		if (hasFlag(id)) return;
+
+		Save.instance.modOptions["tidbits"].push(id);
+		Save.instance.flush();
+		trace('Added flag: $id');
+	}
+}
