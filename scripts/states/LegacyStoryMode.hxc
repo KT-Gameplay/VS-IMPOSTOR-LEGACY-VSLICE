@@ -1,0 +1,754 @@
+import flixel.FlxG;
+import legacy.objects.AmongUIState;
+import flixel.FlxCamera;
+import flixel.input.mouse.FlxMouse;
+import Reflect;
+import StringTools;
+import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxText.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
+import funkin.Assets;
+import funkin.Paths;
+import funkin.audio.FunkinSound;
+import funkin.data.story.level.LevelRegistry;
+import funkin.data.song.SongRegistry;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.module.ModuleHandler;
+import funkin.play.PlayStatePlaylist;
+import funkin.save.Save;
+
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.transition.LoadingState;
+import funkin.util.Constants;
+import funkin.util.TouchUtil;
+
+class LegacyStoryModeState extends AmongUIState
+{
+  static var currentNodeId:String = 'root';
+  var data:Dynamic;
+  var mapCamera:FlxCamera;
+  var uiCamera:FlxCamera;
+  var savedCameraX:Float = 0;
+  var savedCameraY:Float = 0;
+  var savedCameraWidth:Float = 0;
+  var savedCameraHeight:Float = 0;
+  var savedCameraZoom:Float = 1;
+  var savedScrollX:Float = 0;
+  var savedScrollY:Float = 0;
+  var savedCameraBgColor:Int = 0;
+  var MAP_SHIFT_LEFT:Float = 790;
+  var MAP_SHIFT_UP:Float = 370;
+  var touchMode:Bool = false;
+  var nodeMap:Dynamic = {};
+  var nodeList:Array<Dynamic> = [];
+  var connectors:Array<FlxSprite> = [];
+  var nodeSprites:Array<FlxSprite> = [];
+  var hoverDots:Array<FlxSpriteGroup> = [];
+  var cruiser:FunkinSprite;
+  var selected:Dynamic;
+  var frame:FlxSprite;
+  var infoGroup:FlxSpriteGroup;
+  var weekScore:FlxText;
+  var weekNumber:FlxText;
+  var weekTitle:FlxText;
+  var weekPlaylist:FlxText;
+  var weekLeftIcon:FunkinSprite;
+  var weekRightIcon:FunkinSprite;
+  var lerpScore:Float = 0;
+  var targetScore:Float = 0;
+  var currentWeekIcon:String = '';
+  var leaving:Bool = false;
+  var menuReady:Bool = false;
+  var canZoom:Bool = true;
+  var dragging:Bool = false;
+  var dragX:Float = 0;
+  var dragY:Float = 0;
+  var dragStarted:Bool = false;
+  var hoverTime:Float = 0;
+
+  function new()
+  {
+    super();
+  }
+
+  override function create():Void
+  {
+    menuReady = false;
+    super.create();
+    if (!baseReady)
+    {
+      leaving = true;
+      return;
+    }
+    FlxG.camera.bgColor = FlxColor.BLACK;
+    touchMode = !Std.isOfType(TouchUtil.touch, FlxMouse);
+    FlxG.mouse.visible = !touchMode;
+    leaving = false;
+    dragging = false;
+    data = ModuleHandler.getModule('LegacyMenu');
+    if (data == null)
+    {
+      leaving = true;
+      FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+      return;
+    }
+    data.reloadWeeks();
+    nodeMap = {};
+    nodeList = [];
+    connectors = [];
+    nodeSprites = [];
+    hoverDots = [];
+
+    mapCamera = FlxG.camera;
+    savedCameraX = mapCamera.x;
+    savedCameraY = mapCamera.y;
+    savedCameraWidth = mapCamera.width;
+    savedCameraHeight = mapCamera.height;
+    savedCameraZoom = mapCamera.zoom;
+    savedScrollX = mapCamera.scroll.x;
+    savedScrollY = mapCamera.scroll.y;
+    savedCameraBgColor = mapCamera.bgColor;
+    mapCamera.bgColor = FlxColor.BLACK;
+    mapCamera.x = 70;
+    mapCamera.y = 250;
+    mapCamera.width = FlxG.width - 140;
+    mapCamera.height = FlxG.height - 310;
+    mapCamera.zoom = 0.42;
+    uiCamera = camUpper;
+    buildGraph();
+
+    frame = new FlxSprite();
+    if (Assets.exists(Paths.image('menu/story/border'))) frame.loadGraphic(Paths.image('menu/story/border'));
+    else frame.visible = false;
+    frame.scrollFactor.set();
+    frame.camera = uiCamera;
+    add(frame);
+
+    if (backButton != null)
+    {
+      backButton.setPosition(85, 65);
+      add(backButton).revive();
+    }
+
+    infoGroup = new FlxSpriteGroup();
+    infoGroup.zIndex = 1;
+    infoGroup.scrollFactor.set();
+    infoGroup.camera = uiCamera;
+    add(infoGroup);
+
+    weekScore = new FlxText(80, 200, 640, 'HIGH SCORE: 0');
+    weekScore.setFormat(Paths.font('vcr.ttf'), 24, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    weekScore.borderSize = 2;
+
+    weekNumber = new FlxText(0, 40, FlxG.width, 'STORY MODE');
+    weekNumber.setFormat(Paths.font('AmaticSC-Bold.ttf'), 111, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    weekNumber.borderSize = 2.6;
+
+    weekTitle = new FlxText(0, 155, FlxG.width, '');
+    weekTitle.setFormat(Paths.font('AmaticSC-Bold.ttf'), 64, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    weekTitle.borderSize = 2.2;
+
+    weekPlaylist = new FlxText(FlxG.width * 0.75 - 64, 0, 300, '');
+    weekPlaylist.setFormat(Paths.font('AmaticSC-Bold.ttf'), 64, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    weekPlaylist.borderSize = 1.8;
+
+    weekLeftIcon = null;
+    weekRightIcon = null;
+
+    infoGroup.add(weekScore);
+    infoGroup.add(weekNumber);
+    infoGroup.add(weekTitle);
+    infoGroup.add(weekPlaylist);
+
+    cruiser = new FunkinSprite();
+    if (Assets.exists(Paths.image('menu/story/ship')) && Assets.exists(Paths.file('images/menu/story/ship.xml')))
+    {
+      cruiser.frames = Paths.getSparrowAtlas('menu/story/ship');
+      cruiser.animation.addByPrefix('west', 'left', 24, true);
+      cruiser.animation.addByPrefix('east', 'right', 24, true);
+      cruiser.animation.addByPrefix('south', 'down', 24, true);
+      cruiser.animation.addByPrefix('north', 'up', 24, true);
+      cruiser.animation.play('east');
+      cruiser.updateHitbox();
+    }
+    else cruiser.visible = false;
+    cruiser.camera = mapCamera;
+    add(cruiser);
+    var initial:Dynamic = Reflect.field(nodeMap, currentNodeId);
+    if (initial == null) initial = Reflect.field(nodeMap, 'root');
+    if (initial != null) goToNode(initial, true);
+    mapCamera.scroll.set(
+      cruiser.x + cruiser.width * 0.5 - mapCamera.width * 0.5 / mapCamera.zoom + MAP_SHIFT_LEFT / mapCamera.zoom,
+      cruiser.y + cruiser.height * 0.5 - mapCamera.height * 0.5 / mapCamera.zoom + MAP_SHIFT_UP / mapCamera.zoom
+    );
+    mapCamera.fade(FlxColor.BLACK, 0.4, true);
+    uiCamera.fade(FlxColor.BLACK, 0.4, true);
+    try FunkinSound.playMusic('freakyMenu', {overrideExisting: true, restartTrack: false, persist: true}) catch (e:Dynamic) trace(e);
+    menuReady = true;
+  }
+
+  function isOppositeDirection(a:String, b:String):Bool
+  {
+    return (a == 'east' && b == 'west') || (a == 'west' && b == 'east') || (a == 'north' && b == 'south') || (a == 'south' && b == 'north');
+  }
+
+  function buildGraph():Void
+  {
+    var root:Dynamic = {id: 'root', x: 0.0, y: 0.0, parent: null, direction: 'none', children: {}, unlocked: true, meta: null, sprite: null};
+    Reflect.setField(nodeMap, 'root', root);
+    var pending:Array<Dynamic> = [];
+    for (entry in data.weeks)
+    {
+      var meta:Dynamic = entry.meta;
+      if (Reflect.field(meta, 'hideStoryMode') == true) continue;
+      var nodeData:Dynamic = Reflect.field(meta, 'node');
+      if (nodeData == null) continue;
+      var id:String = Std.string(entry.id);
+      var parentId:String = Std.string(Reflect.field(nodeData, 'parent'));
+      if (parentId == null || parentId == 'null' || parentId.length == 0) parentId = 'root';
+      var direction:String = Std.string(Reflect.field(nodeData, 'direction'));
+      if (direction == null || direction == 'null' || direction.length == 0) direction = 'east';
+      var node:Dynamic = {
+        id: id,
+        x: 0.0,
+        y: 0.0,
+        parentId: parentId,
+        direction: direction.toLowerCase(),
+        parent: null,
+        children: {},
+        unlocked: data.weekUnlocked(id),
+        meta: meta,
+        sprite: null,
+        dots: null
+      };
+      Reflect.setField(nodeMap, id, node);
+      pending.push(node);
+    }
+    var loops:Int = 0;
+    while (pending.length > 0 && loops < data.weeks.length + 2)
+    {
+      loops++;
+      var next:Array<Dynamic> = [];
+      var attached:Int = 0;
+      for (node in pending)
+      {
+        var parent:Dynamic = Reflect.field(nodeMap, node.parentId);
+        if (parent == null || (parent.id != 'root' && parent.parent == null))
+        {
+          next.push(node);
+          continue;
+        }
+        if (node.parentId == node.id)
+        {
+          next.push(node);
+          continue;
+        }
+        var direction:String = node.direction;
+        var dx:Float = 0;
+        var dy:Float = 0;
+        switch (direction)
+        {
+          case 'west': dx = -400;
+          case 'north': dy = -400;
+          case 'south': dy = 400;
+          default: dx = 400;
+        }
+        if (parent.id != 'root' && isOppositeDirection(direction, parent.direction))
+        {
+          next.push(node);
+          continue;
+        }
+        var occupied:Dynamic = Reflect.field(parent.children, direction);
+        if (occupied != null)
+        {
+          occupied.parent = null;
+          nodeList.remove(occupied);
+        }
+        node.x = parent.x + dx;
+        node.y = parent.y + dy;
+        node.parent = parent;
+        Reflect.setField(parent.children, direction, node);
+        nodeList.push(node);
+        attached++;
+      }
+      if (attached == 0) break;
+      pending = next;
+    }
+    var attachedNodes:Array<Dynamic> = [];
+    for (node in nodeList)
+    {
+      var current:Dynamic = node;
+      var attached:Bool = false;
+      while (current != null)
+      {
+        if (current.id == 'root') { attached = true; break; }
+        current = current.parent;
+      }
+      if (attached) attachedNodes.push(node);
+    }
+    nodeList = attachedNodes;
+
+    for (node in nodeList)
+    {
+      var parent:Dynamic = node.parent;
+      if (parent == null) continue;
+      var angle:Float = node.direction == 'west' ? 180 : (node.direction == 'north' ? 90 : (node.direction == 'south' ? -90 : 0));
+      var radians:Float = angle * Math.PI / 180;
+      var template:FlxSprite = new FlxSprite();
+      if (Assets.exists(Paths.image('menu/story/path'))) template.loadGraphic(Paths.image('menu/story/path'));
+      else template.makeGraphic(42, 6, 0xFF777777);
+      var endDistance:Float = 110 + template.width * 0.5;
+      for (i in 0...3)
+      {
+        var distance:Float = endDistance + (400 - endDistance * 2) * (i / 2);
+        var line:FlxSprite = new FlxSprite();
+        if (Assets.exists(Paths.image('menu/story/path'))) line.loadGraphic(Paths.image('menu/story/path'));
+        else line.makeGraphic(42, 6, 0xFF777777);
+        line.x = parent.x + Math.cos(radians) * distance - line.width * 0.5;
+        line.y = parent.y - Math.sin(radians) * distance - line.height * 0.5;
+        line.angle = angle;
+        line.camera = mapCamera;
+        line.color = node.unlocked ? FlxColor.WHITE : 0xFF777777;
+        add(line);
+        connectors.push(line);
+      }
+      template.destroy();
+    }
+    for (node in nodeList)
+    {
+      var center:FlxSprite = new FlxSprite();
+      if (Assets.exists(Paths.image('menu/story/node'))) center.loadGraphic(Paths.image('menu/story/node'));
+      else center.makeGraphic(110, 110, 0xFF777777);
+      center.x = node.x - center.width * 0.5;
+      center.y = node.y - center.height * 0.5;
+      center.color = node.unlocked ? FlxColor.WHITE : FlxColor.BLACK;
+      center.ID = nodeList.indexOf(node);
+      center.camera = mapCamera;
+      add(center);
+      node.sprite = center;
+      nodeSprites.push(center);
+      var dots:FlxSpriteGroup = new FlxSpriteGroup();
+      dots.camera = mapCamera;
+      for (i in 0...8)
+      {
+        var dot:FlxSprite = new FlxSprite();
+        if (Assets.exists(Paths.image('menu/story/hoverDot'))) dot.loadGraphic(Paths.image('menu/story/hoverDot'));
+        else dot.makeGraphic(12, 12, 0xFFFE3443);
+        dot.camera = mapCamera;
+        dots.add(dot);
+      }
+      add(dots);
+      node.dots = dots;
+      hoverDots.push(dots);
+    }
+  }
+
+  function goToNode(node:Dynamic, instant:Bool = false):Void
+  {
+    if (node == null) return;
+    var previous:Dynamic = selected;
+    if (previous != null && previous.sprite != null)
+    {
+      previous.sprite.color = previous.unlocked ? FlxColor.WHITE : FlxColor.BLACK;
+      if (previous.dots != null) previous.dots.visible = false;
+    }
+    if (previous != null && node.id != 'root')
+    {
+      if (node.x < previous.x) face('west');
+      else if (node.x > previous.x) face('east');
+      else if (node.y < previous.y) face('north');
+      else if (node.y > previous.y) face('south');
+    }
+    else if (node.id != 'root') face(node.direction);
+    selected = node;
+    currentNodeId = Std.string(node.id);
+    if (node.id != 'root' && node.sprite != null)
+    {
+      node.sprite.color = node.unlocked ? 0xFFFFFFAA : 0xFFFF8888;
+      node.dots.visible = true;
+    }
+    if (node.id == 'root')
+    {
+      cruiser.x = node.x - cruiser.width * 0.5;
+      cruiser.y = node.y - cruiser.height * 0.5;
+    }
+    else if (instant)
+    {
+      cruiser.x = node.x - cruiser.width * 0.5;
+      cruiser.y = node.y - cruiser.height * 0.5;
+    }
+    updateInfo();
+    if (!instant) FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
+  }
+
+  function face(direction:String):Void
+  {
+    if (direction == 'west') cruiser.animation.play('west', true);
+    else if (direction == 'north') cruiser.animation.play('north', true);
+    else if (direction == 'south') cruiser.animation.play('south', true);
+    else cruiser.animation.play('east', true);
+  }
+
+  function move(direction:String):Void
+  {
+    if (selected == null) return;
+    var next:Dynamic = Reflect.field(selected.children, direction);
+    if (next == null && selected.parent != null)
+      if (selected.direction == 'east' && direction == 'west' || selected.direction == 'west' && direction == 'east' || selected.direction == 'north' && direction == 'south' || selected.direction == 'south' && direction == 'north') next = selected.parent;
+    if (next == null) return;
+    face(direction);
+    if (next.unlocked) goToNode(next);
+    else
+    {
+      FlxG.sound.play(Paths.sound('locked'), 0.7);
+      FlxTween.cancelTweensOf(next.sprite);
+      FlxTween.color(next.sprite, 0.18, 0xFFFF4444, next.unlocked ? FlxColor.WHITE : FlxColor.BLACK);
+    }
+  }
+
+  function makeNormalIcon(raw:String, mirror:Bool = false):FunkinSprite
+  {
+    var name:String = raw == null || raw == '' ? 'face' : raw;
+    while (StringTools.startsWith(name, '../')) name = name.substr(3);
+    if (StringTools.startsWith(name, 'icons/')) name = name.substr(6);
+
+    var iconPath:String = Paths.image('icons/' + name);
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('icons/icon-' + name);
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('icons/face');
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('icons/icon-face');
+
+    var icon:FunkinSprite = new FunkinSprite();
+    if (Assets.exists(iconPath)) icon.loadGraphic(iconPath, true, 150, 150);
+    else icon.makeGraphic(150, 150, 0xFFFFFFFF);
+
+    var count:Int = icon.numFrames;
+    if (count < 1) count = 1;
+    var order:Array<Int> = [];
+    for (i in 0...count) order.push(i);
+
+    icon.animation.add('health', order, 0, false, mirror);
+    icon.animation.play('health');
+    icon.scrollFactor.set();
+    return icon;
+  }
+
+  function setWeekIcons(iconName:String):Void
+  {
+    if (currentWeekIcon == iconName && weekLeftIcon != null && weekRightIcon != null) return;
+
+    if (weekLeftIcon != null) infoGroup.remove(weekLeftIcon, true);
+    if (weekRightIcon != null) infoGroup.remove(weekRightIcon, true);
+
+    weekLeftIcon = makeNormalIcon(iconName);
+    weekRightIcon = makeNormalIcon(iconName);
+    weekLeftIcon.flipX = true;
+    weekRightIcon.flipX = true;
+    weekLeftIcon.y = 55;
+    weekRightIcon.y = 55;
+    weekLeftIcon.visible = true;
+    weekRightIcon.visible = true;
+    infoGroup.add(weekLeftIcon);
+    infoGroup.add(weekRightIcon);
+    currentWeekIcon = iconName;
+  }
+
+  function weekSongs(meta:Dynamic):Array<String>
+  {
+    var result:Array<String> = [];
+    var raw:Array<Dynamic> = cast Reflect.field(meta, 'songs');
+    if (raw == null) return result;
+    for (song in raw)
+    {
+      var name:String = Std.string(Std.isOfType(song, Array) ? song[0] : Reflect.field(song, 'song'));
+      var id:String = StringTools.trim(name).toLowerCase();
+      id = StringTools.replace(id, ' ', '-');
+      id = StringTools.replace(id, '_', '-');
+      id = StringTools.replace(id, "'", '');
+      id = StringTools.replace(id, '.', '');
+      id = StringTools.replace(id, '!', '');
+      id = StringTools.replace(id, '?', '');
+      if (id.length > 0 && id != 'null') result.push(id);
+    }
+    return result;
+  }
+
+  function updateInfo():Void
+  {
+    if (selected == null || selected.id == 'root' || selected.meta == null)
+    {
+      weekNumber.text = 'STORY MODE';
+      weekTitle.text = '';
+      weekPlaylist.text = '';
+      weekScore.visible = false;
+      if (weekLeftIcon != null) weekLeftIcon.visible = false;
+      if (weekRightIcon != null) weekRightIcon.visible = false;
+      targetScore = 0;
+      return;
+    }
+    var meta:Dynamic = selected.meta;
+    weekNumber.visible = true;
+    weekTitle.visible = true;
+    weekPlaylist.visible = true;
+    weekScore.visible = true;
+    weekNumber.text = Std.string(Reflect.field(meta, 'weekName') == null ? selected.id : Reflect.field(meta, 'weekName'));
+    weekTitle.text = Std.string(Reflect.field(meta, 'storyName') == null ? '' : Reflect.field(meta, 'storyName'));
+    var songs:Array<String> = weekSongs(meta);
+    weekPlaylist.size = Std.int(Math.min(128 / Math.max(1, songs.length), 50));
+    weekPlaylist.text = songs.join('\n');
+    weekPlaylist.y = Math.round(147 - weekPlaylist.height * 0.5);
+    var iconName:String = 'face';
+    var rawSongs:Array<Dynamic> = cast Reflect.field(meta, 'songs');
+    if (rawSongs != null && rawSongs.length > 0 && Std.isOfType(rawSongs[0], Array) && rawSongs[0].length > 1 && rawSongs[0][1] != null) iconName = Std.string(rawSongs[0][1]);
+    setWeekIcons(iconName);
+    weekLeftIcon.updateHitbox();
+    weekRightIcon.updateHitbox();
+    var numberWidth:Float = weekNumber.textField == null ? weekNumber.width : weekNumber.textField.textWidth;
+    var centeredIconX:Float = (FlxG.width - weekLeftIcon.width) * 0.5;
+    weekLeftIcon.x = centeredIconX - numberWidth * 0.5 - 80;
+    weekRightIcon.x = centeredIconX + numberWidth * 0.5 + 80;
+    weekLeftIcon.y = 55;
+    weekRightIcon.y = 55;
+    weekLeftIcon.visible = true;
+    weekRightIcon.visible = true;
+    var score:Int = 0;
+    try
+    {
+      var scoreData:Dynamic = Save.instance.getLevelScore(selected.id, Constants.DEFAULT_DIFFICULTY);
+      if (scoreData != null) score = Std.int(scoreData.score);
+      else for (songId in songs)
+      {
+        var songData:Dynamic = Save.instance.getSongScore(songId, Constants.DEFAULT_DIFFICULTY, Constants.DEFAULT_VARIATION);
+        if (songData != null) score += Std.int(songData.score);
+      }
+    }
+    catch (e:Dynamic) trace(e);
+    targetScore = score;
+  }
+
+  function launchWeek():Void
+  {
+    if (leaving || selected == null || selected.meta == null) return;
+    if (!selected.unlocked)
+    {
+      FlxG.sound.play(Paths.sound('locked'), 0.7);
+      mapCamera.shake(0.005, 0.2);
+      return;
+    }
+    var songIds:Array<String> = weekSongs(selected.meta);
+    if (songIds.length == 0)
+    {
+      FlxG.sound.play(Paths.sound('cancelMenu'));
+      return;
+    }
+    var first:Dynamic = SongRegistry.instance.fetchEntry(songIds[0], {variation: Constants.DEFAULT_VARIATION});
+    if (first == null)
+    {
+      trace('[LegacyStoryMode] chart nao encontrada: ' + songIds[0]);
+      FlxG.sound.play(Paths.sound('cancelMenu'));
+      return;
+    }
+    var difficulty:String = Constants.DEFAULT_DIFFICULTY;
+    var variation:String = first.getFirstValidVariation(difficulty);
+    if (variation == null) variation = Constants.DEFAULT_VARIATION;
+    var instrumental:String = first.getBaseInstrumentalId(difficulty, variation);
+    if (instrumental == null) instrumental = '';
+    PlayStatePlaylist.isStoryMode = true;
+    PlayStatePlaylist.playlistSongIds = songIds.slice(1);
+    PlayStatePlaylist.campaignScore = 0;
+    PlayStatePlaylist.campaignTitle = Std.string(Reflect.field(selected.meta, 'weekName') == null ? selected.id : Reflect.field(selected.meta, 'weekName'));
+    PlayStatePlaylist.campaignDifficulty = difficulty;
+    var level:Dynamic = null;
+    try level = LevelRegistry.instance.fetchEntry(selected.id) catch (e:Dynamic) level = null;
+    PlayStatePlaylist.campaignId = level == null ? null : selected.id;
+    try Paths.setCurrentLevel(selected.id) catch (e:Dynamic) trace(e);
+    var rewardCurrencyValue:Dynamic = Reflect.field(selected.meta, 'currency');
+    var rewardCurrency:String = rewardCurrencyValue == null ? 'beans' : Std.string(rewardCurrencyValue);
+    if (rewardCurrency.length == 0 || rewardCurrency == 'null') rewardCurrency = 'beans';
+    data.write('pendingBeansCurrency', rewardCurrency);
+    leaving = true;
+    FlxG.sound.play(Paths.sound('panelAppear'), 0.5);
+    LoadingState.loadPlayState({targetSong: first, targetDifficulty: difficulty, targetVariation: variation, targetInstrumental: instrumental}, true);
+  }
+
+  function pointerPressed():Bool
+  {
+    return touchMode ? TouchUtil.justPressed : FlxG.mouse.justPressed;
+  }
+
+  function pointerHeld():Bool
+  {
+    return touchMode ? TouchUtil.pressed : FlxG.mouse.pressed;
+  }
+
+  function pointerReleased():Bool
+  {
+    return touchMode ? TouchUtil.justReleased : FlxG.mouse.justReleased;
+  }
+
+  function pointerX():Float
+  {
+    return touchMode && TouchUtil.touch != null ? TouchUtil.touch.gameX : FlxG.mouse.screenX;
+  }
+
+  function pointerY():Float
+  {
+    return touchMode && TouchUtil.touch != null ? TouchUtil.touch.gameY : FlxG.mouse.screenY;
+  }
+
+  function pointerOverUi(sprite:FlxSprite):Bool
+  {
+    if (sprite == null) return false;
+    var pointer:Dynamic = touchMode ? TouchUtil.touch : FlxG.mouse;
+    if (pointer == null) return false;
+    var point:Dynamic = pointer.getWorldPosition(uiCamera);
+    var hit:Bool = point.x >= sprite.x && point.x <= sprite.x + sprite.width && point.y >= sprite.y && point.y <= sprite.y + sprite.height;
+    point.put();
+    return hit;
+  }
+
+  function pointerOverMap(sprite:FlxSprite):Bool
+  {
+    if (sprite == null) return false;
+    var pointer:Dynamic = touchMode ? TouchUtil.touch : FlxG.mouse;
+    if (pointer == null) return false;
+    var point:Dynamic = pointer.getWorldPosition(mapCamera);
+    var hit:Bool = point.x >= sprite.x && point.x <= sprite.x + sprite.width && point.y >= sprite.y && point.y <= sprite.y + sprite.height;
+    point.put();
+    return hit;
+  }
+
+  override public function exit():Void
+  {
+    if (leaving) return;
+    leaving = true;
+    FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    if (!baseReady || !menuReady || weekScore == null || mapCamera == null || uiCamera == null || cruiser == null)
+    {
+      super.update(elapsed);
+      return;
+    }
+    if (leaving)
+    {
+      super.update(elapsed);
+      return;
+    }
+    if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.7) FlxG.sound.music.volume += 0.5 * elapsed;
+    if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) move('west');
+    if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) move('east');
+    if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W) move('north');
+    if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S) move('south');
+    if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) launchWeek();
+    if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.BACKSPACE || (pointerPressed() && pointerOverUi(backButton)))
+    {
+      leaving = true;
+      FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+      return;
+    }
+    var pointerInsideMap:Bool = pointerX() >= 70 && pointerX() <= FlxG.width - 70 && pointerY() >= 250 && pointerY() <= FlxG.height - 60;
+    if (pointerPressed() && pointerInsideMap)
+    {
+      dragX = pointerX();
+      dragY = pointerY();
+      dragging = true;
+      dragStarted = false;
+    }
+    if (dragging && pointerHeld())
+    {
+      var dx:Float = pointerX() - dragX;
+      var dy:Float = pointerY() - dragY;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) dragStarted = true;
+      mapCamera.scroll.x -= dx / mapCamera.zoom;
+      mapCamera.scroll.y -= dy / mapCamera.zoom;
+      dragX = pointerX();
+      dragY = pointerY();
+    }
+    if (dragging && pointerReleased())
+    {
+      if (!dragStarted)
+      {
+        for (node in nodeList)
+        {
+          if (node.sprite != null && pointerOverMap(node.sprite))
+          {
+            if (selected == node) launchWeek();
+            else if (node.unlocked) goToNode(node);
+            else FlxG.sound.play(Paths.sound('locked'), 0.7);
+            break;
+          }
+        }
+      }
+      dragging = false;
+    }
+    if (!touchMode && FlxG.mouse.wheel != 0 && canZoom) mapCamera.zoom = FlxMath.bound(mapCamera.zoom + FlxG.mouse.wheel * mapCamera.zoom / 10, 0.25, 0.45);
+    if (selected != null)
+    {
+      var targetX:Float = selected.x - mapCamera.width * 0.5 / mapCamera.zoom + MAP_SHIFT_LEFT / mapCamera.zoom;
+      var targetY:Float = selected.y - mapCamera.height * 0.5 / mapCamera.zoom + MAP_SHIFT_UP / mapCamera.zoom;
+      if (!dragging)
+      {
+        mapCamera.scroll.x = FlxMath.lerp(mapCamera.scroll.x, targetX, 1 - Math.pow(0.85, elapsed * 60));
+        mapCamera.scroll.y = FlxMath.lerp(mapCamera.scroll.y, targetY, 1 - Math.pow(0.85, elapsed * 60));
+      }
+    }
+    if (selected != null && selected.dots != null)
+    {
+      hoverTime += elapsed;
+      for (i in 0...selected.dots.members.length)
+      {
+        var dot:FlxSprite = selected.dots.members[i];
+        var angle:Float = (hoverTime * 25 + i * 45) * Math.PI / 180;
+        var radius:Float = 72;
+        dot.x = selected.x + Math.sin(angle) * radius - dot.width * 0.5;
+        dot.y = selected.y + Math.cos(angle) * radius - dot.height * 0.5;
+        dot.color = selected.unlocked ? 0xFF27CFED : 0xFFFE3443;
+      }
+    }
+    if (cruiser != null && selected != null)
+    {
+      cruiser.x = FlxMath.lerp(cruiser.x, selected.x - cruiser.width * 0.5, Math.min(elapsed * 9, 1));
+      cruiser.y = FlxMath.lerp(cruiser.y, selected.y - cruiser.height * 0.5, Math.min(elapsed * 9, 1));
+    }
+    lerpScore = FlxMath.lerp(lerpScore, targetScore, Math.min(elapsed * 30, 1));
+    if (weekScore != null) weekScore.text = 'HIGH SCORE: ' + FlxStringUtil.formatMoney(Math.round(lerpScore), false);
+    super.update(elapsed);
+  }
+
+  override function destroy():Void
+  {
+    if (mapCamera != null)
+    {
+      try
+      {
+        mapCamera.x = savedCameraX;
+        mapCamera.y = savedCameraY;
+        mapCamera.width = savedCameraWidth;
+        mapCamera.height = savedCameraHeight;
+        mapCamera.zoom = savedCameraZoom;
+        if (mapCamera.scroll != null)
+        {
+          mapCamera.scroll.x = savedScrollX;
+          mapCamera.scroll.y = savedScrollY;
+        }
+        mapCamera.bgColor = savedCameraBgColor;
+      }
+      catch (e:Dynamic)
+      {
+        trace(e);
+      }
+    }
+    mapCamera = null;
+    uiCamera = null;
+    super.destroy();
+  }
+
+}

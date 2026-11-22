@@ -1,0 +1,100 @@
+import flixel.util.FlxTimer;
+import flixel.math.FlxMath;
+import funkin.Conductor;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.play.character.AnimateAtlasCharacter;
+import Math;
+import StringTools;
+
+class BfRunning extends AnimateAtlasCharacter
+{
+    public function new()
+    {
+        super('bf-running');
+    }
+
+    var legs:FunkinSprite;
+    var bfAnchorPoint:Array<Float> = [0, 0];
+    var legPosY:Array<Int> = [7, 7, 4, 4, -5, -5, -7, -7, -3, -3, 7, 7, 4, 4, -5, -5, -7, -7, -3, -3];
+
+    override function onCreate(event:ScriptEvent)
+    {
+        super.onCreate(event);
+
+        legs = new FunkinSprite();
+        legs.loadTextureAtlas('characters/bf/bfRun', null, getAtlasSettings());
+        legs.anim.addByFrameLabel('legs', 'legs', 24, true, false, false);
+        legs.anim.addByFrameLabel('legs-miss', 'legs miss', 24, true, false, false);
+
+        setLegsAnim('legs');
+        legs.animation.pause();
+
+        if (currentStage != null)
+        {
+            currentStage.add(legs);
+        }
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        if (legs == null || legs.animation.curAnim == null) return;
+
+        if (!StringTools.contains(getCurrentAnimation(), 'miss') && getLegsAnim() == 'legs-miss') setLegsAnim('legs');
+
+        var legFrame:Int = Math.floor(FlxMath.mod(Conductor.instance.songPosition / Conductor.instance.beatLengthMs, 2) / 2 * legs.animation.curAnim.numFrames);
+
+        legs.animation.pause();
+        legs.animation.curAnim.curFrame = legFrame;
+
+        if (this.animation.curAnim != null && this.animation.curAnim.looped)
+        {
+            this.animation.curAnim.pause();
+            this.animation.curAnim.curFrame = Math.min(legFrame, this.animation.curAnim.numFrames - 1);
+        }
+
+        this.y = bfAnchorPoint[1] + legPosY[legFrame];
+        legs.setPosition(bfAnchorPoint[0], bfAnchorPoint[1]);
+
+        if (currentStage != null && legs.zIndex != this.zIndex - 1)
+        {
+            legs.zIndex = this.zIndex - 1;
+            currentStage.refresh();
+        }
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        bfAnchorPoint[0] = legs.x = this.x;
+        bfAnchorPoint[1] = legs.y = this.y;
+        this.flipX = false;
+    }
+
+    override function onNoteMiss(event)
+    {
+        super.onNoteMiss(event);
+
+        setLegsAnim('legs');
+
+        new FlxTimer().start(1 / 24, function(timer:FlxTimer)
+        {
+            setLegsAnim('legs-miss');
+        });
+    }
+
+    function setLegsAnim(anim:String)
+    {
+        var lastFrame:Int = 0;
+        if (legs != null && legs.animation.curAnim != null) lastFrame = legs.animation.curAnim.curFrame;
+        legs.animation.play(anim, true, false, lastFrame);
+    }
+
+    function getLegsAnim():String
+    {
+        return (legs.animation.curAnim != null) ? legs.animation.curAnim.name : '';
+    }
+}

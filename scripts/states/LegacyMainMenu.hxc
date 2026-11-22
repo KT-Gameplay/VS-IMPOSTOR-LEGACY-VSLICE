@@ -1,0 +1,402 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
+import flixel.input.keyboard.FlxKey;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxText.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.module.ModuleHandler;
+import funkin.ui.MusicBeatState;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.options.OptionsState;
+import openfl.display.BlendMode;
+
+class LegacyMainMenuState extends MusicBeatState
+{
+  static var curMenuItem:Int = 0;
+  static var lastSmallBtn:Int = 3;
+  var lockMovement:Bool = false;
+  var mouseMode:Bool = false;
+  var menuButtons:Array<FlxSprite> = [];
+  var menuLabels:Array<FlxText> = [];
+  var menuIcons:Array<FunkinSprite> = [];
+  var menuIconTweens:Array<FlxTween> = [];
+  var menuIconOrigX:Array<Float> = [];
+  var panelIntroItems:Array<FlxSprite> = [];
+  var menuShinies:Array<FlxSprite> = [];
+  var redMenu:FlxSprite;
+  var greenMenu:FlxSprite;
+  var logo:FlxSprite;
+  var starFG:FlxBackdrop;
+  var starBG:FlxBackdrop;
+  var backpanel:FlxSprite;
+  var introActive:Bool = false;
+  var introTimer:Float = 0;
+  var transitioning:Bool = false;
+  var bigKeys:Array<String> = ['STORY MODE', 'FREEPLAY', 'COSMICUBES'];
+  var smallKeys:Array<String> = ['OPTIONS', 'AWARDS'];
+  var iconPrefixes:Array<String> = ['Red and Green instance 1', 'Cone instance 1', 'Polus instance 1', 'Gear instance 1', 'Trophy instance 1'];
+  var labelSizes:Array<Int> = [28, 28, 28, 18, 18];
+  var labelOffsets:Array<Float> = [4, 4, 4, 3, 3];
+
+  function new()
+  {
+    super();
+  }
+
+  override function create():Void
+  {
+    super.create();
+    FlxG.camera.bgColor = FlxColor.BLACK;
+    FlxG.mouse.visible = true;
+    lockMovement = false;
+    transitioning = false;
+    menuButtons = [];
+    menuLabels = [];
+    menuIcons = [];
+    menuIconTweens = [];
+    menuIconOrigX = [];
+    panelIntroItems = [];
+    menuShinies = [];
+    introActive = false;
+    introTimer = 0;
+    try FunkinSound.playMusic('freakyMenu', {overrideExisting: true, restartTrack: false, persist: true}) catch (e:Dynamic) trace(e);
+
+    starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
+    starFG.velocity.set(-9, 0);
+    add(starFG);
+
+    starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
+    starBG.velocity.set(-4.5, 0);
+    add(starBG);
+
+    logo = new FlxSprite(0, -5);
+    logo.frames = Paths.getSparrowAtlas('logoBumpin');
+    logo.animation.addByPrefix('bump', 'logo bumpin', 24, true);
+    logo.animation.play('bump');
+    logo.antialiasing = true;
+    logo.scale.set(0.5, 0.5);
+    logo.updateHitbox();
+    logo.x = Math.round((FlxG.width - logo.width) * 0.5);
+    logo.x += 20;
+    add(logo);
+
+    buildPanel();
+
+    redMenu = new FlxSprite(FlxG.width * 0.49, 70);
+    redMenu.frames = Paths.getSparrowAtlas('menu/main/redmenu');
+    redMenu.animation.addByPrefix('idle', 'idle', 24, true);
+    redMenu.animation.addByPrefix('select', 'confirm', 24, false);
+    redMenu.animation.play('idle');
+    add(redMenu);
+
+    greenMenu = new FlxSprite(-225, 100);
+    greenMenu.frames = Paths.getSparrowAtlas('menu/main/greenmenu');
+    greenMenu.animation.addByPrefix('idle', 'idle', 24, true);
+    greenMenu.animation.addByPrefix('select', 'confirm', 24, false);
+    greenMenu.animation.play('idle');
+    add(greenMenu);
+
+    var glow:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menu/main/glow'));
+    glow.scale.set(1.1, 1.1);
+    glow.updateHitbox();
+    glow.screenCenter();
+    glow.blend = BlendMode.ADD;
+    add(glow);
+
+    var vignette:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menu/main/vignette'));
+    vignette.scrollFactor.set();
+    vignette.active = false;
+    add(vignette);
+
+    var version:FlxText = new FlxText(0, FlxG.height - 26, 0, 'VS Impostor Legacy', 16);
+    version.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    version.scrollFactor.set();
+    add(version);
+
+    refreshSelection();
+    var boot:Dynamic = ModuleHandler.getModule('LegacyMenu');
+    if (boot != null)
+    {
+      boot.reloadWeeks();
+      boot.reloadCosmicubes();
+      refreshShinies(boot);
+    }
+
+    redMenu.x = FlxG.width + 120;
+    greenMenu.x = -greenMenu.width - 120;
+    FlxTween.tween(redMenu, {x: FlxG.width * 0.49}, 1.2, {ease: FlxEase.expoOut});
+    FlxTween.tween(greenMenu, {x: -225}, 1.2, {ease: FlxEase.expoOut});
+    playPanelIntro();
+  }
+
+  function refreshShinies(module:Dynamic):Void
+  {
+    var count:Int = 0;
+    try count = Std.int(module.shinies()) catch (e:Dynamic) count = 0;
+    for (i in 0...menuShinies.length) menuShinies[i].visible = i < count;
+  }
+
+  function buildPanel():Void
+  {
+    var ext:String = 'menu/main/';
+    var ratio:Float = 1280 / 1920;
+    backpanel = new FlxSprite(0, 350, Paths.image(ext + 'tablet'));
+    backpanel.scale.set(ratio, ratio);
+    backpanel.updateHitbox();
+    backpanel.x = Math.round((FlxG.width - backpanel.width) * 0.5);
+    add(backpanel);
+    panelIntroItems.push(backpanel);
+    var buttonY:Float = backpanel.y + 28;
+    for (i in 0...bigKeys.length)
+    {
+      var button:FlxSprite = new FlxSprite(0, buttonY);
+      button.frames = Paths.getSparrowAtlas(ext + 'new buttons and stuff');
+      button.animation.addByPrefix('idle', 'Big button instance 1', 24, true);
+      button.animation.play('idle');
+      button.animation.pause();
+      button.scale.set(ratio, ratio);
+      button.updateHitbox();
+      button.x = Math.round((FlxG.width - button.width) * 0.5);
+      add(button);
+      menuButtons.push(button);
+      panelIntroItems.push(button);
+      buttonY += button.height + 8;
+      var label:FlxText = new FlxText(button.x + 16, 0, button.width - 32, bigKeys[i], 24);
+      label.setFormat(Paths.font('vcr.ttf'), 28, 0xFF0F332F, 'right');
+      label.y = Math.round(button.y + (button.height - label.height) * 0.5 + 4);
+      add(label);
+      menuLabels.push(label);
+      panelIntroItems.push(label);
+    }
+    for (i in 0...smallKeys.length)
+    {
+      var button:FlxSprite = new FlxSprite(0, buttonY);
+      button.frames = Paths.getSparrowAtlas(ext + 'new buttons and stuff');
+      button.animation.addByPrefix('idle', 'Small Button instance 1', 24, true);
+      button.animation.play('idle');
+      button.animation.pause();
+      button.scale.set(ratio, ratio);
+      button.updateHitbox();
+      button.x = Math.round(i == 0 ? backpanel.x + 28 : backpanel.x + backpanel.width - button.width - 28);
+      add(button);
+      menuButtons.push(button);
+      panelIntroItems.push(button);
+      var label:FlxText = new FlxText(button.x + 16, 0, button.width - 32, smallKeys[i], 22);
+      label.setFormat(Paths.font('vcr.ttf'), 18, 0xFF0F332F, 'right');
+      label.y = Math.round(button.y + (button.height - label.height) * 0.5 + 3);
+      add(label);
+      menuLabels.push(label);
+      panelIntroItems.push(label);
+    }
+    for (i in 0...5)
+    {
+      var shiny:FlxSprite = new FlxSprite();
+      shiny.frames = Paths.getSparrowAtlas(ext + 'shiny');
+      shiny.animation.addByPrefix('idle', 'Symbol 21 instance 1', 24, true);
+      shiny.animation.play('idle');
+      shiny.visible = false;
+      shiny.scale.set(0.75, 0.75);
+      shiny.updateHitbox();
+      shiny.setPosition(Math.round(FlxMath.lerp(backpanel.x + 28, backpanel.x + backpanel.width - shiny.width - 28, i / 4)), Math.round(backpanel.y + backpanel.height - shiny.height - 28));
+      add(shiny);
+      menuShinies.push(shiny);
+      panelIntroItems.push(shiny);
+    }
+    for (i in 0...menuButtons.length)
+    {
+      var icon:FunkinSprite = new FunkinSprite();
+      icon.frames = Paths.getSparrowAtlas(ext + 'new buttons and stuff');
+      icon.animation.addByPrefix('idle', iconPrefixes[i], 24, true);
+      icon.animation.play('idle');
+      icon.scale.set(ratio, ratio);
+      icon.updateHitbox();
+      icon.x = menuButtons[i].x + 10;
+      icon.y = menuButtons[i].y + (menuButtons[i].height - icon.height) * 0.5;
+      icon.origin.x = menuButtons[i].width * 0.5 - 10;
+      icon.offset.x = icon.origin.x * (1 - ratio);
+      add(icon);
+      menuIcons.push(icon);
+      menuIconOrigX.push(icon.x);
+      menuIconTweens.push(null);
+      panelIntroItems.push(icon);
+    }
+    refreshLabels();
+  }
+
+  function refreshLabels():Void
+  {
+    for (i in 0...menuLabels.length)
+    {
+      var button:FlxSprite = menuButtons[i];
+      var label:FlxText = menuLabels[i];
+      var icon:FunkinSprite = menuIcons[i];
+      var left:Float = button.x + 8;
+      if (icon != null && icon.visible) left = Math.max(left, icon.x + icon.width + 8);
+      label.x = Math.round(left + 4);
+      label.fieldWidth = Math.max(8, Math.round(button.x + button.width - label.x - 12));
+      var size:Int = labelSizes[i];
+      label.setFormat(Paths.font('vcr.ttf'), size, label.color, 'right');
+      label.textField.wordWrap = false;
+      label.textField.multiline = false;
+      while (size > 12 && label.textField != null && label.textField.textWidth > label.fieldWidth)
+      {
+        size--;
+        label.setFormat(Paths.font('vcr.ttf'), size, label.color, 'right');
+      }
+      label.y = Math.round(button.y + (button.height - label.height) * 0.5 + labelOffsets[i]);
+    }
+  }
+
+  function playPanelIntro():Void
+  {
+    introActive = true;
+    introTimer = 1.8;
+    for (item in panelIntroItems)
+    {
+      var targetY:Float = item.y;
+      item.y += 220;
+      FlxTween.tween(item, {y: targetY}, 1.2, {ease: FlxEase.expoOut});
+    }
+  }
+
+  function refreshSelection():Void
+  {
+    for (i in 0...menuButtons.length)
+    {
+      menuButtons[i].animation.curAnim.curFrame = i == curMenuItem ? 1 : 0;
+      menuLabels[i].color = FlxColor.fromRGB(15, 51, 47);
+      if (menuIconTweens[i] != null)
+      {
+        menuIconTweens[i].cancel();
+        menuIconTweens[i] = null;
+      }
+      if (i < 3)
+      {
+        menuIconTweens[i] = FlxTween.tween(menuIcons[i].offset, {x: i == curMenuItem ? 15 : 0}, 0.15, {ease: FlxEase.quadOut});
+      }
+    }
+  }
+
+  function confirmSelection():Void
+  {
+    if (lockMovement || transitioning || introActive) return;
+    lockMovement = true;
+    transitioning = true;
+    redMenu.animation.play('select');
+    greenMenu.animation.play('select');
+    for (item in [menuButtons[curMenuItem], menuLabels[curMenuItem], menuIcons[curMenuItem]])
+    {
+      item.scale.x *= 0.9;
+      item.scale.y *= 0.9;
+      FlxTween.tween(item.scale, {x: item.scale.x * 1.05, y: item.scale.y * 1.05}, 0.2, {ease: FlxEase.circOut});
+    }
+    FlxG.sound.play(Paths.sound('confirmMenu'));
+    FlxTween.tween(starFG, {y: starFG.y + 2000}, 1.8, {ease: FlxEase.sineIn, startDelay: 0.6});
+    FlxTween.tween(starBG, {y: starBG.y + 1500}, 1.8, {ease: FlxEase.sineIn, startDelay: 0.6});
+    FlxTween.tween(redMenu, {y: redMenu.y + 750}, 1.2, {ease: FlxEase.quadInOut, startDelay: 0.6});
+    FlxTween.tween(greenMenu, {y: greenMenu.y + 750}, 1.2, {ease: FlxEase.quadInOut, startDelay: 0.6});
+    FlxTween.tween(logo, {y: logo.y + 1000}, 1.2, {ease: FlxEase.quadInOut, startDelay: 0.6});
+    for (item in panelIntroItems) FlxTween.tween(item, {y: item.y + 1000}, 1.2, {ease: FlxEase.quadInOut, startDelay: 0.6});
+    new FlxTimer().start(1.2, function(timer:FlxTimer) routeSelection());
+  }
+
+  function routeSelection():Void
+  {
+    switch (curMenuItem)
+    {
+      case 0:
+        FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyStoryModeState'));
+      case 1:
+        FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyFreeplayState'));
+      case 2:
+        FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyCosmicubeState'));
+      case 3:
+        FlxG.switchState(() -> new OptionsState());
+      case 4:
+        FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyAwardsState'));
+    }
+  }
+
+  override function beatHit():Void
+  {
+    super.beatHit();
+    if (redMenu != null && redMenu.animation.name != 'select') redMenu.animation.play('idle', true);
+    if (greenMenu != null && greenMenu.animation.name != 'select') greenMenu.animation.play('idle', true);
+    if (logo != null) logo.animation.play('bump', true);
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8) FlxG.sound.music.volume += 0.5 * elapsed;
+    if (FlxG.keys.firstJustPressed() != FlxKey.NONE) mouseMode = false;
+    if (FlxG.mouse.justMoved) mouseMode = true;
+    if (introActive)
+    {
+      introTimer -= elapsed;
+      if (introTimer <= 0) introActive = false;
+    }
+    if (!lockMovement && !introActive && mouseMode)
+    {
+      for (i in 0...menuButtons.length)
+      {
+        if (FlxG.mouse.overlaps(menuButtons[i]))
+        {
+          if (curMenuItem != i)
+          {
+            curMenuItem = i;
+            refreshSelection();
+            FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
+          }
+          if (FlxG.mouse.justPressed) confirmSelection();
+          break;
+        }
+      }
+    }
+    if (!lockMovement && !introActive)
+    {
+      var changed:Bool = false;
+      if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W)
+      {
+        var previous:Int = curMenuItem;
+        if (curMenuItem >= 3)
+        {
+          lastSmallBtn = curMenuItem;
+          curMenuItem = 2;
+        }
+        else if (curMenuItem > 0) curMenuItem--;
+        changed = previous != curMenuItem;
+      }
+      else if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S)
+      {
+        var previous:Int = curMenuItem;
+        if (curMenuItem == 2) curMenuItem = lastSmallBtn;
+        else if (curMenuItem < 2) curMenuItem++;
+        changed = previous != curMenuItem;
+      }
+      else if ((FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) && curMenuItem == 4)
+      {
+        curMenuItem = 3;
+        changed = true;
+      }
+      else if ((FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) && curMenuItem == 3)
+      {
+        curMenuItem = 4;
+        changed = true;
+      }
+      if (changed)
+      {
+        FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
+        refreshSelection();
+      }
+      if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) confirmSelection();
+    }
+    super.update(elapsed);
+  }
+}

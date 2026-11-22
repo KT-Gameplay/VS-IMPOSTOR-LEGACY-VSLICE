@@ -1,0 +1,193 @@
+import funkin.play.PlayState;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.modding.module.Module;
+import funkin.play.scoring.Scoring;
+import funkin.Highscore;
+import funkin.Paths;
+import flixel.graphics.frames.FlxBitmapFont;
+import flixel.math.FlxMath;
+import flixel.text.FlxBitmapText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.util.FlxStringUtil;
+import flixel.FlxG;
+import funkin.save.Save;
+import Math;
+
+class CrushersUIScoreTextModule extends Module
+{
+	var BRACKETS:Array<String> = ['[', '] '];
+	var RANK_BRACKETS:Array<String> = [' (', ')'];
+	var EXTRA_RANK_BRACKETS:Array<String> = [' [', ']'];
+	var TEXT_SPLITTER:String = ': ';
+	var ACCURACY_SIGN:String = '%';
+	var SHOW_LAST_BRACKET_ON_LAST_ELEMENT:Bool = true;
+	var TEXT_UNDER_ICONS:Bool = false;
+
+	var RATING_TEXTS:Array<Array<String>> = [
+		['PERFECT_GOLD', 'SFC'],
+		['PERFECT', 'GFC']
+	];
+
+	var playState:PlayState = null;
+	var scoreTxt:FlxBitmapText = null;
+	var playScoreText:FlxBitmapText = null;
+	var acc = null;
+
+	public function new():Void
+	{
+		super("CrushersUIScoreTextModule", 1, {
+			state: PlayState
+		});
+	}
+
+	public override function onStateChangeEnd(event:ScriptEvent):Void
+	{
+		super.onStateChangeEnd(event);
+
+		playState = PlayState.instance;
+		playScoreText = playState.scoreText;
+
+		scoreTxt = new FlxBitmapText(0, playScoreText.y, '', playScoreText.font);
+		scoreTxt.borderColor = playScoreText.borderColor;
+		scoreTxt.textColor = playScoreText.textColor;
+		scoreTxt.letterSpacing = playScoreText.letterSpacing;
+		scoreTxt.wordWrap = playScoreText.wordWrap;
+		scoreTxt.scrollFactor.set(playScoreText.scrollFactor.x, playScoreText.scrollFactor.y);
+		scoreTxt.zIndex = returnScoreTxtZIndex();
+		scoreTxt.cameras = [playState.camHUD];
+		playState.add(scoreTxt);
+		playState.refresh();
+	}
+
+	function onCountdownStart(event)
+	{
+		super.onCountdownStart(event);
+
+		if(PlayState.instance.currentSong.id.toLowerCase() == "sussus-nuzzus")
+		{
+			PlayState.instance.scoreText.font = FlxBitmapFont.fromAngelCode(Paths.font("apple_kid.png"), Paths.font("apple_kid.fnt"));
+		}
+		else{
+			PlayState.instance.scoreText.font = FlxBitmapFont.fromAngelCode(Paths.font("vcr-bmp.png"), Paths.font("vcr-bmp.fnt"));
+		}
+	}
+
+	public override function onUpdate(event:ScriptEvent):Void
+	{
+		super.onUpdate(event);
+
+		if (playScoreText != null)
+		{
+			playScoreText.visible = false;
+			playScoreText.active = false;
+		}
+
+		acc = FlxMath.roundDecimal((Highscore.tallies.sick + Highscore.tallies.good - Highscore.tallies.missed) / noteHitCalculation() * 100, 2);
+		
+		if(scoreTxt != null)
+		{
+			scoreTxt.text = getScoreText() + getMissesText() + getAccuracyText() + getRankText();
+			scoreTxt.x = (FlxG.width - scoreTxt.width) / 2;
+		}
+	}
+
+	function returnScoreTxtZIndex():Int
+	{
+		if (!TEXT_UNDER_ICONS)
+		{
+			if (playState.iconP2 != null)
+				return playState.iconP2.zIndex + 1;
+			else if (playState.iconP1 != null)
+				return playState.iconP1.zIndex + 1;
+		}
+
+		return playScoreText.zIndex + 1;
+	}
+
+	function getScoreText():String
+	{
+		return 'Score: ' + FlxStringUtil.formatMoney(playState.songScore, false, true);
+	}
+
+	function getMissesText():String
+	{
+		if(playState.currentSong.id.toLowerCase() == 'defeat')
+		{
+			return ' | Misses: ' + Highscore.tallies.missed + '/' + PlayState.instance.currentSong.scriptGet('missLimitCount');
+		}
+		if(playState.currentSong.id.toLowerCase() == 'victory')
+		{
+			return ' | Misses: Who cares? You already won!';
+		}
+		if(playState.currentSong.id.toLowerCase() != 'defeat' || playState.currentSong.id.toLowerCase() != 'victory')
+		{
+			return ' | Misses: ' + Highscore.tallies.missed;
+		}
+	}
+
+	function getAccuracyText():String
+	{
+		return ' | Accuracy: ' + returnAccuracy() + ACCURACY_SIGN;
+	}
+
+	function getRankText():String
+	{
+		return ' | Rank: ' + returnLegacyRank();
+	}
+
+	function returnLegacyRank():String
+	{
+		if(Math.isNaN(acc) || acc < 0) return 'N/A';
+		if(acc >= 99 && Highscore.tallies.missed == 0) return 'P';
+		if(acc >= 95 && Highscore.tallies.missed == 0) return 'S';
+		if(acc >= 90 && Highscore.tallies.missed <= 20) return 'A';
+		if(acc >= 85 && Highscore.tallies.missed <= 30) return 'B';
+		if(acc >= 70 && Highscore.tallies.missed <= 50) return 'C';
+		if(acc >= 50 && Highscore.tallies.missed <= 70) return 'D';
+		return 'F';
+	}
+
+	function returnAccuracy():Float
+	{
+		var clearPercentFloat:Float;
+		
+		clearPercentFloat = FlxMath.roundDecimal((Highscore.tallies.sick + Highscore.tallies.good - Highscore.tallies.missed) / noteHitCalculation() * 100, 2);
+		if (Math.isNaN(clearPercentFloat) || clearPercentFloat < 0) return 'N/A';
+
+		return clearPercentFloat;
+	}
+
+	function returnRank():String
+	{
+		var score:String = Scoring.calculateRank(
+		{
+			score: playState.songScore,
+			tallies:
+			{
+				sick: Highscore.tallies.sick,
+				good: Highscore.tallies.good,
+				bad: Highscore.tallies.bad,
+				shit: Highscore.tallies.shit,
+				missed: Highscore.tallies.missed,
+				combo: Highscore.tallies.combo,
+				maxCombo: Highscore.tallies.maxCombo,
+				totalNotesHit: Highscore.tallies.totalNotesHit,
+				totalNotes: noteHitCalculation()
+			}
+		});
+
+		for (i in 0...RATING_TEXTS.length - 1)
+		{
+			if (score == RATING_TEXTS[i][0])
+				return RATING_TEXTS[i][1];
+		}
+
+		return '?';
+	}
+
+	function noteHitCalculation():Float
+	{
+		return (Highscore.tallies.totalNotesHit + Highscore.tallies.missed);
+	}
+}

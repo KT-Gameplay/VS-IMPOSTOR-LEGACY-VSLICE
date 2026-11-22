@@ -1,0 +1,478 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.Paths;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import openfl.display.BlendMode;
+
+class Defeat extends Stage
+{
+	var defeatthing:FlxSprite;
+	var old_defeat:FlxSprite;
+	var bodies2:FlxSprite;
+	var bodies:FlxSprite;
+	var bodiesfront:FlxSprite;
+	var lightoverlay:FlxSprite;
+	var subtract:FlxSprite;
+	var edgeglow1:FlxSprite;
+	var edgeglow2:FlxSprite;
+	var redscreen:FlxSprite;
+
+	var glowTween1:FlxTween;
+	var glowTween2:FlxTween;
+	var defeatBopTween:FlxTween;
+	var defeatScaleTween:FlxTween;
+
+	var isRetro:Bool = false;
+	var lastProcessedStep:Int = -1;
+	var cameraLocked:Bool = true;
+	var screenHidden:Bool = false;
+
+	public function new()
+	{
+		super('defeat');
+	}
+
+	public override function buildStage():Void
+	{
+		super.buildStage();
+
+		defeatthing = getNamedProp('defeatthing');
+		old_defeat = getNamedProp('old_defeat');
+		bodies2 = getNamedProp('bodies2');
+		subtract = getNamedProp('subtract');
+		edgeglow1 = getNamedProp('edgeglow1');
+		edgeglow2 = getNamedProp('edgeglow2');
+		lightoverlay = getNamedProp('lightoverlay');
+
+		bodies = new FlxSprite(-4800, -900);
+		bodies.frames = Paths.getSparrowAtlas('stages/void/props');
+		bodies.animation.addByPrefix('idle', 'deadBG', 24, true);
+		bodies.animation.play('idle');
+		bodies.scale.set(5, 5);
+		bodies.updateHitbox();
+		bodies.setGraphicSize(Std.int(bodies.width * 0.26));
+		bodies.alpha = 0.001;
+		bodies.scrollFactor.set(0.9, 0.9);
+		bodies.zIndex = 0;
+		add(bodies);
+
+		bodiesfront = new FlxSprite(-3700, -250);
+		bodiesfront.frames = Paths.getSparrowAtlas('stages/void/props');
+		bodiesfront.animation.addByPrefix('idle', 'deadFG', 24, true);
+		bodiesfront.animation.play('idle');
+		bodiesfront.scale.set(5, 5);
+		bodiesfront.updateHitbox();
+		bodiesfront.setGraphicSize(Std.int(bodiesfront.width * 0.3));
+		bodiesfront.alpha = 0.001;
+		bodiesfront.scrollFactor.set(1.5, 1.2);
+		bodiesfront.zIndex = 2;
+		add(bodiesfront);
+
+		if (edgeglow1 != null)
+			edgeglow1.blend = BlendMode.ADD;
+
+		if (edgeglow2 != null)
+			edgeglow2.blend = BlendMode.ADD;
+
+		if (subtract != null)
+			subtract.blend = BlendMode.SUBTRACT;
+
+		if (lightoverlay != null)
+			lightoverlay.blend = BlendMode.ADD;
+
+		redscreen = new FlxSprite();
+		redscreen.makeGraphic(FlxG.width, FlxG.height, 0xFFFF0000);
+		redscreen.scrollFactor.set();
+		redscreen.alpha = 0.001;
+		redscreen.cameras = [PlayState.instance.camCutscene];
+		redscreen.zIndex = 999999;
+		add(redscreen);
+
+		lastProcessedStep = -1;
+	}
+
+	public override function onSongStart(event:ScriptEvent):Void
+	{
+		super.onSongStart(event);
+
+		lastProcessedStep = -1;
+		isRetro = false;
+		cameraLocked = true;
+		screenHidden = false;
+
+		if (PlayState.instance != null)
+		{
+			if (PlayState.instance.iconP1 != null)
+				PlayState.instance.iconP1.visible = false;
+
+			if (PlayState.instance.iconP2 != null)
+				PlayState.instance.iconP2.visible = false;
+
+			PlayState.instance.camGame.visible = true;
+			PlayState.instance.camHUD.visible = true;
+			PlayState.instance.cancelCameraFollowTween();
+
+			if (PlayState.instance.cameraFollowPoint != null)
+				PlayState.instance.cameraFollowPoint.setPosition(790, 515);
+		}
+
+		if (defeatthing != null)
+			defeatthing.alpha = 0.4;
+
+		if (old_defeat != null)
+			old_defeat.alpha = 0.01;
+
+		if (bodies != null)
+			bodies.alpha = 0.001;
+
+		if (bodies2 != null)
+			bodies2.alpha = 0.001;
+
+		if (bodiesfront != null)
+			bodiesfront.alpha = 0.001;
+
+		if (edgeglow1 != null)
+			edgeglow1.alpha = 0.001;
+
+		if (edgeglow2 != null)
+			edgeglow2.alpha = 0.001;
+
+		if (subtract != null)
+			subtract.alpha = 0.001;
+
+		if (lightoverlay != null)
+			lightoverlay.alpha = 0.6;
+
+		if (redscreen != null)
+			redscreen.alpha = 0.001;
+	}
+
+	public override function onSongEvent(event):Void
+	{
+		super.onSongEvent(event);
+
+		if (event.eventData.eventKind == "FocusCamera")
+		{
+			var char:Int = event.eventData.getInt('char');
+
+			if (char == 0 || char == 1)
+			{
+				event.cancel();
+
+				if (PlayState.instance != null && !screenHidden)
+				{
+					PlayState.instance.cancelCameraFollowTween();
+
+					if (PlayState.instance.cameraFollowPoint != null)
+						PlayState.instance.cameraFollowPoint.setPosition(790, 515);
+				}
+			}
+		}
+	}
+
+	public override function onUpdate(event:UpdateScriptEvent):Void
+	{
+		super.onUpdate(event);
+
+		if (PlayState.instance == null)
+			return;
+
+		if (!screenHidden && cameraLocked)
+		{
+			PlayState.instance.cancelCameraFollowTween();
+
+			if (PlayState.instance.cameraFollowPoint != null)
+				PlayState.instance.cameraFollowPoint.setPosition(790, 515);
+		}
+	}
+
+	public override function onBeatHit(event:SongTimeScriptEvent):Void
+	{
+		super.onBeatHit(event);
+
+		if (event.beat % 4 != 0)
+			return;
+
+		if (defeatthing != null)
+		{
+			if (defeatBopTween != null)
+				defeatBopTween.cancel();
+
+			if (defeatScaleTween != null)
+				defeatScaleTween.cancel();
+
+			defeatthing.alpha = 0.5;
+			defeatthing.scale.set(5.5, 5);
+
+			defeatBopTween = FlxTween.tween(
+				defeatthing,
+				{alpha: 0.4},
+				0.8,
+				{ease: FlxEase.bounceOut}
+			);
+
+			defeatScaleTween = FlxTween.tween(
+				defeatthing.scale,
+				{x: 4, y: 4},
+				0.8,
+				{ease: FlxEase.sineOut}
+			);
+		}
+
+		if (edgeglow1 != null && edgeglow1.alpha > 0.01)
+		{
+			if (glowTween1 != null)
+				glowTween1.cancel();
+
+			if (glowTween2 != null)
+				glowTween2.cancel();
+
+			edgeglow1.alpha = 1;
+			edgeglow2.alpha = 1;
+
+			glowTween1 = FlxTween.tween(
+				edgeglow1,
+				{alpha: 0.6},
+				0.35,
+				{ease: FlxEase.bounceOut}
+			);
+
+			glowTween2 = FlxTween.tween(
+				edgeglow2,
+				{alpha: 0.6},
+				0.35,
+				{ease: FlxEase.bounceOut}
+			);
+		}
+	}
+
+	public override function onStepHit(event:SongTimeScriptEvent):Void
+	{
+		super.onStepHit(event);
+
+		var currentStep:Int = event.step;
+
+		if (currentStep <= lastProcessedStep)
+			return;
+
+		var startStep:Int = lastProcessedStep + 1;
+
+		if (startStep < 0)
+			startStep = 0;
+
+		for (step in startStep...currentStep + 1)
+		{
+			processStep(step);
+		}
+
+		lastProcessedStep = currentStep;
+	}
+
+	function processStep(step:Int):Void
+	{
+		switch (step)
+		{
+			case 135:
+				flashCamera(1);
+				fadeInDefeat();
+
+			case 582:
+				flashCamera(0);
+
+			case 583:
+				enterRetro();
+
+			case 720:
+				flashCamera(1);
+				exitRetro();
+
+			case 976:
+				removeDefeatDark();
+		}
+	}
+
+	function changeRetroCharacter():Void
+	{
+		if (PlayState.instance == null)
+			return;
+
+		var dad = PlayState.instance.dad;
+
+		if (dad != null)
+		{
+			PlayState.instance.stage.getBoyfriend();
+		}
+	}
+
+	function enterRetro():Void
+	{
+		isRetro = true;
+
+		flashCamera(1);
+
+		if (bodies != null)
+			bodies.alpha = 0.001;
+
+		if (bodies2 != null)
+			bodies2.alpha = 0.001;
+
+		if (bodiesfront != null)
+			bodiesfront.alpha = 0.001;
+
+		if (lightoverlay != null)
+			lightoverlay.alpha = 0.001;
+
+		if (subtract != null)
+			subtract.alpha = 0.001;
+
+		if (edgeglow1 != null)
+			edgeglow1.alpha = 0.001;
+
+		if (edgeglow2 != null)
+			edgeglow2.alpha = 0.001;
+
+		if (old_defeat != null)
+			old_defeat.alpha = 1;
+
+		if (defeatthing != null)
+			defeatthing.alpha = 0.001;
+	}
+
+	function exitRetro():Void
+	{
+		isRetro = false;
+
+		if (bodies != null)
+			bodies.alpha = 1;
+
+		if (bodies2 != null)
+			bodies2.alpha = 1;
+
+		if (bodiesfront != null)
+			bodiesfront.alpha = 1;
+
+		if (lightoverlay != null)
+			lightoverlay.alpha = 0.7;
+
+		if (subtract != null)
+			subtract.alpha = 1;
+
+		if (edgeglow1 != null)
+			edgeglow1.alpha = 0.5;
+
+		if (edgeglow2 != null)
+			edgeglow2.alpha = 0.5;
+
+		if (old_defeat != null)
+			old_defeat.alpha = 0.001;
+
+		if (defeatthing != null)
+			defeatthing.alpha = 0.4;
+	}
+
+	function fadeInDefeat():Void
+	{
+		tweenAlpha(bodies, 1);
+		tweenAlpha(bodies2, 1);
+		tweenAlpha(bodiesfront, 1);
+		tweenAlpha(edgeglow1, 0.5);
+		tweenAlpha(edgeglow2, 0.5);
+		tweenAlpha(subtract, 1);
+		tweenAlpha(lightoverlay, 0.7);
+	}
+
+	function fadeOutDefeat():Void
+	{
+		tweenAlpha(bodies, 0);
+		tweenAlpha(bodies2, 0);
+		tweenAlpha(bodiesfront, 0);
+		tweenAlpha(edgeglow1, 0);
+		tweenAlpha(edgeglow2, 0);
+		tweenAlpha(subtract, 0);
+		tweenAlpha(lightoverlay, 0);
+	}
+
+	function tweenAlpha(sprite:FlxSprite, alpha:Float):Void
+	{
+		if (sprite == null)
+			return;
+
+		FlxTween.tween(
+			sprite,
+			{alpha: alpha},
+			0.7,
+			{ease: FlxEase.quadInOut}
+		);
+	}
+
+	function flashCamera(value:Int):Void
+	{
+		if (PlayState.instance == null)
+			return;
+
+		if (value == 1)
+		{
+			PlayState.instance.camGame.flash(0xFFFFFFFF, 0.1);
+		}
+	}
+
+	function removeDefeatDark():Void
+	{
+		if (PlayState.instance == null || screenHidden)
+			return;
+
+		screenHidden = true;
+		cameraLocked = false;
+
+		PlayState.instance.cancelCameraFollowTween();
+
+		if (redscreen != null)
+		{
+			redscreen.alpha = 1;
+
+			FlxTween.tween(
+				redscreen,
+				{alpha: 0},
+				0.2,
+				{
+					ease: FlxEase.quadOut,
+					onComplete: function(tween:FlxTween)
+					{
+						if (PlayState.instance == null)
+							return;
+
+						PlayState.instance.camGame.visible = false;
+						PlayState.instance.camHUD.visible = false;
+
+						if (PlayState.instance.iconP1 != null)
+							PlayState.instance.iconP1.visible = false;
+
+						if (PlayState.instance.iconP2 != null)
+							PlayState.instance.iconP2.visible = false;
+					}
+				}
+			);
+		}
+		else
+		{
+			PlayState.instance.camGame.flash(0xFFFF0000, 0.2);
+
+			FlxTween.delayedCall(0.2, function()
+			{
+				if (PlayState.instance == null)
+					return;
+
+				PlayState.instance.camGame.visible = false;
+				PlayState.instance.camHUD.visible = false;
+			});
+		}
+
+		PlayState.instance.camGame.flash(0xFFFF0000, 0.2);
+	}
+}

@@ -1,0 +1,114 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "tuesday",
+	"cameraOffsets": [
+		-130,
+		290
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "tuesday",
+		"isPixel": false
+	},
+	"assetPath": "characters/tomongus/tuesday",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "idle",
+			"offsets": [
+				70,
+				-279
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right",
+			"offsets": [
+				86,
+				-279
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left",
+			"offsets": [
+				66,
+				-274
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down",
+			"offsets": [
+				78,
+				-300
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up",
+			"offsets": [
+				52,
+				-260
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "anim 1",
+			"offsets": [
+				60,
+				-278
+			],
+			"frameRate": 24,
+			"name": "prep",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "anim 2",
+			"offsets": [
+				1026,
+				-226
+			],
+			"frameRate": 24,
+			"name": "shot",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "tomidle",
+			"offsets": [
+				78,
+				-374
+			],
+			"frameRate": 24,
+			"name": "idle-alt",
+			"looped": false
+		}
+	]
+}

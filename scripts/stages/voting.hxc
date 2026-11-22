@@ -1,0 +1,348 @@
+package funkin.modding.module;
+
+import funkin.modding.module.Module;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.modding.events.CountdownScriptEvent;
+import funkin.modding.events.HitNoteScriptEvent;
+
+import funkin.play.PlayState;
+import funkin.play.character.CharacterDataParser;
+import funkin.util.GRhythmUtil;
+import funkin.Conductor;
+import funkin.Highscore;
+import funkin.graphics.FunkinSprite;
+
+import flixel.FlxG;
+
+class VotingTimeExtraStrumlines extends Module
+{
+  private static var _momChar:Dynamic = null;
+  private static var _spawnedMom:Bool = false;
+  private static var _momBwahPlayed:Bool = false;
+
+  private static var _blackBars:Array<FunkinSprite> = [];
+  private static var _blackBarsBuilt:Bool = false;
+
+  public function new()
+  {
+    super("VotingTimeExtraStrumlines");
+  }
+
+  private static inline function _isVotingTime():Bool
+  {
+    var playState = PlayState.instance;
+    if (playState == null) return false;
+
+    var songId:String = "";
+    if (playState.currentSong != null && playState.currentSong.id != null)
+      songId = playState.currentSong.id;
+
+    var chartName:String = "";
+    if (playState.currentChart != null && playState.currentChart.songName != null)
+      chartName = playState.currentChart.songName;
+
+    return songId == "voting-time"
+      || songId == "voting time"
+      || songId == "Voting-Time"
+      || songId == "Voting Time"
+      || chartName == "voting-time"
+      || chartName == "voting time"
+      || chartName == "Voting-Time"
+      || chartName == "Voting Time";
+  }
+
+  private static inline function _isOpp2Sing(note:Dynamic):Bool
+  {
+    return note != null && note.noteData != null && note.noteData.kind == "Opponent 2 Sing";
+  }
+
+  private static inline function _isGFSing(note:Dynamic):Bool
+  {
+    return note != null && note.noteData != null && note.noteData.kind == "GF Sing";
+  }
+
+  private static inline function _hideNoteObject(note:Dynamic):Void
+  {
+    if (note == null) return;
+    
+    if (note.alpha != 0) note.alpha = 0;
+    if (note.visible) note.visible = false;
+    if (note.shader != null) note.shader = null;
+
+    if (note.holdNoteSprite != null)
+    {
+      if (note.holdNoteSprite.alpha != 0) note.holdNoteSprite.alpha = 0;
+      if (note.holdNoteSprite.visible) note.holdNoteSprite.visible = false;
+      if (note.holdNoteSprite.shader != null) note.holdNoteSprite.shader = null;
+    }
+  }
+
+  private static inline function _getMomCharacter():Dynamic
+  {
+    if (_momChar != null) return _momChar;
+
+    var ps = PlayState.instance;
+    if (ps == null || ps.currentStage == null) return null;
+
+    if (ps.currentStage.getCharacter != null)
+    {
+      return ps.currentStage.getCharacter("mom");
+    }
+    return null;
+  }
+
+  private static inline function _triggerMomReaction(dir:Int):Void
+  {
+    var mom:Dynamic = _getMomCharacter();
+    if (mom != null && mom.playSingAnimation != null)
+    {
+      mom.playSingAnimation(dir, false);
+      mom.holdTimer = 0;
+    }
+  }
+
+  private static inline function _triggerMomBwah():Void
+  {
+    var mom:Dynamic = _getMomCharacter();
+    if (mom != null && mom.playAnimation != null)
+    {
+      mom.playAnimation("bwah", true, true, false);
+      mom.holdTimer = 0;
+    }
+  }
+
+  private static function _makeBlackBar(ps:PlayState, y:Float):FunkinSprite
+  {
+    var bar = new FunkinSprite(0, y);
+    bar.makeSolidColor(FlxG.width + 3, 90, 0xFF000000);
+    bar.cameras = [ps.camHUD];
+    bar.scrollFactor.set(0, 0);
+    bar.zIndex = -1000;
+    ps.add(bar);
+    return bar;
+  }
+
+  private static function _buildBlackBars(ps:PlayState):Void
+  {
+    if (_blackBarsBuilt || ps == null) return;
+    
+    _blackBars = [];
+    _blackBars.push(_makeBlackBar(ps, 0));
+    _blackBars.push(_makeBlackBar(ps, FlxG.height - 90));
+
+    ps.refresh();
+    _blackBarsBuilt = true;
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    _cleanup();
+  }
+
+  override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+    if (!_isVotingTime()) return;
+    var ps = PlayState.instance;
+    if (ps == null) return;
+
+    _buildBlackBars(ps);
+    if (ps.currentStage == null || _spawnedMom) return;
+    if (ps.currentStage.getCharacter("mom") != null) return;
+
+    _momChar = CharacterDataParser.fetchCharacter("madgus", false);
+    if (_momChar == null) return;
+
+    ps.currentStage.add(_momChar);
+    _momChar.zIndex = ps.currentStage.getBoyfriend().zIndex - 1;
+    _momChar.x = ps.currentStage.getBoyfriendPosition().x - _momChar.characterOrigin.x - 150;
+    _momChar.y = ps.currentStage.getBoyfriendPosition().y - _momChar.characterOrigin.y - 130;
+    _momChar.flipX = false;
+
+    ps.currentStage.refresh();
+    ps.currentStage.characters.set("mom", _momChar);
+    _spawnedMom = true;
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    var ps = PlayState.instance;
+    if (ps == null || !_isVotingTime()) return;
+
+    if (!_momBwahPlayed && Conductor.instance != null && Conductor.instance.currentStep >= 1312)
+    {
+      _triggerMomBwah();
+      _momBwahPlayed = true;
+    }
+
+    _processNotes();
+  }
+
+  private static function _processNotes():Void
+  {
+    var ps = PlayState.instance;
+    if (ps == null || ps.currentStage == null || ps.playerStrumline == null || ps.opponentStrumline == null) return;
+
+    var songPos:Float = Conductor.instance.songPosition;
+    var activeMom:Dynamic = _momChar;
+    var activeGF:Dynamic = ps.currentStage.getGirlfriend();
+
+    var playerNotes = ps.playerStrumline.notes.members;
+    if (playerNotes != null)
+    {
+      for (note in playerNotes)
+      {
+        if (note == null || !note.alive || note.noteData == null) continue;
+        if (note.noteData.kind != "Opponent 2 Sing") continue;
+
+        note.hasBeenHit = false;
+        var r = GRhythmUtil.processWindow(note, false);
+        note.hasBeenHit = true;
+
+        _hideNoteObject(note);
+        
+        if (r.botplayHit)
+        {
+          _triggerMomReaction(note.noteData.getDirection());
+          note.visible = false;
+          note.kill();
+          continue;
+        }
+          
+        if (note.holdNoteSprite != null && note.hasBeenHit && !note.holdNoteSprite.missedNote && note.holdNoteSprite.sustainLength > 0)
+        {
+          if (activeMom != null && activeMom.isSinging()) activeMom.holdTimer = 0;
+          
+          if (songPos > note.holdNoteSprite.strumTime)
+          {
+            if (!note.holdNoteSprite.visible) note.holdNoteSprite.visible = true;
+            note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - songPos;
+            if (note.holdNoteSprite.sustainLength <= 10) note.holdNoteSprite.visible = false;
+          }
+        }
+      }
+    }
+
+    var opponentNotes = ps.opponentStrumline.notes.members;
+    if (opponentNotes != null)
+    {
+      for (note in opponentNotes)
+      {
+        if (note == null || !note.alive || note.noteData == null) continue;
+        if (note.noteData.kind != "GF Sing") continue;
+
+        note.hasBeenHit = false;
+        var r2 = GRhythmUtil.processWindow(note, false);
+        note.hasBeenHit = true;
+        _hideNoteObject(note);
+        
+        if (r2.botplayHit)
+        {
+          if (activeGF != null)
+          {
+            activeGF.playSingAnimation(note.noteData.getDirection(), false);
+            activeGF.holdTimer = 0;
+          }
+
+          note.visible = false;
+          note.kill();
+          continue;
+        }
+          
+        if (note.holdNoteSprite != null && note.hasBeenHit && !note.holdNoteSprite.missedNote && note.holdNoteSprite.sustainLength > 0)
+        {
+          if (activeGF != null && activeGF.isSinging()) activeGF.holdTimer = 0;
+          
+          if (songPos > note.holdNoteSprite.strumTime)
+          {
+            if (!note.holdNoteSprite.visible) note.holdNoteSprite.visible = true;
+            note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - songPos;
+            if (note.holdNoteSprite.sustainLength <= 10) note.holdNoteSprite.visible = false;
+          }
+        }
+      }
+    }
+  }
+
+  function onNoteIncoming(event:Dynamic):Void
+  {
+    if (!_isVotingTime() || event == null || event.note == null || event.note.noteData == null) return;
+    var note:Dynamic = event.note;
+    var kind:String = note.noteData.kind;
+
+    if (kind == "Opponent 2 Sing" || kind == "GF Sing")
+    {
+      if (note.noteData.getMustHitNote()) Highscore.tallies.totalNotes--;
+      note.hasBeenHit = true;
+      _hideNoteObject(note);
+    }
+  }
+
+  override function onNoteHit(event:HitNoteScriptEvent):Void
+  {
+    if (!_isVotingTime() || event == null || event.note == null || event.note.noteData == null) return;
+
+    var note:Dynamic = event.note;
+    var kind:String = note.noteData.kind;
+    var dir:Int = note.noteData.getDirection();
+
+    if (kind == "Opponent 2 Sing")
+    {
+      event.cancelEvent();
+      event.stopPropagation();
+      _hideNoteObject(note);
+      _triggerMomReaction(dir);
+      return;
+    }
+
+    if (kind == "GF Sing")
+    {
+      event.cancelEvent();
+      event.stopPropagation();
+      _hideNoteObject(note);
+      return;
+    }
+  }
+
+  private static function _cleanup():Void
+  {
+    var ps = PlayState.instance;
+
+    if (_blackBars != null)
+    {
+      for (bar in _blackBars) {
+        if (bar != null) {
+          if (ps != null) ps.remove(bar, true);
+          bar.destroy();
+        }
+      }
+    }
+    _blackBars = [];
+    _blackBarsBuilt = false;
+
+    if (_spawnedMom && ps != null && ps.currentStage != null && _momChar != null)
+    {
+      ps.currentStage.remove(_momChar, true);
+      _momChar.destroy();
+    }
+    _momChar = null;
+    _spawnedMom = false;
+    _momBwahPlayed = false;
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    _cleanup();
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    _cleanup();
+  }
+}

@@ -1,0 +1,81 @@
+import funkin.play.stage.Stage;
+import StringTools;
+import flixel.tweens.FlxTween;
+
+class AttackStage extends Stage
+{
+   function new()
+   {
+      super("attack");
+   }
+
+    var crowd;
+    var cooper;
+    var nick;
+    var orbyy;
+    var offbi;
+    var loggo;
+
+    function buildStage()
+    {
+       super.buildStage();
+
+       crowd = getNamedProp('crowd');
+       cooper = getNamedProp('cooper');
+       nick = getNamedProp('nick');
+       orbyy = getNamedProp('orbyy');
+       offbi = getNamedProp('offbi');
+       loggo = getNamedProp('loggo');
+    }
+
+    function onBeatHit(event)
+    {
+        super.onBeatHit(event);
+
+        if (event.beat % 2 == 0)
+        {
+            cooper.playAnimation('idle', true);
+            crowd.playAnimation('idle', true);
+            if (!StringTools.startsWith(nick.getCurrentAnimation(), 'okay')) nick.playAnimation('idle', true);
+	    }
+	    else if (event.beat % 2 == 1)
+	    {
+            offbi.playAnimation('idle', true);
+            if (!StringTools.startsWith(orbyy.getCurrentAnimation(), 'shutup')) orbyy.playAnimation('idle', true);
+            loggo.playAnimation('idle', true);
+	    }
+    }
+
+    function onSongEvent(event)
+    {
+      super.onSongEvent(event);
+
+        if(event.eventData.eventKind == 'PlayAnimation')
+        {
+            if(event.eventData.getString('target') == 'nick')
+            {
+                if(event.eventData.getString('anim') == 'okay') // kinda weird thought of me but it works
+                {
+                   FlxTween.tween(orbyy, {alpha: 0.1}, 0.4);
+		   		    FlxTween.tween(offbi, {alpha: 0.1}, 0.4);
+		   	    	FlxTween.tween(loggo, {alpha: 0.1}, 0.4);
+	   	    		FlxTween.tween(PlayState.instance.currentStage.getGirlfriend(), {alpha: 0.1}, 0.4);
+		       		FlxTween.tween(PlayState.instance.currentStage.getCharacter('mom'), {alpha: 0.1}, 0.4);
+	   	    		FlxTween.tween(PlayState.instance.currentStage.getDad(), {alpha: 0.25}, 0.4);
+	       			FlxTween.tween(PlayState.instance.currentStage.getBoyfriend(), {alpha: 0.25}, 0.4);
+                }
+
+                if(event.eventData.getString('anim') == 'idle')
+                {
+                   FlxTween.tween(orbyy, {alpha: 1}, 0.4);
+	   	    		FlxTween.tween(offbi, {alpha: 1}, 0.4);
+	       			FlxTween.tween(loggo, {alpha: 1}, 0.4);
+		       		FlxTween.tween(PlayState.instance.currentStage.getGirlfriend(), {alpha: 1}, 0.4);
+	   	    		FlxTween.tween(PlayState.instance.currentStage.getCharacter('mom'), {alpha: 1}, 0.4);
+			   	    FlxTween.tween(PlayState.instance.currentStage.getDad(), {alpha: 1}, 0.4);
+		       		FlxTween.tween(PlayState.instance.currentStage.getBoyfriend(), {alpha: 1}, 0.4);
+                }
+            }
+        }
+    }
+}

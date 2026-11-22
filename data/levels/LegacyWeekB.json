@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "name": "Loggo's Halloween",
+  "titleAsset": "storymenu/titles/BOO!",
+  "visible": true,
+  "props": [
+  ],
+  "background": "#22C55E",
+    "songs": [
+        "lemon-lime",
+        "chlorophyll",
+        "inflorescence",
+        "stargazer"
+    ]
+}

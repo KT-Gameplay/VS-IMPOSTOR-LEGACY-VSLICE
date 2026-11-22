@@ -1,0 +1,92 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 0.9,
+	"name": "dave",
+	"cameraOffsets": [
+		-300,
+		160
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "dave",
+		"isPixel": false
+	},
+	"assetPath": "characters/freeplay/Dave",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "Dave Idle",
+			"offsets": [
+				160,
+				0
+			],
+			"frameRate": 12,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Dave Right",
+			"offsets": [
+				159,
+				3
+			],
+			"frameRate": 12,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Dave Left",
+			"offsets": [
+				156,
+				1
+			],
+			"frameRate": 12,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Dave Up",
+			"offsets": [
+				160,
+				5
+			],
+			"frameRate": 12,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Dave Down",
+			"offsets": [
+				163,
+				1
+			],
+			"frameRate": 12,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Dave Death",
+			"offsets": [
+				159,
+				-3
+			],
+			"frameRate": 12,
+			"name": "die",
+			"looped": false
+		}
+	]
+}

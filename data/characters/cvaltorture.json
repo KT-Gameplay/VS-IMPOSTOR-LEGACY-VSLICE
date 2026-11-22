@@ -1,0 +1,172 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "cvaltorture",
+	"cameraOffsets": [
+		-610,
+		90
+	],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "cval",
+		"isPixel": false
+	},
+	"assetPath": "characters/misc/cvp/cvaltorture",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "cval down",
+			"offsets": [
+				21,
+				67
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "cval up",
+			"offsets": [
+				-12,
+				102
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "cval right",
+			"offsets": [
+				-60,
+				89
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "cvale",
+			"offsets": [
+				0,
+				80
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [
+				10,
+				11,
+				12,
+				13
+			],
+			"prefix": "cvale",
+			"offsets": [
+				0,
+				80
+			],
+			"frameRate": 24,
+			"name": "idle-LOOP",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "cval left",
+			"offsets": [
+				87,
+				97
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [
+				10,
+				11,
+				12,
+				13
+			],
+			"prefix": "cval left",
+			"offsets": [
+				87,
+				97
+			],
+			"frameRate": 24,
+			"name": "singLEFT-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [
+				10,
+				11,
+				12,
+				13
+			],
+			"prefix": "cval right",
+			"offsets": [
+				-60,
+				89
+			],
+			"frameRate": 24,
+			"name": "singRIGHT-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [
+				10,
+				11,
+				12,
+				13
+			],
+			"prefix": "cval up",
+			"offsets": [
+				-12,
+				102
+			],
+			"frameRate": 24,
+			"name": "singUP-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [
+				10,
+				11,
+				12,
+				13
+			],
+			"prefix": "cval down",
+			"offsets": [
+				21,
+				67
+			],
+			"frameRate": 24,
+			"name": "singDOWN-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "cval rozebud",
+			"offsets": [
+				439,
+				314
+			],
+			"frameRate": 24,
+			"name": "GETOUT",
+			"looped": false
+		}
+	]
+}

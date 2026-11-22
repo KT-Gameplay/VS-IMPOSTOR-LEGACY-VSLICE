@@ -1,0 +1,61 @@
+//package funkin.play.event;
+
+import funkin.play.PlayState;
+import flixel.FlxG;
+import funkin.play.event.SongEvent;
+import Std;
+import Math;
+
+/**
+ * This class handles song events which bops the camera once.
+ */
+class AddCameraZoomEvent extends SongEvent
+{
+  public function new()
+  {
+    super('Add Camera Zoom', {
+      processOldEvents: true
+    });
+  }
+
+  public override function handleEvent(data:SongEventData):Void
+  {
+    // Does nothing if there is no PlayState camera or stage.
+    if (PlayState.instance == null) return;
+
+    var camZoom:Float = Std.parseFloat(data.getFloat('gameIntensity'));
+		var hudZoom:Float = Std.parseFloat(data.getFloat('intensity'));
+		if(Math.isNaN(camZoom)) camZoom = 0.015;
+		if(Math.isNaN(hudZoom)) hudZoom = 0.03;
+
+    PlayState.instance.camHUD.zoom += hudZoom;
+    PlayState.instance.cameraBopMultiplier = 1 + camZoom;
+  }
+
+  public override function getTitle():String
+  {
+    return 'Add Camera Zoom';
+  }
+
+  public override function getEventSchema():SongEventSchema
+  {
+    return[{
+      name: 'intensity',
+      title: 'HUD Zoom Intensity',
+      defaultValue: 0.03,
+      min: 0,
+      step: 0.1,
+      type: 'float',
+      units: 'x'
+    },
+    {
+      name: 'gameIntensity',
+      title: 'Camera Zoom Intensity',
+      defaultValue: 0.015,
+      min: 0,
+      step: 0.1,
+      type: 'float',
+      units: 'x'
+    }];
+  }
+}

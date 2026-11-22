@@ -1,0 +1,212 @@
+{
+  "version": "1.0.0",
+  "name": "gf-fall",
+  "assetPath": "characters/gf/gffall",
+  "startingAnimation": "cheer",
+  "singTime": 6,
+  "scale": 1,
+  "flipX": false,
+  "offsets": [
+    0,
+    0
+  ],
+  "cameraOffsets": [
+    0,
+    0
+  ],
+  "healthIcon": {
+    "id": "gf",
+    "scale": 1,
+    "flipX": false,
+    "isPixel": false
+  },
+  "healthbarColors": [
+    161,
+    161,
+    161
+  ],
+  "renderType": "multianimateatlas",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "cheer",
+      "prefix": "GF Cheer",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        3,
+        0
+      ]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "GF left note",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        0,
+        -19
+      ]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "GF Down Note",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        0,
+        -20
+      ]
+    },
+    {
+      "name": "singUP",
+      "prefix": "GF Up Note",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        0,
+        4
+      ]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "GF Right Note",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        0,
+        -20
+      ]
+    },
+    {
+      "name": "sad",
+      "prefix": "gf sad",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        -237,
+        21
+      ],
+      "frameIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "name": "danceLeft",
+      "prefix": "GF Dancing Beat",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        -222,
+        26
+      ],
+      "frameIndices": [
+        30,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    {
+      "name": "danceRight",
+      "prefix": "GF Dancing Beat",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        -222,
+        26
+      ],
+      "frameIndices": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ]
+    },
+    {
+      "name": "hairBlow",
+      "prefix": "GF Dancing Beat Hair blowing",
+      "fps": 24,
+      "looped": true,
+      "offsets": [
+        45,
+        -8
+      ],
+      "frameIndices": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "hairFall",
+      "prefix": "GF Dancing Beat Hair Landing",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        0,
+        -9
+      ],
+      "frameIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "name": "scared",
+      "prefix": "GF FEAR",
+      "fps": 24,
+      "looped": true,
+      "offsets": [
+        -2,
+        -17
+      ]
+    }
+  ]
+}

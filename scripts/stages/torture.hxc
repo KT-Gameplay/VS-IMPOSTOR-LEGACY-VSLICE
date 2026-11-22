@@ -1,0 +1,167 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.play.Countdown;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import funkin.Paths;
+import flixel.util.FlxColor;
+import StringTools;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.Conductor;
+import flixel.util.FlxTimer;
+
+class TortureStage extends Stage
+{
+    public function new()
+    {
+        super('torture');
+    }
+
+    var bladeDistance = 120;
+    var startDark:FlxSprite;
+    var ziffyStart:FlxSprite;
+    var leftblades:FlxSprite;
+    var rightblades:FlxSprite;
+    var focusedOn:String;
+
+    override function buildStage()
+    {
+        super.buildStage();
+
+        leftblades = new FlxSprite(213.05, -670);
+        leftblades.frames = Paths.getSparrowAtlas('BG/torture/leftblades', 'shared');
+        leftblades.animation.addByPrefix('spin', 'blad', 24, false);
+        leftblades.animation.play('spin');
+        leftblades.scrollFactor.set(1.4, 1.4);
+        leftblades.zIndex = 112;
+        add(leftblades);
+
+        rightblades = new FlxSprite(827.75, -670);
+        rightblades.frames = Paths.getSparrowAtlas('BG/torture/rightblades', 'shared');
+        rightblades.animation.addByPrefix('spin', 'blad', 24, false);
+        rightblades.animation.play('spin');
+        rightblades.scrollFactor.set(1.4, 1.4);
+        rightblades.zIndex = 113;
+        add(rightblades);
+
+        refresh();
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        if(startDark != null)
+        {
+            PlayState.instance.remove(startDark);
+            startDark = null;
+        }
+
+        if(ziffyStart != null)
+        {
+            PlayState.instance.remove(ziffyStart);
+            ziffyStart = null;
+        }
+
+        startDark = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+        startDark.cameras = [PlayState.instance.camCutscene];
+        startDark.screenCenter();
+        PlayState.instance.add(startDark);
+
+        ziffyStart = new FlxSprite();
+        ziffyStart.frames = Paths.getSparrowAtlas('BG/torture/ziffy', 'shared');
+        ziffyStart.animation.addByPrefix('idle', 'Opening', 24, false);
+        ziffyStart.visible = false;
+        ziffyStart.cameras = [PlayState.instance.camCutscene];
+        ziffyStart.screenCenter();
+        ziffyStart.y -= 120;
+        PlayState.instance.add(ziffyStart);
+
+        Countdown.skipCountdown();
+
+        PlayState.instance.tweenCameraToPosition(640, 350, 0);
+        LegacyUtils.camSpecialThing([640, 350], [640, 300]);
+        //PlayState.instance.camHUD.alpha = 0.001;
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        leftblades.x = (213.05 + bladeDistance) - (60 * PlayState.instance.health);
+        rightblades.x = (827.75 - bladeDistance) + (60 * PlayState.instance.health);
+
+        var dadSings:Bool = (StringTools.startsWith(PlayState.instance.currentStage.getDad().getCurrentAnimation(), 'sing'));
+
+        if (dadSings || StringTools.startsWith(PlayState.instance.currentStage.getGirlfriend().getCurrentAnimation(), 'sing'))
+		{
+			if (!dadSings) focusedOn = 'gf';
+			
+			PlayState.instance.cameraFollowPoint.x = (dadSings ? 690 : 590);
+		}
+    }
+
+    function onBeatHit(event)
+    {
+        super.onBeatHit(event);
+
+        leftblades.animation.play('spin', true);
+        rightblades.animation.play('spin', true);
+    }
+
+    function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        switch(event.eventData.eventKind)
+        {
+            case 'intro':
+                ziffyStart.visible = true;
+                ziffyStart.animation.play("idle");
+
+            case 'why dont we begin':
+				ziffyStart.visible = false;
+				ziffyStart.destroy();
+
+            case 'start':
+				FlxTween.tween(startDark, {alpha: 0}, (Conductor.instance.beatLengthMs * 28) / 1000,
+					{
+						onComplete: function(t) {
+							startDark.destroy();
+						}
+					});
+				
+				PlayState.instance.currentCameraZoom = 2.1;
+				PlayState.instance.tweenCameraZoom(1.1, 10, true, FlxEase.sineIn);
+
+            case 'saw':
+				FlxG.sound.play(Paths.sound('stage/ziffSaw'), 1);
+				FlxTween.tween(leftblades, {y: leftblades.y + 300}, (Conductor.instance.beatLengthMs * 4) / 1000, {ease: FlxEase.quintOut});
+				FlxTween.tween(rightblades, {y: rightblades.y + 300}, (Conductor.instance.beatLengthMs * 4) / 1000, {ease: FlxEase.quintOut});
+			
+                PlayState.instance.tweenCameraZoom(0.9, 1, true, FlxEase.sineOut);
+
+            case 'rozebud':
+				var rozebud = PlayState.instance.currentStage.getNamedProp('rozebud');
+
+				rozebud.alpha = 1;
+				rozebud.playAnimation('thing', true);
+                new FlxTimer().start(5.625, function(tmr) {rozebud.alpha = 0.001;});
+				
+                PlayState.instance.tweenCameraZoom(0.7, (Conductor.instance.beatLengthMs * 4) / 1000, true, FlxEase.quintOut);
+
+            case 'bye':
+                PlayState.instance.cancelCameraZoomTween();
+				FlxTween.num(bladeDistance, 150, (Conductor.instance.beatLengthMs * 4) / 1000, {ease: FlxEase.quartOut}, function(n) bladeDistance = n);
+				FlxTween.tween(PlayState.instance, {health: 0.05}, (Conductor.instance.beatLengthMs * 4) / 1000, {ease: FlxEase.quartOut});
+        }
+    }
+
+    function onStepHit(event)
+    {
+        super.onStepHit(event);
+
+        if(event.step >= 200) startDark.destroy();
+    }
+}

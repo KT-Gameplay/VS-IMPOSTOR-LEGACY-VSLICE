@@ -1,0 +1,125 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "bfmira",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"assetPath": "characters/bf/bfmira",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "BF idle dance",
+			"offsets": [
+				-5,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE LEFT0",
+			"offsets": [
+				5,
+				-6
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE DOWN0",
+			"offsets": [
+				-23,
+				-51
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE UP0",
+			"offsets": [
+				-42,
+				25
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE RIGHT0",
+			"offsets": [
+				-51,
+				-5
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE DOWN MISS",
+			"offsets": [
+				-23,
+				-26
+			],
+			"frameRate": 24,
+			"name": "singDOWNmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE LEFT MISS",
+			"offsets": [
+				5,
+				12
+			],
+			"frameRate": 24,
+			"name": "singLEFTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE RIGHT MISS",
+			"offsets": [
+				-44,
+				14
+			],
+			"frameRate": 24,
+			"name": "singRIGHTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE UP MISS",
+			"offsets": [
+				-35,
+				25
+			],
+			"frameRate": 24,
+			"name": "singUPmiss",
+			"looped": false
+		}
+	]
+}

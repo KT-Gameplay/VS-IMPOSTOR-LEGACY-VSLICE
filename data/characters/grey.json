@@ -1,0 +1,159 @@
+{
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 1,
+	"renderType": "sparrow",
+	"applyStageMatrix": false,
+	"scale": 0.9,
+	"name": "grey",
+	"cameraOffsets": [
+		500,
+		0
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 9,
+	"startingAnimation": "danceRight",
+	"healthIcon": {
+		"shouldBop": true,
+		"isPixel": false,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 1,
+		"flipX": false,
+		"id": "gray"
+	},
+	"assetPath": "characters/triple/grey",
+	"atlasSettings": {
+		"swfMode": true,
+		"applyStageMatrix": false,
+		"useRenderTexture": false,
+		"filterQuality": 1,
+		"cacheOnLoad": false
+	},
+	"animations": [
+		{
+			"offsets": [
+				-158,
+				86
+			],
+			"frameIndices": [],
+			"prefix": "right",
+			"name": "singRIGHT",
+			"looped": false,
+			"animType": "symbol",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-107,
+				-43
+			],
+			"frameIndices": [],
+			"prefix": "down",
+			"animType": "framelabel",
+			"name": "singDOWN",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				1,
+				55
+			],
+			"frameIndices": [],
+			"prefix": "left",
+			"animType": "framelabel",
+			"name": "singLEFT",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-53,
+				39
+			],
+			"frameIndices": [],
+			"prefix": "up",
+			"animType": "framelabel",
+			"name": "singUP",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				60
+			],
+			"frameIndices": [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14
+			],
+			"prefix": "idle",
+			"animType": "framelabel",
+			"name": "danceLeft",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				60
+			],
+			"frameIndices": [
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31
+			],
+			"prefix": "idle",
+			"animType": "framelabel",
+			"name": "danceRight",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24
+		}
+	]
+}

@@ -1,0 +1,81 @@
+{
+  "version": "1.0.0",
+  "name": "redmungus",
+  "assetPath": "characters/jorsawsee/meangus",
+  "startingAnimation": "idle",
+  "singTime": 6,
+  "scale": 1,
+  "flipX": true,
+  "offsets": [
+    40,
+    0
+  ],
+  "cameraOffsets": [
+    440,
+    900
+  ],
+  "healthIcon": {
+    "id": "redmungus",
+    "scale": 1,
+    "isPixel": false
+  },
+  "healthbarColors": [
+    255,
+    40,
+    40
+  ],
+  "renderType": "sparrow",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "fps": 12,
+      "looped": false,
+      "offsets": [
+        50,
+        50
+      ]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "fps": 12,
+      "looped": false,
+      "offsets": [
+        74,
+        23
+      ]
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "fps": 12,
+      "looped": false,
+      "offsets": [
+        169,
+        69
+      ]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "left",
+      "fps": 12,
+      "looped": false,
+      "offsets": [
+        -8,
+        54
+      ]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "right",
+      "fps": 12,
+      "looped": false,
+      "offsets": [
+        174,
+        50
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+import funkin.graphics.FunkinSprite;
+import funkin.play.character.AnimateAtlasCharacter;
+
+class Charles extends AnimateAtlasCharacter
+{
+    public function new()
+    {
+        super('charles');
+    }
+
+    var cloud:FunkinSprite;
+
+    override function onCreate(event)
+    {
+        super.onCreate(event);
+
+        cloud = FunkinSprite.createTextureAtlas(-392, -274, 'henry/charlesClouds', '', {cacheOnLoad: false});
+        cloud.anim.addByFrameLabel('move', 'clouds moving', 60, true);
+        cloud.scale.set(0.8, 0.8);
+        cloud.anim.play('move');
+        cloud.origin.set();
+
+        var cloudElement:FlxSpriteElement = new animate.internal.elements.FlxSpriteElement(cloud);
+        cloudElement.active = false;
+
+        this.timeline.layers[2].forEachFrame((frame) -> frame.add(cloudElement));
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        cloud.update(event.elapsed);
+    }
+
+    function onDestroy(event):Void
+    {
+        super.onDestroy(event);
+
+        cloud.destroy();
+    }
+}

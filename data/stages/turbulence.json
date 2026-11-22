@@ -1,0 +1,26 @@
+{
+  "props": [],
+
+  "cameraZoom": 0.45,
+  "version": "1.0.0",
+
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [1070, 1190],
+      "cameraOffsets": [-100, 290]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [-100, 350],
+      "cameraOffsets": [300, 150]
+    },
+    "gf": {
+      "zIndex": 100,
+      "cameraOffsets": [0, 0],
+      "position": [600, 5000020]
+    }
+  },
+
+  "name": "turbulence"
+}

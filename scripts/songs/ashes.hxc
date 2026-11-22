@@ -1,0 +1,36 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import legacy.objects.LegacyDialogueBox;
+import funkin.play.PlayStatePlaylist;
+
+class AshesSong extends Song
+{
+    public function new()
+    {
+        super('ashes');
+        playedDialogue = false;
+    }
+
+    var playedDialogue:Bool = false;
+    var dialogue:LegacyDialogueBox;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        if(!PlayStatePlaylist.isStoryMode) playedDialogue = true;
+
+        if(!playedDialogue)
+        {
+            event.cancel();
+            dialogue = new LegacyDialogueBox('ashes');
+            PlayState.instance.add(dialogue);
+            playedDialogue = true;
+        }
+    }
+
+    function onSongRetry(event)
+    {
+        playedDialogue = true;
+    }
+}

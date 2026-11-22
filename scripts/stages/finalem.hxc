@@ -1,0 +1,603 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+import funkin.modding.events.SongRetryEvent;
+import funkin.modding.events.SongEventScriptEvent;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
+import openfl.display.BlendMode;
+import legacy.shaders.ExtraDropShadowShader;
+
+class Finale extends Stage
+{
+    var defeatthing;
+    var mainoverlayDK;
+    var bg1;
+    var bg2;
+    var bg3;
+    var bg4;
+    var bg5;
+    var dark;
+    var finaleLight;
+    var finaleFlashbackStuff;
+    var lightoverlay;
+    var finaleDarkFG:FlxSprite;
+    var bfRim:ExtraDropShadowShader;
+    var zoomTween:FlxTween;
+    var lastProcessedStep:Int = -1;
+    var finaleStarted:Bool = false;
+
+    public function new()
+    {
+        super('finalem');
+    }
+
+    public override function buildStage():Void
+    {
+        super.buildStage();
+
+        defeatthing = this.getNamedProp('defeatthing');
+        mainoverlayDK = this.getNamedProp('mainoverlayDK');
+        bg1 = this.getNamedProp('bg1');
+        bg2 = this.getNamedProp('bg2');
+        bg3 = this.getNamedProp('bg3');
+        bg4 = this.getNamedProp('bg4');
+        bg5 = this.getNamedProp('bg5');
+        dark = this.getNamedProp('dark');
+        finaleLight = this.getNamedProp('finaleLight');
+        finaleFlashbackStuff = this.getNamedProp('finaleFlashbackStuff');
+        lightoverlay = this.getNamedProp('lightoverlay');
+
+        if (defeatthing != null)
+        {
+            defeatthing.scrollFactor.set(0.8, 0.8);
+            defeatthing.visible = true;
+        }
+
+        if (mainoverlayDK != null)
+        {
+            mainoverlayDK.visible = true;
+            mainoverlayDK.alpha = 0.0001;
+        }
+
+        if (bg1 != null)
+        {
+            bg1.scrollFactor.set(0.8, 0.8);
+            bg1.alpha = 0.001;
+        }
+
+        if (bg2 != null)
+        {
+            bg2.scrollFactor.set(0.9, 0.9);
+            bg2.alpha = 0.001;
+        }
+
+        if (bg3 != null)
+        {
+            bg3.alpha = 0.001;
+        }
+
+        if (bg4 != null)
+        {
+            bg4.alpha = 0.001;
+        }
+
+        if (bg5 != null)
+        {
+            bg5.alpha = 0.001;
+        }
+
+        if (dark != null)
+        {
+            dark.alpha = 0.001;
+        }
+
+        if (finaleLight != null)
+        {
+            finaleLight.scrollFactor.set(0.8, 0.8);
+            finaleLight.alpha = 0.001;
+        }
+
+        if (finaleFlashbackStuff != null)
+        {
+            finaleFlashbackStuff.alpha = 0.001;
+            finaleFlashbackStuff.scrollFactor.set();
+        }
+
+        if (lightoverlay != null)
+        {
+            lightoverlay.blend = BlendMode.ADD;
+            lightoverlay.scrollFactor.set(0.8, 0.8);
+        }
+
+        finaleDarkFG = new FlxSprite(-1000, -900);
+        finaleDarkFG.makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+        finaleDarkFG.scrollFactor.set();
+        finaleDarkFG.alpha = 1;
+        finaleDarkFG.zIndex = 150;
+        this.add(finaleDarkFG);
+
+        this.refresh();
+    }
+
+    public override function onSongLoaded(event):Void
+    {
+        super.onSongLoaded(event);
+
+        lastProcessedStep = -1;
+        finaleStarted = false;
+        setupInitialHUD();
+        setupBfRim();
+    }
+
+    public override function onSongStart(event:ScriptEvent):Void
+    {
+        super.onSongStart(event);
+
+        lastProcessedStep = -1;
+        finaleStarted = false;
+
+        if (zoomTween != null)
+        {
+            zoomTween.cancel();
+            zoomTween = null;
+        }
+
+        if (finaleDarkFG != null)
+        {
+            finaleDarkFG.alpha = 1;
+            FlxTween.tween(finaleDarkFG, {alpha: 0}, 9.6);
+        }
+
+        setupInitialHUD();
+    }
+
+    public override function onSongRetry(event:SongRetryEvent):Void
+    {
+        super.onSongRetry(event);
+
+        lastProcessedStep = -1;
+        finaleStarted = false;
+
+        if (zoomTween != null)
+        {
+            zoomTween.cancel();
+            zoomTween = null;
+        }
+
+        resetFinaleState();
+        setupInitialHUD();
+    }
+
+    public override function onBeatHit(event:SongTimeScriptEvent):Void
+    {
+        super.onBeatHit(event);
+
+        if (event.beat % 4 == 0 && finaleLight != null)
+        {
+            finaleLight.animation.play('light', true);
+        }
+    }
+
+    public override function onStepHit(event:SongTimeScriptEvent):Void
+    {
+        super.onStepHit(event);
+
+        var currentStep:Int = event.step;
+
+        if (currentStep == lastProcessedStep || Math.max(currentStep, lastProcessedStep) != currentStep)
+        {
+            return;
+        }
+
+        var startStep:Int = lastProcessedStep + 1;
+
+        if (Math.max(startStep, 0) != startStep)
+        {
+            startStep = 0;
+        }
+
+        for (step in startStep...currentStep + 1)
+        {
+            processStep(step);
+        }
+
+        lastProcessedStep = currentStep;
+    }
+
+    function processStep(step:Int):Void
+    {
+        switch (step)
+        {
+            case 64:
+                playFlashback('polus');
+
+            case 80:
+                playFlashback('mira');
+
+            case 96:
+                playFlashback('airship');
+
+            case 112:
+                flashFinale();
+
+            case 128:
+                restoreHUD();
+
+            case 272:
+                startFinaleDrop();
+
+            case 1984:
+                endFinale();
+        }
+    }
+
+    function setupInitialHUD():Void
+    {
+        if (PlayState.instance == null)
+        {
+            return;
+        }
+
+        PlayState.instance.camHUD.alpha = 0.001;
+
+        if (PlayState.instance.iconP1 != null)
+        {
+            PlayState.instance.iconP1.visible = false;
+        }
+
+        if (PlayState.instance.iconP2 != null)
+        {
+            PlayState.instance.iconP2.visible = false;
+        }
+
+        if (PlayState.instance.healthBar != null)
+        {
+            PlayState.instance.healthBar.visible = false;
+        }
+
+        if (PlayState.instance.healthBarBG != null)
+        {
+            PlayState.instance.healthBarBG.visible = false;
+        }
+
+        if (PlayState.instance.opponentStrumline != null)
+        {
+            PlayState.instance.opponentStrumline.visible = false;
+        }
+    }
+
+    function setupBfRim():Void
+    {
+        if (PlayState.instance == null || PlayState.instance.currentStage == null)
+        {
+            return;
+        }
+
+        var boyfriend = PlayState.instance.currentStage.getBoyfriend();
+
+        if (boyfriend == null)
+        {
+            return;
+        }
+
+        var blackRimlightBase:ExtraDropShadowShader = new ExtraDropShadowShader();
+
+        blackRimlightBase.threshold = 0.08;
+        blackRimlightBase.strength = 0.35;
+        blackRimlightBase.setColorMatrix([
+            1, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            0, 0, 1, 0, 0,
+            0, 0, 0, 1, 0
+        ]);
+
+        blackRimlightBase.addLayer([
+            1, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            0, 0, 1, 0, 0,
+            0, 0, 0, 1, 0
+        ], 10, 14, 0.01);
+
+        bfRim = blackRimlightBase;
+        bfRim.attachedSprite = boyfriend;
+        boyfriend.useRenderTexture = true;
+    }
+
+    function playFlashback(animationName:String):Void
+    {
+        if (finaleFlashbackStuff == null)
+        {
+            return;
+        }
+
+        finaleFlashbackStuff.alpha = 0.5;
+        finaleFlashbackStuff.visible = true;
+        finaleFlashbackStuff.animation.play(animationName, true);
+    }
+
+    function flashFinale():Void
+    {
+        if (finaleFlashbackStuff != null)
+        {
+            finaleFlashbackStuff.alpha = 0;
+        }
+
+        if (PlayState.instance != null && PlayState.instance.camGame != null)
+        {
+            PlayState.instance.camGame.fade(FlxColor.WHITE, 1.2, false, function()
+            {
+                if (PlayState.instance != null && PlayState.instance.camGame != null)
+                {
+                    PlayState.instance.camGame.fade(FlxColor.RED, 0.6, true);
+                }
+            });
+        }
+    }
+
+    function startFinaleDrop():Void
+    {
+        finaleStarted = true;
+
+        if (defeatthing != null)
+        {
+            defeatthing.visible = false;
+        }
+
+        if (mainoverlayDK != null)
+        {
+            mainoverlayDK.visible = false;
+        }
+
+        setFinalePropState(bg1, true, 1);
+        setFinalePropState(bg2, true, 1);
+        setFinalePropState(bg3, true, 1);
+        setFinalePropState(bg4, true, 1);
+        setFinalePropState(bg5, true, 1);
+        setFinalePropState(dark, true, 1);
+        setFinalePropState(finaleLight, true, 1);
+
+        if (lightoverlay != null)
+        {
+            lightoverlay.visible = false;
+        }
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.health = 0.2;
+
+            if (PlayState.instance.camGame != null)
+            {
+                PlayState.instance.camGame.flash(0xFFFF1266, 0.75);
+            }
+
+            if (PlayState.instance.iconP1 != null)
+            {
+                PlayState.instance.iconP1.visible = true;
+            }
+
+            if (PlayState.instance.iconP2 != null)
+            {
+                PlayState.instance.iconP2.visible = false;
+            }
+
+            if (PlayState.instance.healthBar != null)
+            {
+                PlayState.instance.healthBar.visible = false;
+            }
+
+            if (PlayState.instance.healthBarBG != null)
+            {
+                PlayState.instance.healthBarBG.visible = false;
+            }
+        }
+    }
+
+    function restoreHUD():Void
+    {
+        if (PlayState.instance == null)
+        {
+            return;
+        }
+
+        PlayState.instance.camHUD.alpha = 1;
+        PlayState.instance.camHUD.visible = true;
+
+        if (PlayState.instance.healthBar != null)
+        {
+            PlayState.instance.healthBar.visible = false;
+        }
+
+        if (PlayState.instance.healthBarBG != null)
+        {
+            PlayState.instance.healthBarBG.visible = false;
+        }
+
+        if (PlayState.instance.iconP1 != null)
+        {
+            PlayState.instance.iconP1.visible = false;
+        }
+
+        if (PlayState.instance.iconP2 != null)
+        {
+            PlayState.instance.iconP2.visible = false;
+        }
+
+        if (PlayState.instance.opponentStrumline != null)
+        {
+            PlayState.instance.opponentStrumline.visible = false;
+        }
+    }
+
+    public override function onSongEvent(event:SongEventScriptEvent):Void
+    {
+        super.onSongEvent(event);
+
+        if (!finaleStarted || PlayState.instance == null)
+        {
+            return;
+        }
+
+        if (PlayState.instance.iconP2 != null)
+        {
+            PlayState.instance.iconP2.visible = false;
+        }
+
+        var eventName = event.eventData.eventKind != null ? event.eventData.eventKind : event.eventData.event;
+
+        if (eventName == "FocusCamera")
+        {
+            var charTarget:Int = event.eventData.getInt('char');
+
+            if (zoomTween != null)
+            {
+                zoomTween.cancel();
+            }
+
+            if (charTarget == 0)
+            {
+                zoomTween = FlxTween.tween(
+                    PlayState.instance,
+                    {currentCameraZoom: 0.7},
+                    0.7,
+                    {ease: FlxEase.smoothStepInOut}
+                );
+            }
+            else if (charTarget == 1)
+            {
+                zoomTween = FlxTween.tween(
+                    PlayState.instance,
+                    {currentCameraZoom: 0.5},
+                    0.5,
+                    {ease: FlxEase.smoothStepInOut}
+                );
+            }
+        }
+    }
+
+    function setFinalePropState(prop:Dynamic, visibleState:Bool, alphaValue:Float):Void
+    {
+        if (prop == null)
+        {
+            return;
+        }
+
+        prop.visible = visibleState;
+        prop.alpha = alphaValue;
+    }
+
+    function endFinale():Void
+    {
+        if (zoomTween != null)
+        {
+            zoomTween.cancel();
+            zoomTween = null;
+        }
+
+        if (PlayState.instance != null)
+        {
+            if (PlayState.instance.iconP2 != null)
+            {
+                PlayState.instance.iconP2.visible = false;
+            }
+
+            if (PlayState.instance.camHUD != null)
+            {
+                PlayState.instance.camHUD.visible = false;
+            }
+
+            if (PlayState.instance.camGame != null)
+            {
+                PlayState.instance.camGame.flash(0xFFFF1266, 5);
+                PlayState.instance.camGame.visible = false;
+            }
+        }
+    }
+
+    function resetFinaleState():Void
+    {
+        if (defeatthing != null)
+        {
+            defeatthing.visible = true;
+        }
+
+        if (mainoverlayDK != null)
+        {
+            mainoverlayDK.visible = true;
+            mainoverlayDK.alpha = 0.0001;
+        }
+
+        setFinalePropState(bg1, true, 0.001);
+        setFinalePropState(bg2, true, 0.001);
+        setFinalePropState(bg3, true, 0.001);
+        setFinalePropState(bg4, true, 0.001);
+        setFinalePropState(bg5, true, 0.001);
+        setFinalePropState(dark, true, 0.001);
+        setFinalePropState(finaleLight, true, 0.001);
+
+        if (finaleFlashbackStuff != null)
+        {
+            finaleFlashbackStuff.visible = true;
+            finaleFlashbackStuff.alpha = 0.001;
+        }
+
+        if (lightoverlay != null)
+        {
+            lightoverlay.visible = true;
+            lightoverlay.alpha = 1;
+        }
+
+        if (finaleDarkFG != null)
+        {
+            finaleDarkFG.visible = true;
+            finaleDarkFG.alpha = 1;
+        }
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.camHUD.visible = true;
+            PlayState.instance.camHUD.alpha = 0.001;
+            PlayState.instance.camGame.visible = true;
+
+            if (PlayState.instance.iconP1 != null)
+            {
+                PlayState.instance.iconP1.visible = false;
+            }
+
+            if (PlayState.instance.iconP2 != null)
+            {
+                PlayState.instance.iconP2.visible = false;
+            }
+
+            if (PlayState.instance.healthBar != null)
+            {
+                PlayState.instance.healthBar.visible = false;
+            }
+
+            if (PlayState.instance.healthBarBG != null)
+            {
+                PlayState.instance.healthBarBG.visible = false;
+            }
+
+            if (PlayState.instance.opponentStrumline != null)
+            {
+                PlayState.instance.opponentStrumline.visible = false;
+            }
+        }
+    }
+
+    public override function onDestroy(event:ScriptEvent):Void
+    {
+        if (zoomTween != null)
+        {
+            zoomTween.cancel();
+            zoomTween = null;
+        }
+
+        super.onDestroy(event);
+    }
+}

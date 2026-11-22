@@ -1,0 +1,76 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import flixel.util.FlxColor;
+
+class LegacyModule extends Module
+{
+    public function new()
+    {
+        super('LegacyModule');
+    }
+
+    var bfOff:Array<Float> = null;
+    var dadOff:Array<Float> = null;
+    var focusedOn:String;
+
+    // function is called from utils
+    public function camSpecialThing(?dad = null, ?bf = null, ?zoom:Float = -1, ?snaptoo:Int = -1)
+    {
+        if(zoom > 0) PlayState.instance?.currentCameraZoom = zoom;
+        if (bf != null && bf != -1) bfOff = bf;
+        if (dad != null && dad != -1) dadOff = dad;
+        if (snaptoo != -1 && snaptoo != null)
+        {
+            var huh = (snaptoo == 0 ? dad : bf);
+            PlayState.instance?.tweenCameraToPosition(huh[0], huh[1], 0);
+        }
+    }
+
+    override function onSongEvent(event)
+    {
+        if(PlayState.instance == null) return;
+        super.onSongEvent(event);
+
+        if(bfOff == null && dadOff == null) return;
+
+        if(event.eventData.eventKind == 'FocusCamera')
+        {
+            var char:Int = event.eventData.getInt('char');
+
+            switch(char)
+            {
+                case 1:            
+                    event.cancel();
+
+                    PlayState.instance.resetCamera(false, false, false);      
+                    PlayState.instance.cancelCameraFollowTween();
+                    PlayState.instance.cameraFollowPoint.setPosition(dadOff[0], dadOff[1]);
+
+                case 0:
+                    event.cancel();
+
+                    PlayState.instance.resetCamera(false, false, false);
+                    PlayState.instance.cancelCameraFollowTween();
+                    PlayState.instance.cameraFollowPoint.setPosition(bfOff[0], bfOff[1]);
+            }
+        }
+
+        if(event.eventData.eventKind == 'flash')
+        {
+            var charType = 1;
+            if(event.eventData.getInt('value') != null) charType = event.eventData.getInt('value');
+
+            switch (charType)
+			{
+				case 0:
+					PlayState.instance.camGame.flash(FlxColor.WHITE, 0.35);
+				case 1:
+					PlayState.instance.camGame.flash(FlxColor.WHITE, 0.35);
+				case 2:
+					PlayState.instance.camGame.flash(FlxColor.WHITE, 0.55);
+				case 3:
+					PlayState.instance.camGame.flash(FlxColor.WHITE, 0.55);
+			}
+        }
+    }
+}

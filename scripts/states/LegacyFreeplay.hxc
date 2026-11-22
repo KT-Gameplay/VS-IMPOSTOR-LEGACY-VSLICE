@@ -1,0 +1,694 @@
+import flixel.FlxG;
+import flixel.FlxCamera;
+import legacy.objects.AmongUIState;
+import Reflect;
+import StringTools;
+import flixel.FlxSprite;
+import flixel.input.mouse.FlxMouse;
+import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxText.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import funkin.Assets;
+import funkin.Paths;
+import funkin.audio.FunkinSound;
+import funkin.data.song.SongRegistry;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.module.ModuleHandler;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.scoring.Scoring;
+import funkin.save.Save;
+
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.transition.LoadingState;
+import funkin.util.Constants;
+import funkin.util.TouchUtil;
+
+class LegacyFreeplayState extends AmongUIState
+{
+  static var curSection:Int = 0;
+  static var curSong:Int = 0;
+  var data:Dynamic;
+  var sections:Array<Dynamic> = [];
+  var songs:Array<Dynamic> = [];
+  var sectionTabs:Array<FlxSprite> = [];
+  var sectionTabTargets:Array<Int> = [];
+  var tabsLayer:FlxSpriteGroup;
+  var cardLayer:FlxSpriteGroup;
+  var cardGroups:Array<FlxSpriteGroup> = [];
+  var cardSprites:Array<FlxSprite> = [];
+  var cardNames:Array<FlxText> = [];
+  var cardIcons:Array<FunkinSprite> = [];
+  var cardLocks:Array<FlxSprite> = [];
+  var cardCosts:Array<FlxText> = [];
+  var cardRanks:Array<FlxText> = [];
+  var cardCredits:Array<FlxText> = [];
+  var portrait:FlxSprite;
+  var portraitGlow:FlxSprite;
+  var sectionTitle:FlxText;
+  var statsText:FlxText;
+  var previousPortrait:String = '';
+  var portraitTween:FlxTween;
+  var portraitAlphaTween:FlxTween;
+  var glowTween:FlxTween;
+  var leaving:Bool = false;
+  var menuReady:Bool = false;
+  var smoothSong:Float = 0;
+  var smoothSection:Float = 0;
+  var sectionTarget:Float = 0;
+  var touchMode:Bool = false;
+  var touchStartX:Float = 0;
+  var touchStartY:Float = 0;
+  var touchMoved:Bool = false;
+  var cubeButton:FlxSprite;
+  var selectedSong:Dynamic;
+  var selectedLocked:Bool = false;
+  var infoColor:Int = FlxColor.WHITE;
+  var topY:Float = 0;
+
+  function new()
+  {
+    super();
+  }
+
+  override function create():Void
+  {
+    menuReady = false;
+    super.create();
+    if (!baseReady)
+    {
+      leaving = true;
+      return;
+    }
+    FlxG.camera.bgColor = FlxColor.BLACK;
+    touchMode = !Std.isOfType(TouchUtil.touch, FlxMouse);
+    FlxG.mouse.visible = !touchMode;
+    lockMovement = false;
+    leaving = false;
+    data = ModuleHandler.getModule('LegacyMenu');
+    if (data == null)
+    {
+      leaving = true;
+      trace('[LegacyFreeplay] LegacyMenuModule nao carregado.');
+      FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+      return;
+    }
+    data.reloadWeeks();
+    sections = data.sections;
+    if (sections == null || sections.length == 0)
+    {
+      sections = [{id: 'empty', title: 'FREEPLAY', songs: []}];
+    }
+    curSection = FlxMath.wrap(curSection, 0, sections.length - 1);
+    smoothSection = curSection;
+    sectionTarget = curSection;
+    sectionTabs = [];
+    cardGroups = [];
+    cardSprites = [];
+    cardNames = [];
+    cardIcons = [];
+    cardLocks = [];
+    cardCosts = [];
+    cardRanks = [];
+    cardCredits = [];
+    topY = FlxG.height * 0.45;
+
+    cardLayer = new FlxSpriteGroup();
+    cardLayer.scrollFactor.set();
+    add(cardLayer);
+
+    var backGlow:FlxSprite = new FlxSprite(484.9, -12.65);
+    if (Assets.exists(Paths.image('menu/freeplay/backGlow'))) backGlow.loadGraphic(Paths.image('menu/freeplay/backGlow'));
+    else backGlow.visible = false;
+    backGlow.color = FlxColor.RED;
+    backGlow.scrollFactor.set();
+    add(backGlow);
+
+    portrait = new FlxSprite(304.65, -100);
+    if (Assets.exists(Paths.image('menu/freeplay/portraits/red'))) portrait.loadGraphic(Paths.image('menu/freeplay/portraits/red'));
+    else portrait.visible = false;
+    portrait.alpha = 0;
+    portrait.scrollFactor.set();
+    add(portrait);
+    portraitGlow = backGlow;
+
+    if (upperBar != null) add(upperBar);
+    if (backButton != null) add(backButton).revive();
+    if (beanIcon != null) add(beanIcon);
+    if (beanText != null) add(beanText);
+
+    cubeButton = new FlxSprite();
+    if (Assets.exists(Paths.image('menu/common/menuOther'))) cubeButton.loadGraphic(Paths.image('menu/common/menuOther'));
+    else cubeButton.makeGraphic(60, 60, 0xFF444444);
+    cubeButton.setPosition(FlxG.width - cubeButton.width - 12, 8);
+    cubeButton.scrollFactor.set();
+    cubeButton.camera = camUpper;
+
+    sectionTitle = new FlxText(0, 80, FlxG.width, 'FREEPLAY');
+    sectionTitle.setFormat(Paths.font('AmaticSC-Bold.ttf'), 70, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    sectionTitle.borderSize = 3;
+    sectionTitle.scrollFactor.set();
+    sectionTitle.camera = camUpper;
+    add(sectionTitle);
+
+    statsText = new FlxText(0, 91, FlxG.width - 6, 'SCORE: 0\nACCURACY: 0%', 48);
+    statsText.setFormat(Paths.font('vcr.ttf'), 36, FlxColor.WHITE, 'right', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    statsText.borderSize = 2;
+    statsText.scrollFactor.set();
+    statsText.camera = camUpper;
+    add(statsText);
+    tabsLayer = new FlxSpriteGroup();
+    tabsLayer.camera = camUpper;
+    tabsLayer.zIndex = 22;
+    add(tabsLayer);
+    add(cubeButton);
+
+    buildTabs();
+    changeSection(0, false);
+    FlxG.camera.fade(FlxColor.BLACK, 0.35, true);
+    try FunkinSound.playMusic('freakyMenu', {overrideExisting: true, restartTrack: false, persist: true}) catch (e:Dynamic) trace(e);
+    menuReady = true;
+  }
+
+  function makeNormalIcon(raw:String, mirror:Bool = false):FunkinSprite
+  {
+    var name:String = raw == null || raw == '' ? 'face' : raw;
+    while (StringTools.startsWith(name, '../')) name = name.substr(3);
+    if (StringTools.startsWith(name, 'icons/')) name = name.substr(6);
+
+    var iconPath:String = Paths.image('icons/' + name);
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('icons/icon-' + name);
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('icons/face');
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('icons/icon-face');
+
+    var icon:FunkinSprite = new FunkinSprite();
+    if (Assets.exists(iconPath)) icon.loadGraphic(iconPath, true, 150, 150);
+    else icon.makeGraphic(150, 150, 0xFFFFFFFF);
+
+    var count:Int = icon.numFrames;
+    if (count < 1) count = 1;
+    var order:Array<Int> = [];
+    for (i in 0...count) order.push(i);
+
+    icon.animation.add('health', order, 0, false, mirror);
+    icon.animation.play('health');
+    icon.scrollFactor.set();
+    return icon;
+  }
+
+  function buildTabs():Void
+  {
+    for (tab in sectionTabs) tabsLayer.remove(tab, true);
+    sectionTabs = [];
+    sectionTabTargets = [];
+    for (i in 0...10)
+    {
+      var tab:FlxSprite = new FlxSprite();
+      tab.ID = i;
+      tab.scrollFactor.set();
+      tab.camera = camUpper;
+      tabsLayer.add(tab);
+      sectionTabs.push(tab);
+      sectionTabTargets.push(-1);
+    }
+  }
+
+  function clearCards():Void
+  {
+    for (group in cardGroups) cardLayer.remove(group, true);
+    cardGroups = [];
+    cardSprites = [];
+    cardNames = [];
+    cardIcons = [];
+    cardLocks = [];
+    cardCosts = [];
+    cardRanks = [];
+    cardCredits = [];
+  }
+
+  function changeSection(delta:Int, resetSong:Bool = true):Void
+  {
+    if (sections.length == 0) return;
+    curSection = FlxMath.wrap(curSection + delta, 0, sections.length - 1);
+    if (sections.length > 1)
+    {
+      var sectionStep:Int = delta;
+      if (sections.length > 2 && Math.abs(sectionStep) > sections.length * 0.5) sectionStep += sectionStep > 0 ? -sections.length : sections.length;
+      sectionTarget += sectionStep;
+    }
+    var sectionSongs:Array<Dynamic> = cast sections[curSection].songs;
+    songs = [];
+    if (sectionSongs != null)
+    {
+      for (entry in sectionSongs)
+      {
+        if (entry.hide == true && !data.doubleTroubleUnlocked()) continue;
+        songs.push(entry);
+      }
+    }
+    if (resetSong) curSong = 0;
+    if (songs.length > 0) curSong = FlxMath.wrap(curSong, 0, songs.length - 1);
+    smoothSong = curSong;
+    sectionTitle.text = Std.string(sections[curSection].title);
+    clearCards();
+    for (i in 0...songs.length)
+    {
+      var entry:Dynamic = songs[i];
+      var group:FlxSpriteGroup = new FlxSpriteGroup(70, 0);
+      group.ID = i;
+      var card:FlxSprite = new FlxSprite(0, 0);
+      if (Assets.exists(Paths.image('menu/freeplay/card'))) card.loadGraphic(Paths.image('menu/freeplay/card'));
+      else card.makeGraphic(560, 170, 0xFF444444);
+      var name:FlxText = new FlxText(110, -5, 500, Std.string(entry.name), 64);
+      name.setFormat(Paths.font('AmaticSC-Bold.ttf'), 64, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      name.borderSize = 2;
+      var icon:FunkinSprite = makeNormalIcon(entry.icon == null ? 'face' : Std.string(entry.icon));
+      icon.setGraphicSize(Std.int(icon.frameWidth * 0.6));
+      icon.updateHitbox();
+      icon.setPosition(-13, -23);
+      var lock:FlxSprite = new FlxSprite();
+      var lockAtlas:String = entry.lock == 'special' ? 'menu/freeplay/lockGold' : 'menu/freeplay/lock';
+      try
+      {
+        if (!Assets.exists(Paths.image(lockAtlas))) throw 'lock atlas missing';
+        lock.frames = Paths.getSparrowAtlas(lockAtlas);
+        lock.animation.addByPrefix('lock', 'lock0', 24, true);
+        lock.animation.addByPrefix('unlock', 'lock open', 24, false);
+        lock.animation.play('lock');
+      }
+      catch (e:Dynamic)
+      {
+        lock.makeGraphic(55, 70, 0xFFFF3333);
+      }
+      lock.setPosition(25, 9);
+      var cost:FlxText = new FlxText(440, -20, 100, Std.string(entry.cost), 28);
+      cost.setFormat(Paths.font('ariblk.ttf'), 28, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      cost.borderSize = 2;
+      var currency:FlxSprite = new FlxSprite(405, -20);
+      if (Assets.exists(Paths.image('currency/' + Std.string(entry.currency)))) currency.loadGraphic(Paths.image('currency/' + Std.string(entry.currency)));
+      else currency.visible = false;
+      currency.setGraphicSize(0, 40);
+      currency.updateHitbox();
+      var note:FlxSprite = new FlxSprite(110, 75);
+      if (Assets.exists(Paths.image('menu/freeplay/musicNote'))) note.loadGraphic(Paths.image('menu/freeplay/musicNote'));
+      else note.visible = false;
+      var credit:FlxText = new FlxText(130, 72, 350, Std.string(entry.credit), 20);
+      credit.setFormat(Paths.font('vcr.ttf'), 20, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      var rank:FlxText = new FlxText(450, 0, 90, '', 64);
+      rank.setFormat(Paths.font('AmaticSC-Bold.ttf'), 64, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      rank.borderSize = 2;
+      group.add(card);
+      group.add(name);
+      group.add(icon);
+      group.add(lock);
+      group.add(currency);
+      group.add(cost);
+      group.add(note);
+      group.add(credit);
+      group.add(rank);
+      cardLayer.add(group);
+      cardGroups.push(group);
+      cardSprites.push(card);
+      cardNames.push(name);
+      cardIcons.push(icon);
+      cardLocks.push(lock);
+      cardCosts.push(cost);
+      cardCredits.push(credit);
+      cardRanks.push(rank);
+    }
+    updateCards(true);
+    refreshCardDepth();
+    updateSelectedInfo(true);
+  }
+
+  function refreshCardDepth():Void
+  {
+    if (cardLayer == null || cardGroups == null) return;
+    var ordered:Array<FlxSpriteGroup> = cardGroups.copy();
+    ordered.sort(function(a:FlxSpriteGroup, b:FlxSpriteGroup):Int
+    {
+      var da:Float = Math.abs(a.ID - curSong);
+      var db:Float = Math.abs(b.ID - curSong);
+      if (da > db) return -1;
+      if (da < db) return 1;
+      return a.ID - b.ID;
+    });
+    for (group in ordered) cardLayer.remove(group, false);
+    for (group in ordered) cardLayer.add(group);
+  }
+
+  function isLocked(entry:Dynamic):Bool
+  {
+    if (data.ownsSong(entry.id)) return false;
+    var lock:String = entry.lock == null ? 'story' : Std.string(entry.lock);
+    if (lock == 'shop') return true;
+    if (lock == 'story' || lock == 'special')
+    {
+      var required:Array<String> = cast entry.requiredSongs;
+      if (required == null) required = [Std.string(entry.id)];
+      for (requiredSong in required)
+      {
+        if (!data.songPlayed(Std.string(requiredSong))) return true;
+      }
+    }
+    return false;
+  }
+
+  function updateCards(instant:Bool = false):Void
+  {
+    for (i in 0...cardGroups.length)
+    {
+      var distance:Float = i - smoothSong;
+      var targetX:Float = 70 + Math.abs(distance) * -70;
+      var targetY:Float = topY + distance * 117;
+      var targetAlpha:Float = Math.max(0, 1 - Math.abs(distance) * 0.25);
+      var group:FlxSpriteGroup = cardGroups[i];
+      if (instant)
+      {
+        group.x = targetX;
+        group.y = targetY;
+        group.alpha = targetAlpha;
+      }
+      else
+      {
+        var follow:Float = 1 - Math.pow(0.7, FlxG.elapsed * 60);
+        group.x = FlxMath.lerp(group.x, targetX, follow);
+        group.y = FlxMath.lerp(group.y, targetY, follow);
+        group.alpha = FlxMath.lerp(group.alpha, targetAlpha, follow);
+      }
+      var entry:Dynamic = songs[i];
+      var locked:Bool = isLocked(entry);
+      cardLocks[i].visible = locked;
+      cardCosts[i].visible = locked && entry.lock == 'shop' && Std.int(entry.cost) > 0;
+      var currency:FlxSprite = cast cardGroups[i].members[4];
+      currency.visible = locked && entry.lock == 'shop' && Std.int(entry.cost) > 0;
+      cardNames[i].text = locked && Std.int(entry.cost) == 0 ? '???' : Std.string(entry.name);
+      cardNames[i].color = locked ? 0xFFAAAAAA : FlxColor.WHITE;
+      cardIcons[i].color = locked ? FlxColor.BLACK : FlxColor.WHITE;
+      cardSprites[i].color = locked ? 0xFF4A4A4A : FlxColor.WHITE;
+      cardCredits[i].visible = !locked;
+      var rankValue:String = locked ? '' : data.songRank(Std.string(entry.id));
+      cardRanks[i].text = rankValue == 'NONE' ? '' : rankValue;
+      cardRanks[i].x = 450;
+      cardRanks[i].y = (cardSprites[i].height - cardRanks[i].height) * 0.5;
+      cardRanks[i].visible = !locked && rankValue != '' && rankValue != 'NONE';
+      cardRanks[i].color = rankValue == 'P' ? 0xFFEDA3F7 : (rankValue == 'S' ? 0xFFFFFF00 : (rankValue == 'F' ? 0xFFFF5555 : FlxColor.WHITE));
+    }
+    var sectionFraction:Float = FlxMath.mod(smoothSection, 1);
+    var sectionBase:Int = Std.int(Math.floor(smoothSection));
+    for (i in 0...sectionTabs.length)
+    {
+      var tab:FlxSprite = sectionTabs[i];
+      var diff:Float = i - 4;
+      var scrollDiff:Float = diff - sectionFraction;
+      var sectionIndex:Int = Std.int(FlxMath.mod(diff + sectionBase, sections.length));
+      if (sectionTabTargets[i] != sectionIndex)
+      {
+        sectionTabTargets[i] = sectionIndex;
+        var sectionId:String = Std.string(sections[sectionIndex].id);
+        var imagePath:String = 'menu/freeplay/sections/' + sectionId;
+        if (Assets.exists(Paths.image(imagePath)))
+        {
+          tab.loadGraphic(Paths.image(imagePath));
+          tab.visible = true;
+        }
+        else if (Assets.exists(Paths.image('menu/freeplay/card')))
+        {
+          tab.loadGraphic(Paths.image('menu/freeplay/card'));
+          tab.visible = true;
+        }
+        else tab.visible = false;
+        tab.setGraphicSize(-1, 71);
+        tab.updateHitbox();
+      }
+      var cosine:Float = FlxMath.fastCos((1 - scrollDiff / 5.3) * Math.PI * 0.5);
+      tab.x = (FlxG.width - tab.width) * 0.5 + cosine * 320;
+      tab.y = 6;
+      var distance:Float = Math.abs(scrollDiff / 5);
+      tab.alpha = Math.max(0, 1 - FlxEase.quintIn(distance) * 0.6 - FlxEase.quintOut(distance) * 0.4);
+      tab.zIndex = Std.int(Math.abs(diff - sectionFraction));
+    }
+    tabsLayer.members.sort(function(a:Dynamic, b:Dynamic):Int return Std.int(b.zIndex - a.zIndex));
+
+  }
+
+  function changeSong(delta:Int):Void
+  {
+    if (songs.length == 0) return;
+    curSong = FlxMath.wrap(curSong + delta, 0, songs.length - 1);
+    smoothSong = curSong;
+    updateSelectedInfo(false);
+    refreshCardDepth();
+    FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
+  }
+
+  function updateSelectedInfo(instant:Bool):Void
+  {
+    if (songs.length == 0)
+    {
+      selectedSong = null;
+      statsText.text = 'SCORE: 0\nACCURACY: 0%\nRANK: --';
+      portrait.alpha = 0;
+      previousPortrait = '';
+      return;
+    }
+    selectedSong = songs[curSong];
+    selectedLocked = isLocked(selectedSong);
+    var portraitName:String = Std.string(selectedSong.portrait);
+    if (portraitName != previousPortrait)
+    {
+      try
+      {
+        var portraitPath:String = 'menu/freeplay/portraits/' + portraitName;
+        if (!Assets.exists(Paths.image(portraitPath))) portraitPath = 'menu/freeplay/portraits/unknown';
+        if (!Assets.exists(Paths.image(portraitPath))) throw 'freeplay portrait missing: ' + portraitName;
+        portrait.loadGraphic(Paths.image(portraitPath));
+        portrait.visible = true;
+        portrait.updateHitbox();
+        portrait.offset.set();
+        portrait.offset.x += (portrait.frameWidth - 1215) * 0.5 * portrait.scale.x;
+        portrait.offset.y += (portrait.frameHeight - 1097) * 0.5 * portrait.scale.y;
+        portrait.color = selectedLocked ? FlxColor.BLACK : FlxColor.WHITE;
+        portrait.x = 504.65;
+        portrait.y = -100;
+        portrait.alpha = 0;
+        if (portraitTween != null) portraitTween.cancel();
+        if (portraitAlphaTween != null) portraitAlphaTween.cancel();
+        if (glowTween != null) glowTween.cancel();
+        portraitTween = FlxTween.tween(portrait, {x: 304.65}, 0.3, {ease: FlxEase.expoOut});
+        portraitAlphaTween = FlxTween.tween(portrait, {alpha: 1}, 0.3, {ease: FlxEase.expoOut});
+        var tint:Dynamic = Reflect.field(selectedSong, 'color');
+        if (Std.isOfType(tint, Array) && tint.length >= 3)
+        {
+          var tintColor:Int = FlxColor.fromRGB(Std.int(tint[0]), Std.int(tint[1]), Std.int(tint[2]));
+          glowTween = FlxTween.color(portraitGlow, 0.2, portraitGlow.color, tintColor);
+        }
+        else if (tint != null)
+        {
+          glowTween = FlxTween.color(portraitGlow, 0.2, portraitGlow.color, Std.int(tint));
+        }
+        previousPortrait = portraitName;
+      }
+      catch (e:Dynamic)
+      {
+        portrait.alpha = 0;
+        previousPortrait = '';
+      }
+    }
+    else
+    {
+      portrait.color = selectedLocked ? FlxColor.BLACK : FlxColor.WHITE;
+    }
+    refreshCardDepth();
+    var record:Dynamic = null;
+    try record = Save.instance.getSongScore(selectedSong.id, Constants.DEFAULT_DIFFICULTY, Constants.DEFAULT_VARIATION) catch (e:Dynamic) record = null;
+    var score:Int = record == null ? 0 : Std.int(record.score);
+    var accuracy:Float = 0;
+    if (record != null && record.tallies != null && record.tallies.totalNotes > 0) accuracy = Scoring.tallyCompletion(record.tallies) * 100;
+    var rank:String = data.songRank(Std.string(selectedSong.id));
+    statsText.text = 'SCORE: ' + score + '\nACCURACY: ' + Math.round(accuracy * 100) / 100 + '%\nRANK: ' + (rank == 'NONE' ? '--' : rank);
+    if (selectedLocked) statsText.text = 'SCORE: --\nACCURACY: --\nRANK: --';
+  }
+
+  function acceptSong():Void
+  {
+    if (selectedSong == null || leaving) return;
+    if (selectedLocked)
+    {
+      var price:Int = Std.int(selectedSong.cost);
+      if (selectedSong.lock == 'shop' && price > 0 && data.spend(Std.string(selectedSong.currency), price))
+      {
+        data.unlockSong(Std.string(selectedSong.id));
+        data.checkAchievements();
+        selectedLocked = false;
+        FlxG.sound.play(Paths.sound('shopBuy'), 0.8);
+        updateCards(true);
+        updateSelectedInfo(true);
+        return;
+      }
+      FlxG.sound.play(Paths.sound('locked'), 0.7);
+      FlxG.camera.shake(0.004, 0.18);
+      return;
+    }
+    var song:Dynamic = null;
+    try song = SongRegistry.instance.fetchEntry(Std.string(selectedSong.id), {variation: Constants.DEFAULT_VARIATION}) catch (e:Dynamic) song = null;
+    if (song == null)
+    {
+      var cleanId:String = StringTools.replace(StringTools.replace(Std.string(selectedSong.name).toLowerCase(), ' ', '-'), "'", '');
+      try song = SongRegistry.instance.fetchEntry(cleanId, {variation: Constants.DEFAULT_VARIATION}) catch (e:Dynamic) song = null;
+    }
+    if (song == null)
+    {
+      trace('[LegacyFreeplay] SongRegistry nao encontrou ' + Std.string(selectedSong.id));
+      FlxG.sound.play(Paths.sound('cancelMenu'));
+      return;
+    }
+    var difficulty:String = Constants.DEFAULT_DIFFICULTY;
+    var variation:String = song.getFirstValidVariation(difficulty);
+    if (variation == null) variation = Constants.DEFAULT_VARIATION;
+    var instrumental:String = song.getBaseInstrumentalId(difficulty, variation);
+    if (instrumental == null) instrumental = '';
+    try Paths.setCurrentLevel(Std.string(selectedSong.week)) catch (e:Dynamic) trace(e);
+    var rewardCurrency:String = selectedSong.currency == null ? 'beans' : Std.string(selectedSong.currency);
+    if (rewardCurrency.length == 0 || rewardCurrency == 'null') rewardCurrency = 'beans';
+    data.write('pendingBeansCurrency', rewardCurrency);
+    PlayStatePlaylist.isStoryMode = false;
+    PlayStatePlaylist.playlistSongIds = [];
+    PlayStatePlaylist.campaignScore = 0;
+    PlayStatePlaylist.campaignId = null;
+    PlayStatePlaylist.campaignTitle = Std.string(selectedSong.name);
+    PlayStatePlaylist.campaignDifficulty = difficulty;
+    leaving = true;
+    FlxG.sound.play(Paths.sound('panelAppear'), 0.5);
+    LoadingState.loadPlayState({targetSong: song, targetDifficulty: difficulty, targetVariation: variation, targetInstrumental: instrumental}, true);
+  }
+
+  function pointerX():Float
+  {
+    return touchMode && TouchUtil.touch != null ? TouchUtil.touch.gameX : FlxG.mouse.screenX;
+  }
+
+  function pointerY():Float
+  {
+    return touchMode && TouchUtil.touch != null ? TouchUtil.touch.gameY : FlxG.mouse.screenY;
+  }
+
+  function pointerOverObject(object:Dynamic):Bool
+  {
+    if (object == null) return false;
+    var targetCamera:FlxCamera = object.camera == null ? FlxG.camera : object.camera;
+    var pointer:Dynamic = touchMode ? TouchUtil.touch : FlxG.mouse;
+    if (pointer == null) return false;
+    var point:Dynamic = pointer.getWorldPosition(targetCamera);
+    var hit:Bool = point.x >= object.x && point.x <= object.x + object.width && point.y >= object.y && point.y <= object.y + object.height;
+    point.put();
+    return hit;
+  }
+
+  override public function exit():Void
+  {
+    if (leaving) return;
+    leaving = true;
+    FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    if (!baseReady || !menuReady || leaving || data == null || cardLayer == null)
+    {
+      super.update(elapsed);
+      return;
+    }
+    if (!leaving && !lockMovement)
+    {
+      var pointerTap:Bool = !touchMode && FlxG.mouse.justPressed;
+      var touchRelease:Bool = touchMode && TouchUtil.justReleased;
+
+      if (touchMode && TouchUtil.justPressed)
+      {
+        touchStartX = pointerX();
+        touchStartY = pointerY();
+        touchMoved = false;
+      }
+      if (touchMode && TouchUtil.pressed)
+      {
+        if (Math.abs(pointerX() - touchStartX) > 28 || Math.abs(pointerY() - touchStartY) > 28) touchMoved = true;
+      }
+      if (touchRelease)
+      {
+        var deltaX:Float = pointerX() - touchStartX;
+        var deltaY:Float = pointerY() - touchStartY;
+        if (touchMoved)
+        {
+          if (Math.abs(deltaY) >= Math.abs(deltaX)) changeSong(deltaY < 0 ? 1 : -1);
+          else changeSection(deltaX < 0 ? 1 : -1);
+        }
+        else pointerTap = true;
+      }
+
+      if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.BACKSPACE || (pointerTap && pointerOverObject(backButton)))
+      {
+        leaving = true;
+        FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+        return;
+      }
+      if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) changeSection(-1);
+      else if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) changeSection(1);
+      if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W) changeSong(-1);
+      else if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S) changeSong(1);
+      if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) acceptSong();
+      if (FlxG.keys.justPressed.TAB)
+      {
+        var locker:Dynamic = ModuleHandler.getModule('LegacyMenu');
+        if (locker != null) FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyCosmicubeState'));
+      }
+      if (!touchMode && FlxG.mouse.wheel != 0)
+      {
+        if (FlxG.mouse.y < 140) changeSection(FlxG.mouse.wheel > 0 ? -1 : 1);
+        else changeSong(FlxG.mouse.wheel > 0 ? -1 : 1);
+      }
+      if (pointerTap && pointerOverObject(cubeButton))
+      {
+        leaving = true;
+        FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyCosmicubeState'));
+        super.update(elapsed);
+        return;
+      }
+      if (pointerTap)
+      {
+        for (i in 0...cardGroups.length)
+        {
+          if (!pointerOverObject(cardGroups[i])) continue;
+          if (curSong != i)
+          {
+            curSong = i;
+            smoothSong = i;
+            updateSelectedInfo(false);
+            refreshCardDepth();
+            FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
+          }
+          else acceptSong();
+          break;
+        }
+        for (i in 0...sectionTabs.length)
+        {
+          var targetSection:Int = sectionTabTargets[i];
+          if (targetSection >= 0 && pointerOverObject(sectionTabs[i]) && curSection != targetSection)
+          {
+            var sectionDelta:Int = targetSection - curSection;
+            if (sections.length > 2 && Math.abs(sectionDelta) > sections.length * 0.5) sectionDelta += sectionDelta > 0 ? -sections.length : sections.length;
+            changeSection(sectionDelta);
+            break;
+          }
+        }
+      }
+    }
+    smoothSong = FlxMath.lerp(smoothSong, curSong, Math.min(elapsed * 12, 1));
+    smoothSection = FlxMath.lerp(smoothSection, sectionTarget, 1 - Math.pow(0.7, elapsed * 60));
+    updateCards(false);
+    super.update(elapsed);
+  }
+}

@@ -1,0 +1,29 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import flixel.FlxSprite;
+import funkin.Paths;
+
+class InsaneStreamerSong extends Song // what the fucking fuck
+{
+    public function new()
+    {
+        super('insane-streamer');
+    }
+
+    var vig:FlxSprite;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        if(vig != null)
+        {
+            PlayState.instance.remove(vig);
+            vig = null;
+        }
+
+        vig = new FlxSprite(0, 0).loadGraphic(Paths.image('BG/jerma/vignette', 'shared'));
+        vig.cameras = [PlayState.instance.camHUD];
+        PlayState.instance.add(vig);
+    }
+}

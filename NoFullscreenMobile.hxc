@@ -1,0 +1,63 @@
+import flixel.FlxG;
+import funkin.ui.FullScreenScaleMode;
+import funkin.modding.module.Module;
+import funkin.modding.events.StateChangeScriptEvent;
+import funkin.save.Save;
+import funkin.ui.options.OptionsState;
+
+class DisableFullscreenForever extends Module
+{
+    public function new()
+    {
+        super("DisableFullscreenForever");
+
+        if (!FlxG.onMobile) return;
+
+        if(Save.instance.modOptions["DisableFullScreen"] == null) Save.instance.modOptions["DisableFullScreen"] = true;
+
+        forceDisableFullscreen();
+    }
+
+    var state2;
+
+    override function onStateChangeEnd(event:StateChangeScriptEvent):Void
+    {
+        super.onStateChangeEnd(event);
+
+        state2 = event.targetState;
+
+        addedObjects = false;
+
+        if (!FlxG.onMobile) return;
+
+        forceDisableFullscreen();
+    }
+
+    function forceDisableFullscreen():Void
+    {
+        if(Save.instance.modOptions["DisableFullScreen"] == true)
+        FullScreenScaleMode.enabled = false;
+    }
+
+    override function onUpdate(event:UpdateScriptEvent)
+    {
+		super.onUpdate(event);
+
+		if (!FlxG.onMobile) return;
+
+		if (Std.isOfType(state2, OptionsState))
+		{
+		if (!addedObjects)
+		{
+		addedObjects = true;
+		var prefs = FlxG.state.optionsCodex.pages.get("preferences");
+
+		prefs.createPrefItemCheckbox("Disable FullScreen","",function(value){
+		FullScreenScaleMode.enabled = !value;
+		Save.instance.modOptions["DisableFullScreen"] = value;
+		Save.instance.flush();
+		},Save.instance.modOptions["DisableFullScreen"]);
+		}
+		}
+    }
+}

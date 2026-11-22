@@ -1,0 +1,62 @@
+{
+ "version": "2.2.4",
+ "songName": "Esculent",
+ "artist": "Nii-san",
+ "charter": "Thales, Orbyy",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "gf",
+   "opponent": "esculent"
+  },
+  "stage": "esculent",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 7},
+  "album": "Impostor36d",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 145,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 26482.7586206897,
+   "b": 64,
+   "bpm": 160,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 50482.7586206897,
+   "b": 128,
+   "bpm": 174,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 127724.137931034,
+   "b": 352,
+   "bpm": 160,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 175724.137931034,
+   "b": 480,
+   "bpm": 174,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 208827.586206896,
+   "b": 576,
+   "bpm": 185,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

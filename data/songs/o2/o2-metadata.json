@@ -1,0 +1,38 @@
+{
+  "version": "2.2.4",
+  "songName": "O2",
+  "artist": "Punkett",
+  "charter": "Thales",
+  "offsets": {},
+  "playData": {
+    "difficulties": [
+      "normal"
+    ],
+    "characters": {
+      "player": "bf",
+      "girlfriend": "gf",
+      "opponent": "jorsawsee"
+    },
+    "stage": "lounge",
+    "noteStyle": "impostor",
+    "ratings": {"normal": 4},
+    "album": "Impostor18"
+  },
+  "generatedBy": "Funkin' Tools",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 135,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}

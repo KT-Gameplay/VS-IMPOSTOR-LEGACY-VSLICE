@@ -1,0 +1,112 @@
+{
+  "version": "1.0.0",
+  "name": "bf-reator",
+  "assetPath": "characters/bf/bfr",
+  "startingAnimation": "idle",
+  "singTime": 6,
+  "scale": 1,
+  "flipX": true,
+  "offsets": [
+    0,
+    175
+  ],
+  "healthIcon": {
+    "id": "bf",
+    "scale": 1,
+    "isPixel": false
+  },
+  "renderType": "sparrow",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "hey",
+      "prefix": "BF HEY",
+      "looped": false,
+      "offsets": [
+        -2,
+        6
+      ]
+    },
+    {
+      "name": "idle",
+      "prefix": "BF idle dance",
+      "looped": false,
+      "offsets": [
+        -5,
+        0
+      ]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "BF NOTE LEFT0",
+      "looped": false,
+      "offsets": [
+        5,
+        -7
+      ]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "BF NOTE DOWN0",
+      "looped": false,
+      "offsets": [
+        -29,
+        -51
+      ]
+    },
+    {
+      "name": "singUP",
+      "prefix": "BF NOTE UP0",
+      "looped": false,
+      "offsets": [
+        -42,
+        28
+      ]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "BF NOTE RIGHT0",
+      "looped": false,
+      "offsets": [
+        -49,
+        -5
+      ]
+    },
+    {
+      "name": "singLEFTmiss",
+      "prefix": "BF NOTE LEFT MISS",
+      "looped": false,
+      "offsets": [
+        5,
+        19
+      ]
+    },
+    {
+      "name": "singDOWNmiss",
+      "prefix": "BF NOTE DOWN MISS",
+      "looped": false,
+      "offsets": [
+        -29,
+        -21
+      ]
+    },
+    {
+      "name": "singUPmiss",
+      "prefix": "BF NOTE UP MISS",
+      "looped": false,
+      "offsets": [
+        -38,
+        28
+      ]
+    },
+    {
+      "name": "singRIGHTmiss",
+      "prefix": "BF NOTE RIGHT MISS",
+      "looped": false,
+      "offsets": [
+        -43,
+        23
+      ]
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+import funkin.play.PlayState;
+import funkin.modding.module.Module;
+import flixel.math.FlxMath;
+import flixel.FlxG;
+import Std;
+import Math;
+
+class IconBounceModule extends Module {
+	var restScaleP1:Float;
+	var restScaleP2:Float;
+	var baseOffX1:Float = 0;
+	var baseOffY1:Float = 0;
+	var baseOffX2:Float = 0;
+	var baseOffY2:Float = 0;
+	var initialized = false;
+
+	function new() {
+		super("IconBounceModule", 1);
+	}
+
+	override function onStateChangeEnd(event) {
+		super.onStateChangeEnd(event);
+
+		PlayState.instance = event.targetState;
+
+		if (PlayState.instance == null) return;
+		if (!Std.isOfType(PlayState.instance, PlayState)) return;
+
+		var iconP1 = PlayState.instance.iconP1;
+		var iconP2 = PlayState.instance.iconP2;
+		if (iconP1 == null || iconP2 == null) return;
+
+		restScaleP1 = iconP1.scale.x;
+		restScaleP2 = iconP2.scale.x;
+		baseOffX1 = iconP1.offset.x;
+		baseOffY1 = iconP1.offset.y;
+		baseOffX2 = iconP2.offset.x;
+		baseOffY2 = iconP2.offset.y;
+
+		iconP1.bopEvery = 0;
+		iconP2.bopEvery = 0;
+
+		initialized = true;
+	}
+
+	override function onBeatHit(event) {
+		super.onBeatHit(event);
+
+		if (PlayState.instance == null) return;
+
+		if (!initialized) return;
+
+		var iconP1 = PlayState.instance.iconP1;
+		var iconP2 = PlayState.instance.iconP2;
+		if (iconP1 == null || iconP2 == null) return;
+
+		if (restScaleP1 > 0) {
+			iconP1.scale.set(restScaleP1 * 1.2, restScaleP1 * 1.2);
+			iconP1.offset.set(baseOffX1 - 15, baseOffY1);
+		}
+
+		if (restScaleP2 > 0) {
+			iconP2.scale.set(restScaleP2 * 1.2, restScaleP2 * 1.2);
+			iconP2.offset.set(baseOffX2 + 15, baseOffY2);
+		}
+	}
+
+	override function onUpdate(event) {
+		super.onUpdate(event);
+
+		if (initialized && PlayState.instance != null) {
+			var iconP1 = PlayState.instance.iconP1;
+			var iconP2 = PlayState.instance.iconP2;
+			if (iconP1 != null && iconP2 != null) {
+				var rate = PlayState.instance.playbackRate;
+				var factor = Math.exp(-event.elapsed * 9 * rate);
+				var s1 = FlxMath.lerp(restScaleP1, iconP1.scale.x, factor);
+				iconP1.scale.set(s1, s1);
+				iconP1.offset.x = FlxMath.lerp(baseOffX1, iconP1.offset.x, factor);
+				iconP1.offset.y = FlxMath.lerp(baseOffY1, iconP1.offset.y, factor);
+				var s2 = FlxMath.lerp(restScaleP2, iconP2.scale.x, factor);
+				iconP2.scale.set(s2, s2);
+				iconP2.offset.x = FlxMath.lerp(baseOffX2, iconP2.offset.x, factor);
+				iconP2.offset.y = FlxMath.lerp(baseOffY2, iconP2.offset.y, factor);
+			}
+		}
+	}
+}

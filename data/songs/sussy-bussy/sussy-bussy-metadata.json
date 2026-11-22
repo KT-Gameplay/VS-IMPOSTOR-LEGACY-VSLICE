@@ -1,0 +1,19 @@
+{
+	"timeFormat": "ms",
+	"artist": "Saruky",
+	"charter": "KlutchDJ",
+	"playData": {
+		"stage": "tomongus",
+    		"album": "Impostor22",
+    		"ratings": {"normal": 4},
+		"noteStyle": "pixelImpostor",
+		"difficulties": ["normal"],
+		"characters": {"girlfriend": "gf-pixel", "opponent": "tomongus", "player": "bf-pixel"}
+	},
+	"songName": "Sussy Bussy",
+	"timeChanges": [
+		{"t": 0, "bpm": 132}
+	],
+	"generatedBy": "Psych Engine v1.0.4 - Chart Editor V-Slice Exporter",
+	"version": "2.2.3"
+}

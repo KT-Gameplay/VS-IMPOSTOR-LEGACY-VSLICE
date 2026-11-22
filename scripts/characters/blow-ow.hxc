@@ -1,0 +1,30 @@
+import funkin.play.character.MultiAnimateAtlasCharacter;
+import funkin.play.PlayState;
+
+class BlueOw extends MultiAnimateAtlasCharacter
+{
+    public function new()
+    {
+        super('blue-ow');
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        PlayState.instance.tweenCameraToPosition(500, 600, 0);
+    }
+
+    function onNoteHit(event)
+    {
+        super.onNoteHit(event);
+
+        if(!event.note.noteData.getMustHitNote())
+        {
+            this.playSingAnimation(event.note.noteData.getDirection(), false, 'alt');
+            this.holdTimer = 0;
+
+            if(PlayState.instance.health > 0.1) PlayState.instance.health -= 0.015;
+        }
+    }
+}

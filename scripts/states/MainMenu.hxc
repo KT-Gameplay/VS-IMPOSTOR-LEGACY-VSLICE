@@ -1,0 +1,21 @@
+import flixel.FlxG;
+import funkin.ui.MusicBeatState;
+import funkin.ui.ScriptedMusicBeatState;
+
+class DustinMainMenuState extends MusicBeatState
+{
+  var redirecting:Bool = false;
+
+  function new()
+  {
+    super();
+  }
+
+  override function create():Void
+  {
+    super.create();
+    if (redirecting) return;
+    redirecting = true;
+    FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+  }
+}

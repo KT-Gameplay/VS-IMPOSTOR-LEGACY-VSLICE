@@ -1,0 +1,117 @@
+import funkin.modding.module.Module;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.play.PlayState;
+import funkin.Paths;
+import funkin.Preferences;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.ui.FlxBar;
+import flixel.ui.FlxBarFillDirection;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+class TimeBarModule extends Module
+{
+	var timeBarBG:FlxSprite;
+	var timeBar:FlxBar;
+	var timeTxt:FlxText;
+
+	var songPercent:Float = 0;
+	var timeBarZIndex:Int = 802;
+
+	override function onCountdownStart(ev:ScriptEvent)
+	{
+		super.onCountdownStart(ev);
+		if (PlayState.instance == null) return;
+		createTimeBar();
+	}
+
+	function createTimeBar()
+	{
+		var downNotes:Bool = Preferences.downscroll;
+		if (FlxG.onMobile) downNotes = true;
+
+		timeTxt = new FlxText(40, 20, 400, "", 14);
+		timeTxt.setFormat(
+			Paths.font("vcr.ttf"),
+			14,
+			0xFFFFFFFF,
+			"left",
+			FlxTextBorderStyle.OUTLINE,
+			0xFF000000
+		);
+		timeTxt.borderSize = 1;
+		timeTxt.scrollFactor.set();
+		timeTxt.zIndex = timeBarZIndex + 2;
+
+		if (downNotes)
+			timeTxt.y = FlxG.height - 44;
+
+		timeBarBG = new FlxSprite(timeTxt.x - 2, timeTxt.y - 1);
+		timeBarBG.loadGraphic(Paths.image("taskBar"));
+		timeBarBG.scrollFactor.set();
+		timeBarBG.zIndex = timeBarZIndex;
+
+		timeBar = new FlxBar(
+			timeBarBG.x + 4,
+			timeBarBG.y + 4,
+			FlxBarFillDirection.LEFT_TO_RIGHT,
+			Std.int(timeBarBG.width - 8),
+			Std.int(timeBarBG.height - 8),
+			this,
+			"songPercent",
+			0,
+			1
+		);
+		timeBar.createFilledBar(0xFF2E412E, 0xFF44D844);
+		timeBar.numDivisions = 800;
+		timeBar.scrollFactor.set();
+		timeBar.zIndex = timeBarZIndex + 1;
+
+		timeTxt.cameras = timeBar.cameras = timeBarBG.cameras =
+			[PlayState.instance.camHUD];
+
+		timeTxt.alpha = timeBar.alpha = timeBarBG.alpha = 0;
+
+		PlayState.instance.add(timeBarBG);
+		PlayState.instance.add(timeBar);
+		PlayState.instance.add(timeTxt);
+
+		FlxTween.tween(timeBarBG, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+		FlxTween.tween(timeBar,   {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+		FlxTween.tween(timeTxt,   {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+	}
+
+	override function onUpdate(ev:UpdateScriptEvent)
+	{
+		super.onUpdate(ev);
+
+		if (timeBar != null && FlxG.sound.music != null)
+		{
+			songPercent = FlxG.sound.music.time / FlxG.sound.music.length;
+			songPercent = Math.max(0, Math.min(1, songPercent));
+
+			timeBar.value = songPercent;
+			timeBar.updateBar();
+
+			timeTxt.text = PlayState.instance.currentChart.songName.toUpperCase();
+		}
+	}
+
+	override function onDestroy(ev:ScriptEvent)
+	{
+		super.onDestroy(ev);
+
+		if (timeBarBG != null) timeBarBG.destroy();
+		if (timeBar != null) timeBar.destroy();
+		if (timeTxt != null) timeTxt.destroy();
+
+		timeBarBG = null;
+		timeBar = null;
+		timeTxt = null;
+	}
+}

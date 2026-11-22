@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Idk",
+ "artist": "kiwiquest",
+ "charter": "Gonk",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "idkbf",
+   "girlfriend": "gf",
+   "opponent": "idk"
+  },
+  "stage": "idk",
+  "noteStyle": "pixelImpostor",
+  "ratings": {"normal": 4},
+  "album": "Impostor16",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 134,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+	"timeFormat": "ms",
+	"artist": "Punkett",
+	"charter": "Gonk",
+	"playData": {
+  		"album": "Impostor1",
+  		"ratings": {"normal": 6},
+		"stage": "polus-meltdown",
+		"noteStyle": "impostor",
+		"difficulties": ["normal"],
+		"characters": {"girlfriend": "gf-ghost", "opponent": "red-meltdown", "player": "bf-ghost"}
+	},
+	"songName": "Meltdown",
+	"timeChanges": [
+		{"t": 0, "bpm": 120}
+	],
+	"generatedBy": "Psych Engine v1.0.4 - Chart Editor V-Slice Exporter",
+	"version": "2.2.3"
+}

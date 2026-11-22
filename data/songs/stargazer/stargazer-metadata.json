@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Stargazer",
+ "artist": "punkett",
+ "charter": "emi3",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "gf",
+   "opponent": "LIMEGREENWEEKINVSIMPOSTOR"
+  },
+  "stage": "jads",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 6},
+  "album": "Impostor39d",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 180,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"name": "RED impostor week",
+	"titleAsset": "storymenu/titles/week1",
+	"capsule": {
+		"name": "RED impostor week"
+	},
+	"props": [],
+	"background": "#FFFFFF",
+	"songs": [
+		"sussus-moogus",
+		"sabotage",
+		"meltdown"
+	]
+}

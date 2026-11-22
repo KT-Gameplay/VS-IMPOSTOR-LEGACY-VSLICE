@@ -1,0 +1,470 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.Conductor;
+import funkin.Paths;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxTextAlign;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import openfl.display.BlendMode;
+
+class Lounge extends Stage
+{
+var wall:FlxSprite;
+var collage:FlxSprite;
+var cues:FlxSprite;
+var table:FlxSprite;
+var overlay:FlxSprite;
+var scaryLight:FlxSprite;
+var body:FlxSprite;
+var vignette:FlxSprite;
+var wtf:FlxText;
+
+var scaryPrepared:Bool = false;
+var scaryActive:Bool = false;
+var lastProcessedStep:Int = -1;
+
+public function new()
+{
+    super('lounge');
+}
+
+override function buildStage():Void
+{
+    super.buildStage();
+
+    wall = getNamedProp('wall');
+    collage = getNamedProp('collage');
+    cues = getNamedProp('cueHolder');
+    table = getNamedProp('billiardTable');
+    overlay = getNamedProp('overlay');
+    scaryLight = getNamedProp('absoluteLamp');
+    body = getNamedProp('body');
+
+    if (body != null)
+    {
+        body.visible = false;
+        body.alpha = 0;
+    }
+
+    if (scaryLight != null)
+    {
+        scaryLight.visible = false;
+        scaryLight.alpha = 0;
+    }
+
+    if (overlay != null)
+    {
+        overlay.visible = true;
+        overlay.alpha = 1;
+    }
+
+    vignette = new FlxSprite(-80, -40, Paths.image('stages/jorsawsee/o2/vignetteMultiply'));
+    vignette.scale.set(4.5, 4.5);
+    vignette.updateHitbox();
+    vignette.scrollFactor.set(0, 0);
+    vignette.blend = BlendMode.MULTIPLY;
+    vignette.alpha = 0;
+    vignette.visible = false;
+    vignette.zIndex = 1000000;
+    add(vignette);
+
+    wtf = new FlxText(0, 0, 600, '');
+    wtf.setFormat(Paths.font('vcr.ttf'), 96, 0xFF80FFFF, FlxTextAlign.CENTER);
+    wtf.alpha = 1;
+    wtf.visible = true;
+
+    add(wtf);
+
+    if (PlayState.instance != null)
+    {
+        wtf.cameras = [PlayState.instance.camHUD];
+    }
+
+    wtf.screenCenter();
+
+    if (PlayState.instance != null)
+    {
+        PlayState.instance.cameraFollowPoint.setPosition(800, 670);
+    }
+
+    refresh();
+}
+
+override function fetchAssetPaths():Array<String>
+{
+    var assets:Array<String> = super.fetchAssetPaths();
+    assets.push(Paths.image('stages/jorsawsee/o2/vignetteMultiply'));
+    return assets;
+}
+
+override function onSongStart(event:ScriptEvent):Void
+{
+    super.onSongStart(event);
+
+    lastProcessedStep = -1;
+    scaryPrepared = false;
+    scaryActive = false;
+
+    if (overlay != null)
+    {
+        overlay.visible = true;
+        overlay.alpha = 1;
+    }
+
+    if (body != null)
+    {
+        body.visible = false;
+        body.alpha = 0;
+    }
+
+    if (scaryLight != null)
+    {
+        scaryLight.visible = false;
+        scaryLight.alpha = 0;
+    }
+
+    if (vignette != null)
+    {
+        vignette.visible = false;
+        vignette.alpha = 0;
+    }
+
+    if (wtf != null)
+    {
+        wtf.alpha = 1;
+        wtf.visible = true;
+        wtf.text = '';
+        wtf.screenCenter();
+    }
+
+    resetCharacterColors();
+
+    if (PlayState.instance != null)
+    {
+        PlayState.instance.camHUD.alpha = 1;
+        PlayState.instance.camGame.alpha = 1;
+        PlayState.instance.cameraFollowPoint.setPosition(800, 670);
+    }
+}
+
+override function onUpdate(event:UpdateScriptEvent):Void
+{
+    super.onUpdate(event);
+
+    if (scaryLight != null && scaryLight.visible)
+    {
+        var flicker:Float = FlxG.random.float(0.7, 1.0);
+        var wave:Float = Math.sin(Conductor.instance.songPosition / 700);
+
+        scaryLight.alpha = FlxMath.remapToRange(wave, -1, 1, 0.4, flicker);
+    }
+
+    if (scaryActive)
+    {
+        applyScaryColor();
+    }
+}
+
+override function onStepHit(event:SongTimeScriptEvent):Void
+{
+    super.onStepHit(event);
+
+    var currentStep:Int = event.step;
+
+    if (currentStep <= lastProcessedStep)
+    {
+        return;
+    }
+
+    var startStep:Int = lastProcessedStep + 1;
+
+    if (startStep < 0)
+    {
+        startStep = 0;
+    }
+
+    for (step in startStep...currentStep + 1)
+    {
+        processStep(step);
+    }
+
+    lastProcessedStep = currentStep;
+}
+
+function processStep(step:Int):Void
+{
+    switch (step)
+    {
+        case 392:
+            lightsDown();
+
+        case 403:
+            showWtf('what');
+
+        case 404:
+            showWtf('the');
+
+        case 407:
+            showWtf('fuck');
+
+        case 408:
+            dieWtf();
+
+        case 480:
+            changeToMeangusScary();
+    }
+}
+
+function lightsDown():Void
+{
+    if (PlayState.instance == null)
+    {
+        return;
+    }
+
+    var duration:Float = Conductor.instance.beatLengthMs / 500;
+
+    PlayState.instance.camGame.fade(FlxColor.BLACK, duration, false);
+}
+
+function showWtf(type:String):Void
+{
+    if (wtf == null)
+    {
+        return;
+    }
+
+    if (!wtf.exists)
+    {
+        return;
+    }
+
+    switch (type)
+    {
+        case 'what':
+            wtf.text = 'WHAT\n ';
+
+        case 'the':
+            wtf.text = 'THE\n ';
+
+        case 'fuck':
+            wtf.text = 'FUCK';
+    }
+
+    wtf.visible = true;
+    wtf.alpha = 1;
+    wtf.screenCenter();
+}
+
+function dieWtf():Void
+{
+    if (wtf != null)
+    {
+        wtf.destroy();
+        wtf = null;
+    }
+
+    if (PlayState.instance != null)
+    {
+        PlayState.instance.camHUD.alpha = 0.001;
+        PlayState.instance.camGame.flash(0xFF950000, Conductor.instance.beatLengthMs / 1000);
+    }
+
+    prepareScary();
+}
+
+function changeToMeangusScary():Void
+{
+    if (PlayState.instance == null)
+    {
+        return;
+    }
+
+    PlayState.instance.camGame.alpha = 1;
+
+    var duration:Float = Conductor.instance.beatLengthMs / 500;
+
+    PlayState.instance.camGame.fade(FlxColor.BLACK, duration, true);
+
+    FlxTween.tween(
+        PlayState.instance.camHUD,
+        {alpha: 1},
+        Conductor.instance.beatLengthMs / 800,
+        {ease: FlxEase.quadOut}
+    );
+
+    scary();
+}
+
+function prepareScary():Void
+{
+    scaryPrepared = true;
+
+    if (body != null)
+    {
+        body.visible = true;
+        body.alpha = 1;
+    }
+
+    if (scaryLight != null)
+    {
+        scaryLight.visible = true;
+        scaryLight.alpha = 1;
+    }
+
+    if (vignette != null)
+    {
+        vignette.visible = true;
+        vignette.alpha = 1;
+    }
+
+    if (overlay != null)
+    {
+        overlay.visible = false;
+        overlay.alpha = 0;
+    }
+}
+
+function scary():Void
+{
+    if (!scaryPrepared)
+    {
+        prepareScary();
+    }
+
+    scaryActive = true;
+
+    applyScaryColor();
+}
+
+function applyScaryColor():Void
+{
+    if (PlayState.instance == null)
+    {
+        return;
+    }
+
+    var dad = PlayState.instance.currentStage.getDad();
+    var boyfriend = PlayState.instance.currentStage.getBoyfriend();
+    var gf = PlayState.instance.currentStage.getGirlfriend();
+
+    if (dad != null)
+    {
+        dad.color = 0xFF888888;
+    }
+
+    if (boyfriend != null)
+    {
+        boyfriend.color = 0xFF888888;
+    }
+
+    if (gf != null)
+    {
+        gf.color = 0xFF888888;
+    }
+}
+
+function resetCharacterColors():Void
+{
+    if (PlayState.instance == null)
+    {
+        return;
+    }
+
+    var dad = PlayState.instance.currentStage.getDad();
+    var boyfriend = PlayState.instance.currentStage.getBoyfriend();
+    var gf = PlayState.instance.currentStage.getGirlfriend();
+
+    if (dad != null)
+    {
+        dad.color = FlxColor.WHITE;
+    }
+
+    if (boyfriend != null)
+    {
+        boyfriend.color = FlxColor.WHITE;
+    }
+
+    if (gf != null)
+    {
+        gf.color = FlxColor.WHITE;
+    }
+}
+
+override function onSongRetry(event:ScriptEvent):Void
+{
+    super.onSongRetry(event);
+
+    lastProcessedStep = -1;
+    scaryPrepared = false;
+    scaryActive = false;
+
+    if (PlayState.instance != null)
+    {
+        PlayState.instance.camGame.alpha = 1;
+        PlayState.instance.camHUD.alpha = 1;
+        PlayState.instance.cameraFollowPoint.setPosition(800, 670);
+    }
+
+    if (overlay != null)
+    {
+        overlay.visible = true;
+        overlay.alpha = 1;
+    }
+
+    if (body != null)
+    {
+        body.visible = false;
+        body.alpha = 0;
+    }
+
+    if (scaryLight != null)
+    {
+        scaryLight.visible = false;
+        scaryLight.alpha = 0;
+    }
+
+    if (vignette != null)
+    {
+        vignette.visible = false;
+        vignette.alpha = 0;
+    }
+
+    if (wtf != null)
+    {
+        wtf.text = '';
+        wtf.visible = true;
+        wtf.alpha = 1;
+        wtf.screenCenter();
+    }
+
+    resetCharacterColors();
+}
+
+override function onDestroy(event:ScriptEvent):Void
+{
+    if (wtf != null)
+    {
+        wtf.kill();
+        wtf.destroy();
+        wtf = null;
+    }
+
+    if (vignette != null)
+    {
+        vignette.kill();
+        vignette.destroy();
+        vignette = null;
+    }
+
+    super.onDestroy(event);
+}
+}

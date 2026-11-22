@@ -1,0 +1,90 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import flixel.FlxSprite;
+import funkin.Paths;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import flixel.util.FlxColor;
+
+class ReinforcementsSong extends Song
+{
+    public function new()
+    {
+        super('reinforcements');
+        hasPlayedEnd = false;
+    }
+
+    var hasPlayedEnd:Bool = false;
+
+    var armedGuy:FlxSprite;
+    var dad;
+    var gf;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        if(armedGuy != null)
+        {
+            PlayState.instance.currentStage.remove(armedGuy);
+            armedGuy = null;
+        }
+
+        armedGuy = new FlxSprite(-800, -300);
+        armedGuy.frames = Paths.getSparrowAtlas('henry/i_schee_u_enry');
+        armedGuy.animation.addByPrefix('crash', 'rhm intro shadow', 16, false);
+        armedGuy.antialiasing = true;
+        armedGuy.visible = false;
+        armedGuy.zIndex = 350;
+        PlayState.instance.currentStage.add(armedGuy);
+
+        PlayState.instance.currentStage.refresh();
+
+        dad = PlayState.instance.currentStage.getDad();
+        gf = PlayState.instance.currentStage.getGirlfriend();
+
+        if(!PlayStatePlaylist.isStoryMode) hasPlayedEnd = true;
+        else hasPlayedEnd = false;
+    }
+
+    override function onSongEnd(event)
+    {
+        super.onSongEnd(event);
+
+        if(!hasPlayedEnd)
+        {
+            if(!event.eventCanceled) event.cancel();
+            outro();
+        }
+    }
+
+    function outro()
+    {
+        PlayState.instance.isInCutscene = true;
+        FlxTween.tween(PlayState.instance.camHUD, {alpha: 0}, 0.4);
+        FlxG.sound.play(Paths.sound('stage/rhm_crash'));
+        dad.playAnimation('armed', true);
+        gf.playAnimation('armed', true);
+
+        new FlxTimer().start(2.1, function(tmr:FlxTimer) {
+            PlayState.instance.camGame.shake(0.005, 0.9);
+        });
+
+        new FlxTimer().start(2.8, function(tmr:FlxTimer) {
+            armedGuy.visible = true;
+            armedGuy.animation.play('crash');
+        });
+
+        new FlxTimer().start(3, function(tmr:FlxTimer) {
+            PlayState.instance.camGame.alpha = 0;
+            PlayState.instance.camCutscene.flash(FlxColor.WHITE, 3);
+        });
+
+        new FlxTimer().start(6, function(tmr:FlxTimer) {
+            hasPlayedEnd = true;
+            PlayState.instance.endSong();
+        });
+    }
+}

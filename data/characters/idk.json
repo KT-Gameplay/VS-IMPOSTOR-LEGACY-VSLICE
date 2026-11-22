@@ -1,0 +1,81 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 0.8,
+	"name": "idk",
+	"cameraOffsets": [
+		-80,
+		390
+	],
+	"flipX": false,
+	"isPixel": true,
+	"singTime": 10,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "idk",
+		"isPixel": false
+	},
+	"assetPath": "characters/freeplay/idk",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "idle",
+			"offsets": [
+				30,
+				-291
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right",
+			"offsets": [
+				34,
+				-290
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down",
+			"offsets": [
+				32,
+				-289
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left",
+			"offsets": [
+				-5,
+				-288
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up",
+			"offsets": [
+				26,
+				-291
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		}
+	]
+}

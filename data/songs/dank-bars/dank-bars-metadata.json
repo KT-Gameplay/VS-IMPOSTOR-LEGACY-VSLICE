@@ -1,0 +1,30 @@
+{
+ "version": "2.2.4",
+ "songName": "Dank Bars",
+ "artist": "EthanTheDoodler, Terdlestuff",
+ "charter": "Orbyy",
+ "offsets": { },
+ "playData": {
+  "difficulties": ["normal"],
+  "characters": {
+   "player": "senpai-bars",
+   "girlfriend": "gf",
+   "opponent": "bars"
+  },
+  "stage": "bars",
+  "noteStyle": "pixelImpostor",
+  "ratings": {"normal": 7},
+  "album": "ImpostorW",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 110,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

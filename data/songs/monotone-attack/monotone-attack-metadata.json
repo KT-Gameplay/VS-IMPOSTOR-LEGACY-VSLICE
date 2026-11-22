@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Monotone Attack",
+ "artist": "Biddle3",
+ "charter": "Thales, Orbyy",
+ "offsets": { },
+ "playData": {
+  "songVariations": [],
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "clowfoe",
+   "girlfriend": "fabs",
+   "opponent": "attack"
+  },
+  "album": "Impostor33",
+  "stage": "attack",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 6},
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 148,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

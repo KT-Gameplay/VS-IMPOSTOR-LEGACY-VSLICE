@@ -1,0 +1,147 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "bfsusreal",
+	"cameraOffsets": [
+		300,
+		-31
+	],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"assetPath": "characters/bf/bfsusreal",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "idle",
+			"offsets": [
+				-5,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left",
+			"offsets": [
+				-57,
+				-7
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down",
+			"offsets": [
+				-65,
+				-51
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up",
+			"offsets": [
+				36,
+				28
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right",
+			"offsets": [
+				-67,
+				-6
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "bf blow",
+			"offsets": [
+				460,
+				115
+			],
+			"frameRate": 24,
+			"name": "shoot",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF charge",
+			"offsets": [
+				-24,
+				-52
+			],
+			"frameRate": 24,
+			"name": "pull",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "missdown",
+			"offsets": [
+				-65,
+				-24
+			],
+			"frameRate": 24,
+			"name": "singDOWNmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "missleft",
+			"offsets": [
+				-57,
+				1
+			],
+			"frameRate": 24,
+			"name": "singLEFTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "missright",
+			"offsets": [
+				67,
+				5
+			],
+			"frameRate": 24,
+			"name": "singRIGHTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "missup",
+			"offsets": [
+				53,
+				28
+			],
+			"frameRate": 24,
+			"name": "singUPmiss",
+			"looped": false
+		}
+	]
+}

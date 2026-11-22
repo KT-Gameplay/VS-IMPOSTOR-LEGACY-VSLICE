@@ -1,0 +1,112 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import flixel.FlxSprite;
+import funkin.Paths;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import flixel.util.FlxColor;
+
+class ArmedSong extends Song
+{
+    public function new()
+    {
+        super('armed');
+        hasPlayedStart = false;
+        hasPlayedEnd = false;
+    }
+
+    var hasPlayedStart:Bool = false;
+    var hasPlayedEnd:Bool = false;
+
+    var armedDark:FlxSprite;
+    var dustcloud:FlxSprite;
+
+    var dad;
+    var gf;
+    var bf;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        if(armedDark != null)
+        {
+            PlayState.instance.currentStage.remove(armedDark);
+            armedDark = null;
+        }
+
+        if(dustcloud != null)
+        {
+            PlayState.instance.currentStage.remove(dustcloud);
+            dustcloud = null;
+        }
+
+        armedDark = new FlxSprite(-300, -300).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+		armedDark.alpha = 0.001;
+		armedDark.zIndex = 150;
+        PlayState.instance.currentStage.add(armedDark);
+
+        dustcloud = new FlxSprite(120, 450);
+		dustcloud.frames = Paths.getSparrowAtlas('henry/Dust_Cloud');
+		dustcloud.animation.addByPrefix('dust', 'dust clouds', 24, false);
+		dustcloud.antialiasing = true;
+        dustcloud.alpha = 0.001;
+		dustcloud.zIndex = 151;
+		PlayState.instance.currentStage.add(dustcloud);
+
+        PlayState.instance.currentStage.refresh();
+
+        dad = PlayState.instance.currentStage.getDad();
+        gf = PlayState.instance.currentStage.getGirlfriend();
+        bf = PlayState.instance.currentStage.getBoyfriend();
+
+        if(!hasPlayedStart)
+        {
+            event.cancel();
+            intro();
+        }
+
+        if(!PlayStatePlaylist.isStoryMode) hasPlayedStart = true;
+        else hasPlayedStart = false;
+
+        if(!PlayStatePlaylist.isStoryMode) hasPlayedEnd = true;
+        else hasPlayedEnd = false;
+    }
+
+    function intro()
+    {
+        armedDark.alpha = 1;
+        dustcloud.alpha = 1;
+        PlayState.instance.camHUD.alpha = 0.001;
+        bf.alpha = 0.001;
+        gf.alpha = 0.001;
+
+        dad.playAnimation('intro', false);
+        dustcloud.animation.play('dust');
+
+        new FlxTimer().start(3.2, function(tmr:FlxTimer) {
+            FlxTween.tween(gf, {alpha: 1}, 1.5);
+            FlxTween.tween(bf, {alpha: 1}, 1.5);	
+            FlxTween.tween(armedDark, {alpha: 0}, 1.5);
+        });
+
+        new FlxTimer().start(5, function(tmr:FlxTimer) {
+            hasPlayedStart = true;
+            PlayState.instance.camHUD.alpha = 1;
+            PlayState.instance.startCountdown();
+        });
+    }
+
+    override function onSongEnd(event)
+    {
+        super.onSongEnd(event);
+
+        if(!hasPlayedEnd)
+        {
+            if(!event.eventCanceled) event.cancel();
+            PlayState.instance.currentStage.scriptCall('outro');
+        }
+    }
+}

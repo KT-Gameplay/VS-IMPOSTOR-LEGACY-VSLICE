@@ -1,0 +1,31 @@
+{
+ "version": "2.2.4",
+ "songName": "Torture",
+ "artist": "ziffyclumper",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "ziffytorture",
+   "girlfriend": "piptorture",
+   "opponent": "cvaltorture"
+  },
+  "stage": "torture",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 6},
+  "album": "Impostor35",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 186,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

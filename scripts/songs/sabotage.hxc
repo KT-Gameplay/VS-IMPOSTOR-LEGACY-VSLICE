@@ -1,0 +1,140 @@
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.modding.events.ScriptEvent;
+import funkin.play.cutscene.CutsceneType;
+import funkin.Paths;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.math.FlxMath;
+import funkin.modding.events.CountdownScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+
+class SabotageSong extends Song
+{
+	var flashSprite:FlxSprite;
+	var hasPlayedCutscene:Bool;
+
+	public function new()
+	{
+		super('sabotage');
+		hasPlayedCutscene = false;
+	}
+
+	public override function onCountdownStart(event:CountdownScriptEvent):Void
+	{
+		super.onCountdownStart(event);
+
+		PlayState.instance.resetCamera(true, true, true);
+
+		flashSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFB30000);
+		flashSprite.screenCenter();
+		flashSprite.alpha = 0.001;
+		flashSprite.cameras = [PlayState.instance.camCutscene];
+		PlayState.instance.add(flashSprite);
+
+		if (!PlayStatePlaylist.isStoryMode)
+		{
+			hasPlayedCutscene = true;
+		}
+
+		if (!hasPlayedCutscene)
+		{
+			hasPlayedCutscene = true;
+			event.cancel();
+			startIntroVideo();
+		}
+	}
+
+	function startIntroVideo()
+	{
+		VideoCutscene.play(Paths.videos('week1/sabotage'), CutsceneType.STARTING);
+	}
+
+	function onSongRetry(event:ScriptEvent)
+	{
+		super.onSongRetry(event);
+		hasPlayedCutscene = true;
+		PlayState.instance.resetCamera(true, true, true);
+	}
+
+	function onSongStart(event:ScriptEvent)
+	{
+		super.onSongStart(event);
+		PlayState.instance.resetCamera(true, true, true);
+	}
+
+	function reactorBeep()
+	{
+		if (PlayState.instance == null) return;
+		flashSprite.alpha = 0.3;
+	}
+
+	function onCreate(event:ScriptEvent):Void
+	{
+		super.onCreate(event);
+		hasPlayedCutscene = false;
+	}
+
+	function onUpdate(event:UpdateScriptEvent)
+	{
+		super.onUpdate(event);
+
+		if (flashSprite?.alpha != 0.001)
+			flashSprite.alpha = FlxMath.lerp(flashSprite.alpha, 0.001, event.elapsed * 3);
+	}
+
+	override function onStepHit(event:SongTimeScriptEvent)
+	{
+		super.onStepHit(event);
+
+		switch(event.step)
+		{
+			case 64: reactorBeep();
+			case 96: reactorBeep();
+			case 128: reactorBeep();
+			case 160: reactorBeep();
+			case 192: reactorBeep();
+			case 224: reactorBeep();
+			case 256: reactorBeep();
+			case 288: reactorBeep();
+			case 320: reactorBeep();
+			case 352: reactorBeep();
+			case 384: reactorBeep();
+			case 416: reactorBeep();
+			case 448: reactorBeep();
+			case 480: reactorBeep();
+			case 512: reactorBeep();
+			case 576: reactorBeep();
+			case 640: reactorBeep();
+			case 672: reactorBeep();
+			case 704: reactorBeep();
+			case 736: reactorBeep();
+			case 832: reactorBeep();
+			case 864: reactorBeep();
+			case 896: reactorBeep();
+			case 928: reactorBeep();
+			case 960: reactorBeep();
+			case 992: reactorBeep();
+			case 1024: reactorBeep();
+			case 1056: reactorBeep();
+			case 1088: reactorBeep();
+			case 1120: reactorBeep();
+			case 1152: reactorBeep();
+			case 1184: reactorBeep();
+			case 1216: reactorBeep();
+			case 1248: reactorBeep();
+			case 1280: reactorBeep();
+			case 1312: reactorBeep();
+			case 1344: reactorBeep();
+			case 1376: reactorBeep();
+			case 1408: reactorBeep();
+			case 1440: reactorBeep();
+			case 1472: reactorBeep();
+			case 1536: reactorBeep();
+		}
+	}
+
+}

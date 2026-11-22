@@ -1,0 +1,110 @@
+{
+	"renderType": "multianimateatlas",
+	"applyStageMatrix": false,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"isPixel": false,
+		"scale": 1,
+		"id": "monotone",
+		"flipX": false
+	},
+	"assetPath": "characters/story/monotone/monotone",
+	"version": "1.0.0",
+		"offsets": [
+			0,
+			140
+		],
+	"danceEvery": 1,
+	"scale": 1,
+	"name": "monotone",
+	"flipX": false,
+	"cameraOffsets": [
+		20,
+		250
+	],
+	"singTime": 6,
+	"isPixel": false,
+	"atlasSettings": {
+		"applyStageMatrix": false,
+		"useRenderTexture": false,
+		"filterQuality": 1,
+		"cacheOnLoad": false,
+		"swfMode": true
+	},
+	"animations": [
+		{
+			"offsets": [
+				89,
+				-49
+			],
+			"fps": 24,
+			"prefix": "Sidle",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "idle",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				126,
+				-46
+			],
+			"fps": 24,
+			"prefix": "Sleft",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singLEFT",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				94,
+				-38
+			],
+			"fps": 24,
+			"prefix": "Sdown",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singDOWN",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				90,
+				-49
+			],
+			"fps": 24,
+			"prefix": "Sup",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singUP",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				81,
+				-40
+			],
+			"fps": 24,
+			"prefix": "Sright",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singRIGHT",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		}
+	]
+}

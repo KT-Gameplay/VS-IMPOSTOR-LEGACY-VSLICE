@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Tomongus Tuesday",
+ "artist": "emihead",
+ "charter": "Orbyy",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bfsusreal",
+   "girlfriend": "gf-tuesday",
+   "opponent": "tuesday"
+  },
+  "stage": "tuesday",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 4},
+  "album": "Impostor23",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 165,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

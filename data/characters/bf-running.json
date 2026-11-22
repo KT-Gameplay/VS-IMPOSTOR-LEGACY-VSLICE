@@ -1,0 +1,212 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [0, 0],
+	"danceEvery": 1,
+	"scale": 1,
+	"name": "bf-running",
+	"cameraOffsets": [0, 0],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 6,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"assetPath": "characters/bf/bfRun",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "idle",
+			"offsets": [7, 2],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "legs",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "legs",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "legs miss",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "legs-miss",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singLEFT-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singDOWN-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singUP-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singRIGHT-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left miss",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singLEFTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down miss",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singDOWNmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up miss",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singUPmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right miss",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singRIGHTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "left miss loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singLEFTmiss-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "down miss loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singDOWNmiss-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "up miss loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singUPmiss-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "right miss loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singRIGHTmiss-hold",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "hey",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "hey",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "hey loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "hey-loop",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "death",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "firstDeath",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "death loop",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "deathLoop",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "death confirm",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "deathConfirm",
+			"looped": false
+		}
+	]
+}

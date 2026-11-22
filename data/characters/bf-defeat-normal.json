@@ -1,0 +1,212 @@
+{
+	"version": "1.0.0",
+	"offsets": [
+		1,
+		-20
+	],
+	"renderType": "multianimateatlas",
+	"danceEvery": 1,
+	"applyStageMatrix": false,
+	"scale": 1,
+	"name": "bf-defeat-normal",
+	"flipX": true,
+	"cameraOffsets": [
+		2600,
+		950
+	],
+	"singTime": 6,
+	"startingAnimation": "idle",
+	"isPixel": false,
+	"assetPath": "characters/bf/defeatBf",
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"shouldBop": true,
+		"isPixel": false,
+		"scale": 1,
+		"flipX": false,
+		"id": "bf"
+	},
+	"atlasSettings": {
+		"applyStageMatrix": false,
+		"useRenderTexture": false,
+		"filterQuality": 1,
+		"cacheOnLoad": false,
+		"swfMode": true
+	},
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "idle",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "idle",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "left",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singLEFT",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				1
+			],
+			"fps": 24,
+			"prefix": "down",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singDOWN",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "up",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singUP",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "right",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singRIGHT",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "left miss",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singLEFTmiss",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "up miss",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singUPmiss",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "right miss",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singRIGHTmiss",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "down miss",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singDOWNmiss",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				926,
+				-9
+			],
+			"fps": 24,
+			"prefix": "BF dies",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "firstDeath",
+			"flipY": false,
+			"assetPath": "characters/gameover/bfdefeatgameovers",
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				926,
+				-7
+			],
+			"fps": 24,
+			"prefix": "BF Dead Loop",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": true,
+			"name": "deathLoop",
+			"flipY": false,
+			"assetPath": "characters/gameover/bfdefeatgameovers",
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				925,
+				-8
+			],
+			"fps": 24,
+			"prefix": "BF Dead confirm",
+			"animType": "framelabel",
+			"flipX": false,
+			"looped": false,
+			"name": "deathConfirm",
+			"flipY": false,
+			"assetPath": "characters/gameover/bfdefeatgameovers",
+			"frameRate": 24
+		}
+	]
+}

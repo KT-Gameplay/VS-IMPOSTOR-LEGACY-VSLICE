@@ -1,0 +1,80 @@
+{
+  "version": "1.0.0",
+  "name": "green",
+  "assetPath": "characters/story/green/green",
+  "startingAnimation": "idle",
+  "singTime": 6,
+  "scale": 1,
+  "flipX": false,
+  "offsets": [
+    -267,
+    282
+  ],
+  "cameraOffsets": [
+    100,
+    -19
+  ],
+  "healthIcon": {
+    "id": "green",
+    "scale": 1,
+    "flipX": false,
+    "isPixel": false
+  },
+  "healthbarColors": [
+    161,
+    161,
+    161
+  ],
+  "renderType": "multianimateatlas",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "impostor idle",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "impostor right",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "impostor down",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singUP",
+      "prefix": "impostor up2",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "danceLeft",
+      "prefix": "impostor dance left",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "danceRight",
+      "prefix": "impostor dance right",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "liveReaction",
+      "prefix": "bwomp",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "impostor left",
+      "fps": 24,
+      "looped": false
+    }
+  ]
+}

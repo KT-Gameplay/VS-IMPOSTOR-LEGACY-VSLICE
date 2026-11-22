@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "ROOMCODE",
+ "artist": "Keegan",
+ "charter": "Orbyy",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "picolobby",
+   "girlfriend": "nenelobby",
+   "opponent": "powers"
+  },
+  "stage": "lobby",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 6},
+  "album": "Impostor15",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 135,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

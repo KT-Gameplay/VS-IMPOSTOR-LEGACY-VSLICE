@@ -1,0 +1,61 @@
+import funkin.play.event.SongEvent;
+import Std;
+import funkin.play.PlayState;
+import flixel.FlxCamera;
+import Math;
+import StringTools;
+
+class ScreenShakeEvent extends SongEvent
+{
+    public function new()
+    {
+        super("ScreenShakeEvent");
+    }
+
+    var valuesArray:Array<String>;
+    var targetsArray:Array<FlxCamera>;
+
+    override public function handleEvent(data)
+    {
+        if(PlayState.instance == null) return;
+
+        valuesArray = [data.getString('value1'), data.getString('value2')];
+        targetsArray = [PlayState.instance.camGame, PlayState.instance.camHUD];
+
+        for (i in 0...targetsArray.length)
+		{
+			var split:Array<String> = valuesArray[i].split(',');
+			var duration:Float = 0;
+			var intensity:Float = 0;
+			if (split[0] != null) duration = Std.parseFloat(StringTools.trim(split[0]));
+			if (split[1] != null) intensity = Std.parseFloat(StringTools.trim(split[1]));
+			if (Math.isNaN(duration)) duration = 0;
+			if (Math.isNaN(intensity)) intensity = 0;
+					
+			if (duration > 0 && intensity != 0) targetsArray[i].shake(intensity, duration);
+		}
+    }
+
+    override public function getTitle():String
+    {
+        return "Screen Shake";
+    }
+
+    override public function getEventSchema():SongEventSchema
+    {
+        return [
+            {
+                name: "value1",
+                title: "Camera Intensity",
+                type: "string",
+                defaultValue: "0, 0"
+            },
+            {
+                name: "value2",
+                title: "HUD Intensity",
+                type: "string",
+                defaultValue: "0, 0"
+            }
+        ];
+    }
+}

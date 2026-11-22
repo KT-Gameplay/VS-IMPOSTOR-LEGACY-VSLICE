@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Danger",
+ "artist": "Rareblin",
+ "charter": "Rareblin",
+ "divisions": 96,
+ "offsets": { },
+ "playData": {
+   "difficulties": [
+     "normal"
+   ],
+  "characters": {
+   "player": "bf-running",
+   "girlfriend": "gf",
+   "opponent": "danger"
+  },
+  "stage": "danger",
+  "noteStyle": "impostor",
+  "album": "Impostor8",
+  "ratings": {"normal": 10}
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.6",
+ "timeFormat": "ms",
+ "timeChanges": [
+ {
+   "t": 0,
+   "b": 0,
+   "bpm": 180,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

@@ -1,0 +1,74 @@
+{
+	"version": "1.0.0",
+	"name": "yellow-ghost",
+	"assetPath": "characters/story/yellow/yellowGhost",
+	"renderType": "multisparrow",
+	"healthIcon": {
+		"id": "yellowghost",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		-558,
+		91
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 6,
+	"scale": 1,
+	"animations": [
+		{
+			"name": "idle",
+			"prefix": "idle",
+			"offsets": [
+				-593,
+				-128
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "down",
+			"offsets": [
+				-574,
+				-180
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "left",
+			"offsets": [
+				-496,
+				-121
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "right",
+			"offsets": [
+				-513,
+				-135
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUP",
+			"prefix": "up",
+			"offsets": [
+				-566,
+				-126
+			],
+			"looped": false,
+			"fps": 24
+		}
+	]
+}

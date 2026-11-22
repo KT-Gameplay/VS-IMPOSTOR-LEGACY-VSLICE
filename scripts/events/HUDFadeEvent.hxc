@@ -1,0 +1,173 @@
+import funkin.play.PlayState;
+import funkin.Conductor;
+import flixel.FlxG;
+import funkin.play.event.SongEvent;
+import funkin.data.event.SongEventSchema;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.modding.module.ModuleHandler;
+import funkin.modding.module.Module;
+
+/*
+ * Event will store the values and pass them to the module where the actual event runs.
+ */
+
+class HUDFadeEvent extends SongEvent 
+{
+  function new() {
+    super("HUDFadeEvent");
+  }
+
+  public var eventTitle:String = "HUD Fade Event";
+
+  override function handleEvent(data)
+  {
+    if(PlayState.instance == null || PlayState.instance.isMinimalMode) return;
+
+    var hud = data.getString('hud');
+    var duration = data.getFloat('duration');
+    var fadeIn = data.getBool('shouldFadeIn');
+    var unit = data.getString('unit');
+
+    var module = ModuleHandler.getModule('HUDFadeModule');
+    if (module != null) module.scriptCall("fadeHUD", [hud, duration, unit, fadeIn]);
+   }
+
+    public override function getTitle() {
+    return eventTitle;
+  }
+
+    override function getEventSchema(){
+    return [
+      {
+        name: 'duration',
+        title: 'Duration',
+        defaultValue: 4.0,
+        step: 1.0,
+        min: 0.1,
+        type: "float",
+        units: 'units'
+      },
+      {
+        name: 'unit', // My new event speciality
+        title: 'Unit',
+        defaultValue: "steps",
+        type: "enum",
+        keys: [
+         "Steps" => "steps",
+         "Seconds" => "seconds"
+          ]
+      },
+      {
+        name: 'hud',
+        title: 'HUD',
+        defaultValue: "both",
+        type: "enum",
+        keys: [
+          "Both" => "both",
+          "Health Bar" => "hb",
+          "Notes" => "notes"
+           ]
+      },
+      {
+        name: 'shouldFadeIn',
+        title: 'Fade in',
+        defaultValue: false,
+        type: "bool"
+      }
+    ];
+  }
+}
+
+/*
+ * From the event, the fading function is called for the module.
+ */
+
+class HUDFadeModule extends Module
+{
+   function new()
+   {
+      super("HUDFadeModule");
+   }
+
+   var tweenHUD:FlxTween;
+   var tweenHB:FlxTween;
+   var tweenNotes:FlxTween;
+   var game;
+
+   public function fadeHUD(hud:String, duration:Float, unit:String, fadeIn:Bool)
+   {
+      var daAlpha = (fadeIn) ? 1 : 0;
+      var durSeconds = (unit ==  'steps') ? Conductor.instance.stepLengthMs * duration / 1000 : duration;
+
+      game = PlayState.instance;
+      daHUD = hud;
+
+      switch(hud)
+      {
+         case 'both':
+            tweenHUD = FlxTween.tween(game.camHUD, {alpha: daAlpha}, durSeconds);
+
+         case 'hb':
+            for (i in [game.healthBar, game.healthBarBG, game.iconP1, game.iconP2])
+            {
+               tweenHB = FlxTween.tween(i, {alpha: daAlpha}, durSeconds);
+            }
+
+         case 'notes':
+            for (i in [
+               game.playerStrumline.members,
+               game.opponentStrumline.members
+            ])
+            {
+               tweenNotes = FlxTween.tween(i, {alpha: daAlpha}, durSeconds);
+            }
+      }
+   }
+
+   function onGameOver(event)
+   {
+      if (PlayState.instance == null) return;
+
+      super.onGameOver(event);
+
+      if (tweenHUD != null)
+      {
+         tweenHUD.cancel();
+         fadeHUD("both", 0.01, "steps", true);
+      }
+      if (tweenHB != null)
+      {
+         tweenHB.cancel();
+         fadeHUD("hb", 0.01, "steps", true);
+      }
+      if (tweenNotes != null)
+      {
+         tweenNotes.cancel();
+         fadeHUD("notes", 0.01, "steps", true);
+      }
+   }
+
+   function onSongRetry(event)
+   {
+      if (PlayState.instance == null) return;
+
+      super.onSongRetry(event);
+
+      if (tweenHUD != null)
+      {
+         tweenHUD.cancel();
+         fadeHUD("both", 0.01, "steps", true);
+      }
+      if (tweenHB != null)
+      {
+         tweenHB.cancel();
+         fadeHUD("hb", 0.01, "steps", true);
+      }
+      if (tweenNotes != null)
+      {
+         tweenNotes.cancel();
+         fadeHUD("notes", 0.01, "steps", true);
+      }
+   }
+}

@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Double Trouble",
+ "artist": "Rareblin",
+ "charter": "Rareblin",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "gf-dt",
+   "opponent": "green-dt"
+  },
+  "stage": "dt",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 15},
+  "album": "Impostor39",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 120.5,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

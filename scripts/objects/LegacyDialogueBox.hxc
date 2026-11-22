@@ -1,0 +1,538 @@
+package legacy.objects;
+
+import flixel.group.FlxTypedSpriteGroup;
+import flixel.addons.text.FlxTypeText;
+import flixel.util.FlxColor;
+import haxe.Json;
+import funkin.play.PlayState;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.play.components.HealthIcon;
+import haxe.ds.StringMap;
+import flixel.FlxG;
+import funkin.Paths;
+import Std;
+import Math;
+import flixel.util.FlxTimer;
+import funkin.PlayerSettings;
+import funkin.util.TouchUtil;
+
+using StringTools;
+
+class LegacyDialogueBox extends FlxTypedSpriteGroup
+{
+    var id:String;
+public var skipText:FlxText; // skip video text
+var bgFade:FlxSprite;
+var box:FlxSprite;
+var bubble:FlxSprite;
+var bubble_old:FlxSprite;
+var icon:HealthIcon;
+var icon_old:HealthIcon;
+var swagDialogue:FlxTypeText;
+var rtlDisplayText:FlxText;
+var rtlWrapMeasure:FlxText;
+var dropText:FlxText;
+var dropText_old:FlxText;
+var text_old:FlxText;
+var dialogueList:Array<Dynamic>;
+var curEmote:String = 'happy';
+var curCharacter:String = 'bf';
+var dialogueEnded:Bool = false;
+var curIcon:String = 'bf';
+var curSide:Int = 0;
+var charMap:StringMap<Dynamic> = new StringMap();
+var blackYnot:FlxSprite;
+var vidPlaying:Bool = false;
+var dialogueAfter:Bool = false;
+var rtlMode:Bool = false;
+var rtlFullText:String = "";
+var portrait:Array<FunkinSprite> = [];
+var curSound:String = "bf";
+var boxChar:String = "";
+
+var controls;
+public var hasDialogue:Bool = false;
+public var hasDialogueAudio = true;
+
+var portraitOffsets:Array<StringMap<Array<Float>>> = [];
+
+var rgb:FlxRuntimeShader = new FlxRuntimeShader(Assets.getText(Paths.frag('rgb')));
+
+public function new(songId:String)
+    {
+        super();
+        id = songId;
+
+		final PADDING = 15;
+	skipText = new FlxText(PADDING, 0, FlxG.width - PADDING * 2, 'Press BACK to skip');
+	skipText.setFormat(Paths.font("liberbold.ttf"), 25, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	skipText.borderSize = 2;
+	skipText.y = FlxG.height - skipText.height - (PADDING * (3 / 4));
+	skipText.zIndex = 12;
+
+    readDialogue();
+
+    blackYnot = new FlxSprite().makeGraphic(FlxG.width + 3, FlxG.height, FlxColor.BLACK);
+	blackYnot.camera = PlayState.instance.camCutscene;
+	add(blackYnot);
+
+    FlxTween.tween(blackYnot, {alpha: 0}, 0.5, {onComplete: function() blackYnot.kill()});
+
+	rgb.data.enabled.value = [1];
+	rgb.data.a_flash.value = [0];
+	rgb.data.a_alpha.value = [1];
+	rgb.data.mult.value = [1];
+
+	PlayState.instance.camHUD.visible = false;
+    }
+
+public function textFade()
+{	
+	skipText.visible = true;
+	skipText.alpha = 0;
+	FlxTween.tween(skipText, {alpha: .5}, 2, {ease: FlxEase.sineInOut});
+	FlxTween.tween(skipText, {alpha: 0}, 3, {startDelay: 4, ease: FlxEase.sineInOut});
+	
+	skipText.camera = PlayState.instance.camCutscene;
+	add(skipText);
+}
+
+/**
+ * The most disgusting code of all time. Okay so like. Imagine this: We grab the character from data/dialogue/ and load it but ONLY if it already exists.
+ * This code is really bad but nothing in this mod uses more than 3 characters for dialogue total so I don't care.
+ * I have not tested if more than 3 work. Please don't do that.
+**/
+function speakerAnims(char:String = 'bf')
+{
+	// oh my fucking god dude
+	var loadUp:Bool = false;
+	
+	var dialogueChar:DialogueCharacter;
+	if (charMap.exists(char))
+	{
+		dialogueChar = charMap.get(char);
+	}
+	else
+	{
+		var path:String = Paths.json('dialogue/speakers/' + char);
+		if(Assets.exists(path)) dialogueChar = Json.parse(Assets.getText(path));
+		charMap[char] = dialogueChar;
+		loadUp = true;
+	}
+	
+	curSide = dialogueChar.side;
+	curSound = dialogueChar.sound;
+	curIcon = dialogueChar.icon;
+	rgb.data.r.value = [dialogueChar.boxColor[0] / 255, dialogueChar.boxColor[1] / 255, dialogueChar.boxColor[2] / 255];
+	rgb.data.g.value = [66 / 255, 66 / 255, 66 / 255];
+	rgb.data.b.value = [dialogueChar.boxShadeColor[0] / 255, dialogueChar.boxShadeColor[1] / 255, dialogueChar.boxShadeColor[2] / 255];
+	
+	var who:FunkinSprite = portrait[curSide];
+	if (loadUp)
+	{
+		who.loadSparrow('ui/dialogue/characters/${dialogueChar.asset}');
+		if(who == portrait[0]) who.updateHitbox();
+		
+		for (b in dialogueChar.animations)
+		{
+			if (b.loop)
+			{
+				who.animation.addByPrefix('${b.anim}-loop', b.name, b.fps ?? 24, true);
+				setPortraitAnimationOffset(curSide, '${b.anim}-loop', b.offsets[0], b.offsets[1]);
+			}
+			
+			who.animation.addByPrefix(b.anim, b.name, b.fps ?? 24, b.reset ?? true);
+			setPortraitAnimationOffset(curSide, '${b.anim}', b.offsets[0], b.offsets[1]);
+		}
+		
+		who.animation.onFinish.add(function(anim:String) {
+			if (who.hasAnim('$anim-loop')){ who.animation.play('$anim-loop', true);
+		applyPortraitAnimationOffset(curSide, curEmote);}
+		});
+	}
+	
+	boxChar = dialogueChar.name;
+	return who;
+}
+
+/**
+	* Hm.
+	`oldToo` > Refresh old?
+**/
+function refreshDialogue(?oldToo = false)
+{
+	if (oldToo)
+	{
+		if (bubble_old.alpha != 1)
+		{
+			for (i in [dropText_old, text_old, icon_old, bubble_old])
+			{
+				i.alpha = 1;
+			}
+		}
+		dropText_old.text = dropText.text;
+		text_old.text = swagDialogue.text;
+		icon_old.configure({
+			id: curIcon,
+			scale: 0.7,
+			flipX: false,
+			isPixel: false
+		});
+		text_old.scale.y = getSquish(text_old);
+		text_old.updateHitbox();
+		FlxG.sound.play(Paths.sound('clickText'), 0.8);
+	}
+	
+	dialogueEnded = false;
+	var splitName:Array<String> = dialogueList[0].split(":");
+	curCharacter = splitName[1]; // idk
+	
+	v4SpeakerShit();
+	curEmote = splitName[2]; // emote
+	dialogueList[0] = dialogueList[0].substr(splitName[1].length + 3 + splitName[2].length).trim();
+	var line = dialogueList[0];
+	swagDialogue.text = line;
+	swagDialogue.scale.y = getSquish(swagDialogue);
+	swagDialogue.resetText(line);
+	swagDialogue.start(0.05, true);
+	
+	var who = portrait[curSide];
+	
+	who.animation.onLoop.removeAll();
+	who.animation.play(curEmote);
+	applyPortraitAnimationOffset(curSide, curEmote);
+	
+	swagDialogue.completeCallback = function() {
+		dialogueEnded = true;
+		
+		who.animation.onLoop.addOnce(function(anim:String) {
+			if (who.animation.exists(anim + '-loop'))
+			{
+				who.animation.play(anim + '-loop', true);
+			}
+			else
+			{
+				who.animation.pause();
+			}
+		});
+	};
+	
+	dialogueList.remove(dialogueList[0]);
+}
+
+/**
+ * Let us grab this shit at once!
+**/
+function v4SpeakerShit()
+{
+	var speaker:FlxSprite = speakerAnims(curCharacter);
+	swagDialogue.sounds = [FlxG.sound.load(Paths.sound('dialogue/' + curSound), 0.6)];
+	dropText.text = boxChar;
+	icon.configure({
+			id: curIcon,
+			scale: 0.7,
+			flipX: false,
+			isPixel: false
+		});
+	
+	if (!speaker.visible)
+	{
+		speaker.visible = true;
+		switch (speaker)
+		{
+			case portrait[2]:
+				FlxTween.tween(speaker, {alpha: 1, x: 865}, 0.5, {ease: FlxEase.quadInOut});
+			case portrait[0]:
+				FlxTween.tween(speaker, {alpha: 1, x: 247}, 0.5, {ease: FlxEase.quadInOut});
+			case portrait[1]:
+				FlxTween.tween(speaker, {alpha: 1, y: 148}, 0.5, {ease: FlxEase.quadInOut});
+		}
+	}
+}
+
+public function readDialogue()
+{
+	if(Assets.exists(Paths.txt('dialogue/conversations/' + id))) dialogueList = Assets.getText(Paths.txt('dialogue/conversations/' + id)).trim().split("\n");
+	if (dialogueList.length == 0) return;
+
+	hasDialogue = true;
+	
+	var gLtR = 'left';
+	rtlMode = false;
+	
+	var textX:Float = 350; // 325.85
+	
+	// trace('Loading dialogue at ' + txt);
+	if (hasDialogueAudio)
+	{
+		FlxG.sound.playMusic(Paths.music('dialogue/' + id));
+		FlxG.sound.music.volume = 0;
+		FlxG.sound.music.fadeIn(1, 0, 0.8);
+	}
+	
+	bgFade = new FlxSprite(-200, -200).makeGraphic(Std.int(FlxG.width * 1.3), Std.int(FlxG.height * 1.3), 0xFFFFFFFF);
+	bgFade.camera = PlayState.instance.camCutscene;
+	bgFade.alpha = 0;
+	add(bgFade);
+	
+	FlxTween.tween(bgFade, {alpha: 0.35}, 0.8, {ease: FlxEase.circIn});
+	
+	// Create the box group.
+	this.camera = PlayState.instance.camCutscene;
+	
+	// Dialgoue box
+	box = new FlxSprite(0, 431).loadGraphic(Paths.image('ui/dialogue/dialogueBox'));
+	box.screenCenter(0x01);
+	box.x = Std.int(box.x);
+
+	rgb.data.r.value = [0xFFFF1515.redFloat, 0xFFFF1515.greenFloat, 0xFFFF1515.blueFloat];
+	rgb.data.g.value = [0xFF666666.redFloat, 0xFF666666.greenFloat, 0xFF666666.blueFloat];
+	rgb.data.b.value = [0xFF7D0058.redFloat, 0xFF7D0058.greenFloat, 0xFF7D0058.blueFloat];
+	box.shader = rgb;
+	
+	var port0:FunkinSprite = new FunkinSprite(247 - 50, 216);
+	port0.updateHitbox();
+	port0.visible = false;
+	port0.alpha = 0;
+	
+	var port1:FunkinSprite = FunkinSprite.createSparrow(206.85, 198, 'ui/dialogue/characters/gf');
+	port1.updateHitbox();
+	port1.screenCenter(0x01);
+	port1.visible = false;
+	port1.alpha = 0;
+	
+	// portrait right
+	var port2:FunkinSprite = new FunkinSprite(864.75 + 50, 216);
+	port2.updateHitbox();
+	port2.visible = false;
+	port2.alpha = 0;
+
+	add(port0);
+	add(port1);
+	add(port2);
+	
+	portrait.push(port0);
+	portrait.push(port1);
+	portrait.push(port2);
+
+	portraitOffsets.push(new StringMap());
+	portraitOffsets.push(new StringMap());
+	portraitOffsets.push(new StringMap());
+	
+	add(box);
+	
+	bubble = new FlxSprite(355.85, 496).loadGraphic(Paths.image('ui/dialogue/bubble'));
+	bubble_old = new FlxSprite(355.85, 616 /* thats just, evil. oh my god ... */).loadGraphic(Paths.image('ui/dialogue/bubble'));
+	for (i in [bubble, bubble_old])
+	{
+		i.screenCenter(0x01);
+		i.x = Std.int(i.x + 18.5); // fuck it
+		add(i);
+	}
+	
+	icon = new HealthIcon('red', 1);
+	icon.autoUpdate = false;
+	icon.x = 220;
+	icon.y = bubble.getMidpoint().y - 75;
+	icon.updateHitbox();
+	add(icon);
+	
+	swagDialogue = new FlxTypeText(textX, 0, Std.int(FlxG.width * 0.5), "", 28);
+	swagDialogue.setFormat(Paths.font("liber.ttf"), 26, FlxColor.BLACK, gLtR);
+	swagDialogue.visible = true;
+	
+	dropText = new FlxText(textX, 495, Std.int(FlxG.width * 0.5), "", 28);
+	dropText.setFormat(Paths.font("liberbold.ttf"), 30, FlxColor.WHITE, gLtR, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	dropText.borderSize = 2;
+	add(dropText);
+	swagDialogue.y = dropText.y + 30;
+	
+	add(swagDialogue);
+	rtlDisplayText = new FlxText(textX, swagDialogue.y, Std.int(FlxG.width * 0.5), "", 28);
+	rtlDisplayText.setFormat(Paths.font("liber.ttf"), 26, FlxColor.BLACK, gLtR);
+	rtlDisplayText.textField.wordWrap = true;
+	rtlDisplayText.textField.multiline = true;
+	rtlDisplayText.visible = false;
+	add(rtlDisplayText);
+	rtlWrapMeasure = new FlxText(textX, swagDialogue.y, Std.int(FlxG.width * 0.5), "", 28);
+	rtlWrapMeasure.setFormat(Paths.font("liber.ttf"), 26, FlxColor.BLACK, gLtR);
+	rtlWrapMeasure.textField.wordWrap = true;
+	rtlWrapMeasure.textField.multiline = true;
+	
+	// old version of everything
+	icon_old = new HealthIcon('red', 1);
+	icon_old.autoUpdate = false;
+	icon_old.x = icon.x;
+	icon_old.y = (bubble.getMidpoint().y - 75) + 120.8;
+	icon_old.updateHitbox();
+	icon_old.flipX = icon.flipX = false;
+	add(icon_old);
+	
+	dropText_old = new FlxText(textX, 623 - 9, Std.int(FlxG.width * 0.5), "", 28);
+	dropText_old.setFormat(Paths.font("liberbold.ttf"), dropText.size, FlxColor.WHITE, gLtR, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	dropText_old.borderSize = 2;
+	add(dropText_old);
+	
+	text_old = new FlxText(textX, 671 - 21, Std.int(FlxG.width * 0.5), "", 28);
+	text_old.setFormat(Paths.font("liber.ttf"), 26, FlxColor.BLACK, gLtR);
+	add(text_old);
+	
+	for (i in [dropText_old, text_old, icon_old, bubble_old, box, icon, bubble])
+	{
+		i.alpha = 0.001;
+	}
+	// this.visible = false;
+	
+	for (obj in [swagDialogue, rtlDisplayText, rtlWrapMeasure, text_old])
+	{
+		obj._defaultFormat.leading = 0;
+		obj.updateDefaultFormat();
+	}
+	
+	FlxTimer.wait(0.5, function() {
+		box.alpha = 1;
+		bubble.alpha = 1;
+		icon.alpha = 1;
+		refreshDialogue();
+	});
+}
+
+function setPortraitAnimationOffset(index:Int, anim:String, x:Float, y:Float):Void
+{
+    portraitOffsets[index].set(anim, [x, y]);
+}
+
+function applyPortraitAnimationOffset(index:Int, anim:String):Void
+{
+    var spr = portrait[index];
+    var offsets = portraitOffsets[index].get(anim);
+
+    if (offsets != null)
+    {
+        spr.offset.set(offsets[0], offsets[1]);
+    }
+    else
+    {
+        spr.offset.set(0, 0);
+    }
+}
+
+/** 
+ * Get dialogue squish to fit with text box.
+**/
+function getSquish(text)
+{
+	return Math.min(67 / text.textField.textHeight, 1);
+}
+
+/** 
+ * Ran only when the song has dialogue and in the dialogue cutscene.
+**/
+function dialogueUpdate(elapsed:Float)
+{
+	if (controls.BACK_P)
+	{
+		swagDialogue.skip();
+		goodBialogue();
+	}
+	if (controls.ACCEPT_P || TouchUtil.justPressed)
+	{
+		if (dialogueEnded)
+		{
+			if (dialogueList.length > 0) refreshDialogue(true);
+			else
+			{
+				goodBialogue();
+			}
+		}
+		else
+		{
+			swagDialogue.skip();
+		}
+	}
+}
+
+function goodBialogue()
+{
+	hasDialogue = false;
+	FlxG.sound.music.stop(); // fadeOut(1.5, 0);
+	FlxG.sound.play(Paths.sound('panelDisappear'), 0.5);
+	FlxTween.tween(bgFade, {alpha: 0}, 0.25,
+		{
+			ease: FlxEase.circIn
+		});
+	FlxTween.tween(super, {y: this.y + 700}, 0.25,
+		{
+			ease: FlxEase.circIn,
+			onComplete: function() {
+				charMap.clear();
+				bgFade.destroy();
+				PlayState.instance.remove(this);
+				this.destroy();
+			}
+		});
+	if(!PlayState.instance.camHUD.visible) PlayState.instance.camHUD.visible = true;
+	new FlxTimer().start(0.1, function(tmr:FlxTimer) {
+        PlayState.instance.startCountdown();
+    });
+}
+
+override function update(elapsed:Float)
+{
+	super.update(elapsed);
+	controls = PlayerSettings.player1.controls;
+	if (hasDialogue) dialogueUpdate(elapsed);
+	PlayState.instance.disableKeys = hasDialogue;
+
+
+	if (swagDialogue != null)
+	{
+		if (rtlMode && rtlFullText.length > 0)
+		{
+			var ftLen = swagDialogue.text.length;
+			if (ftLen > 0)
+			{
+				if (ftLen > rtlFullText.length) ftLen = rtlFullText.length;
+				var startIndex = rtlFullText.length - ftLen;
+				if (startIndex < 0) startIndex = 0;
+				rtlDisplayText.text = rtlFullText.substring(startIndex);
+			}
+			else rtlDisplayText.text = '';
+			rtlDisplayText.updateHitbox();
+		}
+		else swagDialogue.updateHitbox();
+	}
+
+	
+}
+
+}
+
+typedef DialogueCharacter =
+{
+	var name:String;
+	var asset:String;
+	var sound:String;
+	var icon:String;
+	var side:Int;
+	var boxColor:Array<Int>;
+	var boxShadeColor:Array<Int>;
+	var animations:Array<AnimData>;
+}
+
+typedef AnimData =
+{
+	var anim:String;
+	var name:String;
+	var loop:Bool;
+	var offsets:Array<Int>;
+
+	@:optional var fps:Int;
+	@:optional var reset:Bool;
+}

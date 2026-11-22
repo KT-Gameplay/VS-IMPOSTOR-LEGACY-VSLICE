@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Rivals",
+ "artist": "Keoni",
+ "charter": "emi3",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bf-pixel",
+   "girlfriend": "gf-pixel",
+   "opponent": "tomongus"
+  },
+  "stage": "tomongus",
+  "noteStyle": "pixelImpostor",
+  "ratings": {"normal": 5},
+  "album": "Impostor22",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 135,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

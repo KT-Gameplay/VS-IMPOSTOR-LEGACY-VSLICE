@@ -1,0 +1,111 @@
+/*
+    Written by JugieNoob for the Healthbar+ mod
+    Mod Page: https://gamebanana.com/mods/612284
+    Mod Github: https://github.com/JugieNoob/V-Slice-Healthbar-Plus
+*/
+import flixel.util.FlxColor;
+import funkin.save.Save;
+import Std;
+
+
+class IconColourFinder
+{
+    public static function findIconColour(icon)
+    {
+        if (icon != null)
+        {
+            if (Save.instance.modOptions["IconColourMethod"] == "Slow")
+            {
+                return findIconColourNew(icon);
+            }
+            else
+            {
+                return findIconColourOld(icon);
+            }
+        }
+        else
+        {
+            return 0xFFFFFFFF;
+        }
+    }
+    public static function findIconColourOld(icon)
+    {
+        var best = 0xFFFFFFFF;
+        var bestSat = -1;
+        var pixels = icon.pixels;
+        if (pixels == null && icon.graphic != null) pixels = icon.graphic.bitmap;
+        if (pixels == null) return best;
+        var w = Std.int(icon.width);
+        var h = Std.int(icon.height);
+        var startX = Std.int(w * 0.15);
+        var startY = Std.int(h * 0.15);
+        var endX = Std.int(w * 0.85);
+        var endY = Std.int(h * 0.85);
+        for (cx in 0...6)
+        {
+            for (cy in 0...6)
+            {
+                var x = startX + Std.int((endX - startX) * cx / 5);
+                var y = startY + Std.int((endY - startY) * cy / 5);
+                var px = pixels.getPixel(x, y);
+                if (px == 0) continue;
+                var r = (px >> 16) & 0xFF;
+                var g = (px >> 8) & 0xFF;
+                var b = px & 0xFF;
+                if (r >= 248 && g >= 248 && b >= 248) continue;
+                var sat = Std.int(Math.max(r, Math.max(g, b))) - Std.int(Math.min(r, Math.min(g, b)));
+                if (sat > bestSat) { bestSat = sat; best = 0xFF000000 | px; }
+            }
+        }
+        if (best == 0xFFFFFFFF)
+        {
+            for (x in 0...w)
+            {
+                for (y in 0...h)
+                {
+                    var px = pixels.getPixel(x, y);
+                    if (px == 0) continue;
+                    best = 0xFF000000 | px;
+                    break;
+                }
+                if (best != 0xFFFFFFFF) break;
+            }
+        }
+        return best;
+    }
+	public static function findIconColourNew(icon)
+    {
+        if (icon == null) return 0xFFFFFFFF;
+        var freqMap = [];
+        var detail:Int = 3;
+		var pixels = icon.pixels;
+		if (pixels == null && icon.graphic != null) pixels = icon.graphic.bitmap;
+		if (pixels == null) return 0xFFFFFFFF;
+		for (i in 0...Std.int(icon.width / detail))
+		{
+			for (j in 0...Std.int(icon.height / detail))
+			{
+				var pixel = pixels.getPixel(i * detail, j * detail);
+				if (pixel == 0) continue;
+                var r = (pixel >> 16) & 0xFF;
+                var g = (pixel >> 8) & 0xFF;
+                var b = pixel & 0xFF;
+                if (r >= 224 && g >= 224 && b >= 224) continue;
+                if (r < 10 && g < 10 && b < 10) continue;
+                var found = false;
+                for (item in freqMap)
+                {
+                    if (item[0] == pixel) { item[1]++; found = true; break; }
+                }
+                if (!found) freqMap.push([pixel, 1]);
+			}
+		}
+        if (freqMap.length == 0) return 0xFFFFFFFF;
+        var winner = freqMap[0];
+        for (i in 1...freqMap.length)
+        {
+            if (freqMap[i][1] > winner[1]) winner = freqMap[i];
+        }
+		return 0xFF000000 | winner[0];
+    }
+}

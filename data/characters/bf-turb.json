@@ -1,0 +1,165 @@
+{
+	"version": "1.0.0",
+	"name": "bf-turb",
+	"assetPath": "characters/bf/bf_turb",
+	"flipX": true,
+	"offsets": [57,20],
+	"renderType": "multisparrow",
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		220,
+		-260
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 4,
+	"scale": 1.3,
+	"animations": [
+		{
+			"name": "idle",
+			"prefix": "BF idle dance",
+			"offsets": [
+				-7,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "BF NOTE LEFT0",
+			"offsets": [
+				-23,
+				-45
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUP",
+			"prefix": "BF NOTE UP0",
+			"offsets": [
+				11,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "BF NOTE RIGHT0",
+			"offsets": [
+				-26,
+				47
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFTmiss",
+			"prefix": "BF NOTE LEFT MISS",
+			"offsets": [
+				4,
+				-29
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singDOWNmiss",
+			"prefix": "BF NOTE DOWN MISS",
+			"offsets": [
+				-39,
+				-18
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUPmiss",
+			"prefix": "BF NOTE UP MISS",
+			"offsets": [
+				14,
+				-2
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHTmiss",
+			"prefix": "BF NOTE RIGHT MISS",
+			"offsets": [
+				6,
+				54
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "hey",
+			"prefix": "BF HEY",
+			"offsets": [
+				-10,
+				-3
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "firstDeath",
+			"prefix": "BF dies",
+			"offsets": [
+				-14,
+				-6
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "deathLoop",
+			"prefix": "BF dies",
+			"offsets": [
+				37,
+				200
+			],
+			"looped": true,
+			"frameIndices": [
+				17,
+				18
+			],
+			"fps": 24
+		},
+		{
+			"name": "deathConfirm",
+			"prefix": "BF dies",
+			"offsets": [
+				37,
+				500
+			],
+			"looped": false,
+			"frameIndices": [
+				17,
+				18
+			],
+			"fps": 24
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "BF NOTE DOWNh",
+			"offsets": [
+				-78,
+				-39
+			],
+			"looped": false,
+			"fps": 24
+		}
+	],
+	"isPixel": true
+}

@@ -1,0 +1,845 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.text.FlxText.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
+import flixel.util.FlxTimer;
+import flixel.util.FlxSave;
+import funkin.Assets;
+import funkin.Paths;
+import funkin.Highscore;
+import funkin.audio.FunkinSound;
+import funkin.play.PlayState;
+import funkin.play.scoring.Scoring;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.Module;
+import funkin.save.Save;
+import funkin.util.Constants;
+import Reflect;
+import StringTools;
+import haxe.Json;
+
+class LegacyMenuModule extends Module
+{
+  var store:FlxSave;
+  public var weeks:Array<Dynamic> = [];
+  public var sections:Array<Dynamic> = [];
+  public var cubes:Array<Dynamic> = [];
+  public var items:Dynamic = {};
+  public var cubeMetas:Dynamic = {};
+  var beanRewardBusy:Bool = false;
+  var beanRewardOwner:Dynamic = null;
+  var beanRewardPaid:Dynamic = null;
+  var beanRewardTimer:FlxTimer = null;
+  var beanRewardSoundTimer:FlxTimer = null;
+  var beanRewardCounter:Dynamic = null;
+  var beanRewardIcon:FlxSprite = null;
+  var beanRewardText:FlxText = null;
+
+  function new()
+  {
+    super('LegacyMenu', 0);
+  }
+
+
+  function beanRankName():String
+  {
+    var tally:Dynamic = Highscore.tallies;
+    if (tally == null) return 'NONE';
+
+    var total:Float = tally.sick + tally.good + tally.bad + tally.shit + tally.missed;
+    if (total <= 0) return 'NONE';
+
+    var accuracy:Float = (tally.sick + tally.good * 0.75 + tally.bad * 0.45 + tally.shit * 0.25) / total;
+    var rank:String = 'F';
+    var ranks:Array<Dynamic> = [
+      {percent: 0.0, name: 'F'},
+      {percent: 0.5, name: 'E'},
+      {percent: 0.7, name: 'D'},
+      {percent: 0.8, name: 'C'},
+      {percent: 0.85, name: 'B'},
+      {percent: 0.9, name: 'A'},
+      {percent: 0.95, name: 'S'},
+      {percent: 1.0, name: '=)'}
+    ];
+
+    for (entry in ranks) if (entry.percent <= accuracy) rank = entry.name;
+    return rank;
+  }
+
+  function beanRewardAmount(rank:String):Int
+  {
+    switch (rank)
+    {
+      case '=)': return 700;
+      case 'S': return 650;
+      case 'A': return 600;
+      case 'B': return 550;
+      case 'NONE': return 0;
+      default: return 500;
+    }
+  }
+
+  function beanRewardEligible(state:Dynamic):Bool
+  {
+    if (state == null) return false;
+    if (state.isBotPlayMode == true || state.isPracticeMode == true) return false;
+    return true;
+  }
+
+  function showBeanReward(state:Dynamic, amount:Int, currency:String):Void
+  {
+    var iconPath:String = Paths.image('currency/' + currency);
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('currency/beans');
+
+    beanRewardIcon = new FlxSprite();
+    if (Assets.exists(iconPath)) beanRewardIcon.loadGraphic(iconPath);
+    else beanRewardIcon.makeGraphic(32, 32, FlxColor.WHITE);
+    beanRewardIcon.updateHitbox();
+    beanRewardIcon.scrollFactor.set();
+    beanRewardIcon.alpha = 0;
+
+    beanRewardText = new FlxText(0, 0, 200, FlxStringUtil.formatMoney(amount, false), 35);
+    beanRewardText.setFormat(Paths.font('ariblk.ttf'), 35, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    beanRewardText.borderSize = 3;
+    beanRewardText.updateHitbox();
+    beanRewardText.scrollFactor.set();
+    beanRewardText.alpha = 0;
+
+    var anchorX:Float = FlxG.width - 150;
+    var anchorY:Float = 50;
+    beanRewardIcon.x = anchorX - 90;
+    beanRewardIcon.y = anchorY - beanRewardIcon.height * 0.5 - 100;
+    beanRewardText.x = anchorX - 10;
+    beanRewardText.y = anchorY - beanRewardText.height * 0.5 - 100;
+
+    var hudCamera:Dynamic = Reflect.field(state, 'camHUD');
+    if (hudCamera != null)
+    {
+      beanRewardIcon.cameras = [hudCamera];
+      beanRewardText.cameras = [hudCamera];
+    }
+
+    state.add(beanRewardIcon);
+    state.add(beanRewardText);
+
+    FlxTween.tween(beanRewardIcon, {y: anchorY - beanRewardIcon.height * 0.5, alpha: 1}, 0.35, {ease: FlxEase.circOut});
+    FlxTween.tween(beanRewardText, {y: anchorY - beanRewardText.height * 0.5, alpha: 1}, 0.35, {ease: FlxEase.circOut});
+
+    FlxTween.color(beanRewardIcon, 0.8, 0xFF7CFFBA, FlxColor.WHITE, {ease: FlxEase.expoOut, startDelay: 0.9});
+    FlxTween.color(beanRewardText, 0.8, 0xFF7CFFBA, FlxColor.WHITE, {ease: FlxEase.expoOut, startDelay: 0.9});
+
+    beanRewardCounter = FlxTween.num(amount, 0, 2.5, {ease: FlxEase.expoOut, startDelay: 0.9}, (value:Float) -> {
+      if (beanRewardText != null) beanRewardText.text = FlxStringUtil.formatMoney(Math.floor(value), false);
+    });
+
+    FlxTween.tween(beanRewardIcon, {alpha: 0}, 0.5, {startDelay: 3.4});
+    FlxTween.tween(beanRewardText, {alpha: 0}, 0.5, {startDelay: 3.4});
+
+    beanRewardSoundTimer = new FlxTimer().start(0.9, (_) -> {
+      beanRewardSoundTimer = null;
+      var soundPath:String = Paths.sound('get' + currency);
+      if (!Assets.exists(soundPath)) soundPath = Paths.sound('getbeans');
+      if (Assets.exists(soundPath))
+      {
+        try FunkinSound.playOnce(soundPath, 0.9) catch (error:Dynamic) trace('[LegacyMenu] Falha ao tocar som de beans: ' + error);
+      }
+    });
+  }
+
+  function clearBeanRewardPopup():Void
+  {
+    if (beanRewardTimer != null)
+    {
+      beanRewardTimer.cancel();
+      beanRewardTimer = null;
+    }
+
+    if (beanRewardSoundTimer != null)
+    {
+      beanRewardSoundTimer.cancel();
+      beanRewardSoundTimer = null;
+    }
+
+    if (beanRewardCounter != null)
+    {
+      beanRewardCounter.cancel();
+      beanRewardCounter = null;
+    }
+
+    if (beanRewardIcon != null)
+    {
+      FlxTween.cancelTweensOf(beanRewardIcon);
+      beanRewardIcon.kill();
+      beanRewardIcon = null;
+    }
+
+    if (beanRewardText != null)
+    {
+      FlxTween.cancelTweensOf(beanRewardText);
+      beanRewardText.kill();
+      beanRewardText = null;
+    }
+  }
+
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    beanRewardPaid = null;
+  }
+
+  override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+
+    if (beanRewardBusy)
+    {
+      event.cancelEvent();
+      return;
+    }
+
+    var state:Dynamic = PlayState.instance;
+    if (state == null || beanRewardPaid == state || !beanRewardEligible(state)) return;
+
+    var currencyValue:Dynamic = read('pendingBeansCurrency', '');
+    var currency:String = currencyValue == null ? '' : Std.string(currencyValue);
+    if (currency.length == 0 || currency == 'null') return;
+
+    var amount:Int = beanRewardAmount(beanRankName());
+    if (amount <= 0) return;
+
+    event.cancelEvent();
+    beanRewardBusy = true;
+    beanRewardOwner = state;
+    addMoney(currency, amount);
+
+    try showBeanReward(state, amount, currency) catch (error:Dynamic) trace('[LegacyMenu] Falha na animacao de beans: ' + error);
+
+    beanRewardTimer = new FlxTimer().start(3.9, (_) -> {
+      beanRewardTimer = null;
+      var target:Dynamic = beanRewardOwner;
+      clearBeanRewardPopup();
+      beanRewardBusy = false;
+      beanRewardOwner = null;
+
+      if (target == null || target != PlayState.instance) return;
+
+      beanRewardPaid = target;
+      target.endSong(true);
+    });
+  }
+
+  override function onStateChangeEnd(event:StateChangeScriptEvent):Void
+  {
+    super.onStateChangeEnd(event);
+
+    if (!Std.isOfType(event.targetState, PlayState))
+    {
+      beanRewardPaid = null;
+      beanRewardOwner = null;
+      write('pendingBeansCurrency', '');
+    }
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    clearBeanRewardPopup();
+    beanRewardBusy = false;
+    beanRewardOwner = null;
+    beanRewardPaid = null;
+  }
+
+  function ensureStore():FlxSave
+  {
+    if (store == null)
+    {
+      store = new FlxSave();
+      store.bind('impostorLegacyMenus', 'FridayNightFunkin');
+      if (store.data == null) store.data = {};
+    }
+    return store;
+  }
+
+  public function read(key:String, fallback:Dynamic):Dynamic
+  {
+    var value:Dynamic = Reflect.field(ensureStore().data, key);
+    return value == null ? fallback : value;
+  }
+
+  public function write(key:String, value:Dynamic):Void
+  {
+    Reflect.setField(ensureStore().data, key, value);
+    ensureStore().flush();
+  }
+
+  public function assetList():Array<String>
+  {
+    var result:Array<String> = [];
+    try result = Assets.list() catch (e:Dynamic) trace(e);
+    return result;
+  }
+
+  public function assetPath(path:String):String
+  {
+    if (path == null) return null;
+    if (Assets.exists(path)) return path;
+    if (StringTools.startsWith(path, 'assets/') && Assets.exists(path.substr(7))) return path.substr(7);
+    if (Assets.exists('assets/' + path)) return 'assets/' + path;
+    if (StringTools.startsWith(path, 'legacy/') && Assets.exists(path.substr(7))) return path.substr(7);
+    if (Assets.exists('legacy/' + path)) return 'legacy/' + path;
+    return path;
+  }
+
+  function text(path:String):String
+  {
+    if (path == null) return null;
+    var resolved:String = assetPath(path);
+    try return Assets.getText(resolved) catch (e:Dynamic)
+    {
+      trace('[LegacyMenu] Nao foi possivel ler ' + resolved + ' | ' + Std.string(e));
+    }
+    return null;
+  }
+
+  function pathRelativeTo(path:String, directory:String):String
+  {
+    if (path == null || directory == null) return null;
+    var index:Int = path.indexOf(directory);
+    if (index < 0) return null;
+    if (index > 0 && path.charAt(index - 1) != '/') return null;
+    return path.substr(index + directory.length);
+  }
+
+  function findAssetEnding(relativePath:String):String
+  {
+    for (path in assetList())
+    {
+      if (path == relativePath || StringTools.endsWith(path, '/' + relativePath)) return path;
+    }
+    return null;
+  }
+
+  function findAssetUnder(relativeDirectory:String, fileName:String):String
+  {
+    var all:Array<String> = assetList();
+    for (path in all)
+    {
+      var rest:String = pathRelativeTo(path, relativeDirectory);
+      if (rest == fileName) return path;
+    }
+    return null;
+  }
+
+  function parse(path:String):Dynamic
+  {
+    var source:String = text(path);
+    if (source == null || source.length == 0) return null;
+    try return Json.parse(source) catch (e:Dynamic)
+    {
+      trace('[LegacyMenu] JSON invalido: ' + path + ' | ' + Std.string(e));
+      return null;
+    }
+  }
+
+  function normalizeSong(value:String):String
+  {
+    var result:String = value.toLowerCase();
+    result = StringTools.trim(result);
+    result = StringTools.replace(result, ' ', '-');
+    result = StringTools.replace(result, '_', '-');
+    result = StringTools.replace(result, "'", '');
+    result = StringTools.replace(result, '.', '');
+    result = StringTools.replace(result, '!', '');
+    result = StringTools.replace(result, '?', '');
+    return result;
+  }
+
+  public function reloadWeeks():Void
+  {
+    weeks = [];
+    sections = [];
+    var all:Array<String> = assetList();
+    var weekFilePaths:Dynamic = {};
+    var weekIds:Array<String> = [];
+    var listPath:String = findAssetEnding('data/weeks/weekList.txt');
+    if (listPath == null) listPath = findAssetEnding('weeks/weekList.txt');
+    var listText:String = listPath == null ? null : text(listPath);
+    if (listText != null)
+    {
+      for (line in listText.split('\n'))
+      {
+        var id:String = StringTools.trim(StringTools.replace(line, '\r', ''));
+        if (id.length > 0 && !weekIds.contains(id)) weekIds.push(id);
+      }
+    }
+    for (path in all)
+    {
+      var rest:String = pathRelativeTo(path, 'data/weeks/');
+      var legacyPath:Bool = false;
+      if (rest == null)
+      {
+        rest = pathRelativeTo(path, 'weeks/');
+        legacyPath = true;
+      }
+      if (rest == null || rest.indexOf('/') >= 0 || !StringTools.endsWith(rest, '.json')) continue;
+      var id:String = rest.substr(0, rest.length - 5);
+      var existingPath:String = Reflect.field(weekFilePaths, id);
+      if (existingPath == null || (!legacyPath && pathRelativeTo(existingPath, 'weeks/') != null)) Reflect.setField(weekFilePaths, id, path);
+      if (!weekIds.contains(id)) weekIds.push(id);
+    }
+    for (id in weekIds)
+    {
+      var filePath:String = Reflect.field(weekFilePaths, id);
+      if (filePath == null) filePath = findAssetEnding('weeks/' + id + '.json');
+      if (filePath == null) filePath = findAssetEnding('data/weeks/' + id + '.json');
+      if (filePath == null) continue;
+      var meta:Dynamic = parse(filePath);
+      if (meta == null) continue;
+      if (Reflect.field(meta, 'hideStoryMode') != true || Reflect.field(meta, 'hideFreeplay') != true)
+      {
+        weeks.push({id: id, meta: meta});
+      }
+    }
+    for (week in weeks)
+    {
+      var meta:Dynamic = week.meta;
+      if (Reflect.field(meta, 'hideFreeplay') == true) continue;
+      var sectionId:String = Reflect.field(meta, 'section');
+      if (sectionId == null || sectionId.length == 0) continue;
+      var section:Dynamic = findSection(sectionId);
+      if (section == null)
+      {
+        var sectionPath:String = findAssetEnding('weeks/freeplay/' + sectionId + '.json');
+        if (sectionPath == null) sectionPath = findAssetEnding('data/weeks/freeplay/' + sectionId + '.json');
+        var sectionMeta:Dynamic = sectionPath == null ? null : parse(sectionPath);
+        var sectionTitle:Dynamic = sectionMeta == null ? null : Reflect.field(sectionMeta, 'title');
+        var sectionIndex:Dynamic = sectionMeta == null ? null : Reflect.field(sectionMeta, 'index');
+        var title:String = sectionTitle == null ? '???' : Std.string(sectionTitle);
+        var index:Int = sectionIndex == null ? 2147483647 : Std.int(sectionIndex);
+        section = {id: sectionId, title: title, index: index, songs: []};
+        sections.push(section);
+      }
+      var rawSongs:Array<Dynamic> = cast Reflect.field(meta, 'songs');
+      if (rawSongs == null) rawSongs = [];
+      for (raw in rawSongs)
+      {
+        var originalName:String = Std.string(Std.isOfType(raw, Array) ? raw[0] : Reflect.field(raw, 'song'));
+        if (originalName == null || originalName == 'null' || originalName.length == 0) continue;
+        var songId:String = normalizeSong(originalName);
+        var icon:String = 'red';
+        var portrait:String = 'unknown';
+        var credit:String = 'data5';
+        var cost:Int = 0;
+        var lock:String = null;
+        var hide:Bool = false;
+        var required:Array<String> = [];
+        var hasRequiredSongs:Bool = false;
+        var currency:String = 'beans';
+        var mod:String = null;
+        var color:Dynamic = Reflect.field(meta, 'freeplayColor');
+        if (Std.isOfType(raw, Array))
+        {
+          if (raw.length > 1 && raw[1] != null) icon = Std.string(raw[1]);
+          if (raw.length > 2 && raw[2] != null) color = raw[2];
+          if (raw.length > 3 && raw[3] != null) portrait = Std.string(raw[3]);
+          if (raw.length > 4 && raw[4] != null) credit = Std.string(raw[4]);
+          if (raw.length > 5 && raw[5] != null)
+          {
+            required = cast raw[5];
+            hasRequiredSongs = true;
+          }
+          if (raw.length > 6 && raw[6] != null) cost = Std.int(raw[6]);
+          lock = cost > 0 ? 'shop' : (raw.length > 7 && raw[7] == true ? 'special' : 'story');
+          if (raw.length > 8) hide = raw[8] == true;
+        }
+        else
+        {
+          if (Reflect.field(raw, 'icon') != null) icon = Std.string(Reflect.field(raw, 'icon'));
+          if (Reflect.field(raw, 'portrait') != null) portrait = Std.string(Reflect.field(raw, 'portrait'));
+          if (Reflect.field(raw, 'color') != null) color = Reflect.field(raw, 'color');
+          if (Reflect.field(raw, 'lock') != null) lock = Std.string(Reflect.field(raw, 'lock'));
+          if (Reflect.field(raw, 'credit') != null) credit = Std.string(Reflect.field(raw, 'credit'));
+          if (Reflect.field(raw, 'cost') != null) cost = Std.int(Reflect.field(raw, 'cost'));
+          if (Reflect.field(raw, 'currency') != null) currency = Std.string(Reflect.field(raw, 'currency'));
+          if (Reflect.field(raw, 'hideUntilDoubleTrouble') != null) hide = Reflect.field(raw, 'hideUntilDoubleTrouble') == true;
+          if (Reflect.field(raw, 'mod') != null) mod = Std.string(Reflect.field(raw, 'mod'));
+          required = cast Reflect.field(raw, 'requiredSongs');
+          hasRequiredSongs = required != null;
+        }
+        if (required == null) required = [songId];
+        var rgb:Array<Int> = [255, 255, 255];
+        if (Std.isOfType(color, Array) && color.length >= 3)
+        {
+          rgb = [Std.int(color[0]), Std.int(color[1]), Std.int(color[2])];
+        }
+        else if (Std.isOfType(color, Int))
+        {
+          var colorInt:Int = Std.int(color);
+          rgb = [(colorInt >> 16) & 255, (colorInt >> 8) & 255, colorInt & 255];
+        }
+        if (lock == null || lock == 'null' || lock.length == 0) lock = cost > 0 ? 'shop' : 'story';
+        var metaCurrency:Dynamic = Reflect.field(meta, 'currency');
+        if (metaCurrency != null) currency = Std.string(metaCurrency);
+        if (currency == null || currency.length == 0) currency = 'beans';
+        var folderValue:Dynamic = Reflect.field(meta, 'folder');
+        if ((mod == null || mod.length == 0) && folderValue != null) mod = Std.string(folderValue);
+        var songEntry:Dynamic = {
+          id: songId,
+          name: originalName,
+          icon: icon,
+          portrait: portrait,
+          credit: credit,
+          color: rgb,
+          cost: cost,
+          currency: currency,
+          lock: lock,
+          requiredSongs: required,
+          hasRequiredSongs: hasRequiredSongs,
+          hide: hide,
+          mod: mod,
+          week: week.id
+        };
+        section.songs.push(songEntry);
+      }
+    }
+    sections.sort(function(a:Dynamic, b:Dynamic):Int return Std.int(a.index) - Std.int(b.index));
+  }
+
+  function findSection(id:String):Dynamic
+  {
+    for (section in sections) if (section.id == id) return section;
+    return null;
+  }
+
+  public function reloadCosmicubes():Void
+  {
+    cubes = [];
+    items = {};
+    cubeMetas = {};
+    var all:Array<String> = assetList();
+    var rootPaths:Dynamic = {};
+    for (path in all)
+    {
+      var rest:String = pathRelativeTo(path, 'data/cosmicube/');
+      if (rest == null || rest.indexOf('/') >= 0 || !StringTools.endsWith(rest, '.json')) continue;
+      var rootIndex:Int = path.indexOf('data/cosmicube/');
+      var root:String = path.substr(0, rootIndex + 'data/cosmicube/'.length);
+      var id:String = rest.substr(0, rest.length - 5);
+      if (!Reflect.hasField(rootPaths, id)) Reflect.setField(rootPaths, id, root);
+    }
+    var metadataIds:Array<String> = Reflect.fields(rootPaths);
+    metadataIds.sort(Reflect.compare);
+    for (id in metadataIds)
+    {
+      var base:String = Std.string(Reflect.field(rootPaths, id));
+      var path:String = base + id + '.json';
+      var meta:Dynamic = parse(path);
+      if (meta == null) continue;
+      Reflect.setField(meta, 'fileName', id);
+      if (Reflect.field(meta, 'currency') == null) Reflect.setField(meta, 'currency', 'beans');
+      if (!cubes.contains(id)) cubes.push(id);
+      Reflect.setField(cubeMetas, id, meta);
+      var entries:Array<Dynamic> = [];
+      var itemPrefix:String = base + id + '/';
+      for (itemPath in all)
+      {
+        if (!StringTools.startsWith(itemPath, itemPrefix) || !StringTools.endsWith(itemPath, '.json')) continue;
+        var itemRest:String = itemPath.substr(itemPrefix.length);
+        if (itemRest.indexOf('/') >= 0) continue;
+        var itemId:String = itemRest.substr(0, itemRest.length - 5);
+        var item:Dynamic = parse(itemPath);
+        if (item == null) continue;
+        Reflect.setField(item, 'fileName', itemId);
+        Reflect.setField(item, 'currency', Reflect.field(meta, 'currency'));
+        if (Reflect.field(item, 'node') == null) Reflect.setField(item, 'node', {parent: 'root', direction: 'east'});
+        entries.push(item);
+      }
+      Reflect.setField(items, id, entries);
+    }
+  }
+
+  public function getItems(cubeId:String):Array<Dynamic>
+  {
+    var result:Array<Dynamic> = cast Reflect.field(items, cubeId);
+    return result == null ? [] : result;
+  }
+
+  public function getCubeMeta(cubeId:String):Dynamic
+  {
+    return Reflect.field(cubeMetas, cubeId);
+  }
+
+  public function balance(currency:String):Int
+  {
+    if (currency == null || currency.length == 0) return 0;
+    return Std.int(read('wallet_' + currency, 0));
+  }
+
+  public function addMoney(currency:String, amount:Int):Int
+  {
+    if (currency == null || currency.length == 0) return 0;
+    var next:Int = Std.int(Math.max(0, balance(currency) + amount));
+    Reflect.setField(ensureStore().data, 'wallet_' + currency, next);
+    ensureStore().flush();
+    return next;
+  }
+
+  public function spend(currency:String, amount:Int):Bool
+  {
+    if (amount < 0 || balance(currency) < amount) return false;
+    addMoney(currency, -amount);
+    return true;
+  }
+
+  public function doubleTroubleUnlocked():Bool
+  {
+    if (songPlayed('finale')) return true;
+    for (id in ['double-trouble', 'doubletrouble']) if (weekClear(id)) return true;
+    return read('doubleTroubleUnlocked', false) == true;
+  }
+
+  public function ownsSong(songId:String):Bool
+  {
+    var unlocked:Array<String> = cast read('freeplayUnlocked', []);
+    return unlocked.contains(songId);
+  }
+
+  public function unlockSong(songId:String):Void
+  {
+    var unlocked:Array<String> = cast read('freeplayUnlocked', []);
+    if (!unlocked.contains(songId)) unlocked.push(songId);
+    write('freeplayUnlocked', unlocked);
+  }
+
+  public function songMeetsRank(songId:String, targetRank:String):Bool
+  {
+    var ranks:Array<String> = ['F', 'B', 'A', 'S', 'P'];
+    var actual:String = songRank(songId);
+    var actualIndex:Int = ranks.indexOf(actual);
+    var targetIndex:Int = ranks.indexOf(targetRank == null ? '' : targetRank.toUpperCase());
+    return actualIndex >= 0 && targetIndex >= 0 && actualIndex >= targetIndex;
+  }
+
+  public function ownsNode(nodeId:String):Bool
+  {
+    var owned:Array<String> = cast read('cosmicubeUnlocks', []);
+    return owned.contains(nodeId);
+  }
+
+  public function unlockNode(nodeId:String):Void
+  {
+    var owned:Array<String> = cast read('cosmicubeUnlocks', []);
+    if (!owned.contains(nodeId)) owned.push(nodeId);
+    write('cosmicubeUnlocks', owned);
+  }
+
+  public function activeCube():String
+  {
+    return Std.string(read('activeCosmicube', ''));
+  }
+
+  public function setActiveCube(id:String):Void
+  {
+    write('activeCosmicube', id == null ? '' : id);
+  }
+
+  public function equipped(type:String):String
+  {
+    return Std.string(read('equipment_' + type, ''));
+  }
+
+  public function setEquipped(type:String, id:String):Void
+  {
+    write('equipment_' + type, id == null ? '' : id);
+  }
+
+  function scoreData(songId:String):Dynamic
+  {
+    if (songId == null || songId.length == 0) return null;
+    try return Save.instance.getSongScore(songId, Constants.DEFAULT_DIFFICULTY, Constants.DEFAULT_VARIATION) catch (e:Dynamic) return null;
+  }
+
+  public function songPlayed(songId:String):Bool
+  {
+    var clean:String = normalizeSong(songId);
+    var difficulties:Array<String> = [Constants.DEFAULT_DIFFICULTY, 'easy', 'normal', 'hard'];
+    var checked:Array<String> = [];
+    for (difficulty in difficulties)
+    {
+      if (difficulty == null || checked.contains(difficulty)) continue;
+      checked.push(difficulty);
+      try
+      {
+        var record:Dynamic = Save.instance.getSongScore(clean, difficulty, Constants.DEFAULT_VARIATION);
+        if (record != null && record.score > 0) return true;
+      }
+      catch (e:Dynamic) {}
+    }
+    if (songId != clean)
+    {
+      var record:Dynamic = scoreData(songId);
+      if (record != null && record.score > 0) return true;
+    }
+    return false;
+  }
+
+  public function songAccuracy(songId:String):Float
+  {
+    var data:Dynamic = scoreData(normalizeSong(songId));
+    if (data == null) data = scoreData(songId);
+    if (data == null || data.tallies == null || data.tallies.totalNotes <= 0) return 0;
+    return Scoring.tallyCompletion(data.tallies) * 100;
+  }
+
+  public function songRank(songId:String):String
+  {
+    var record:Dynamic = scoreData(normalizeSong(songId));
+    if (record == null) record = scoreData(songId);
+    if (record == null) return 'NONE';
+    var rank:String = '';
+    try rank = Std.string(Scoring.calculateRank(record)).toLowerCase() catch (e:Dynamic) rank = '';
+    if (rank.indexOf('perfect_gold') >= 0 || rank.indexOf('perfectgold') >= 0 || rank.indexOf('perfect') >= 0) return 'P';
+    if (rank.indexOf('excellent') >= 0) return 'S';
+    if (rank.indexOf('great') >= 0) return 'A';
+    if (rank.indexOf('good') >= 0) return 'B';
+    if (rank.indexOf('shit') >= 0) return 'F';
+    return songAccuracy(songId) >= 99.99 ? 'P' : 'F';
+  }
+
+  public function weekClear(weekId:String):Bool
+  {
+    for (week in weeks)
+    {
+      if (week.id != weekId) continue;
+      var songs:Array<Dynamic> = cast Reflect.field(week.meta, 'songs');
+      if (songs == null || songs.length == 0) return false;
+      for (song in songs)
+      {
+        var name:String = Std.string(Std.isOfType(song, Array) ? song[0] : Reflect.field(song, 'song'));
+        if (!songPlayed(normalizeSong(name))) return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  public function weekAccuracy(weekId:String):Float
+  {
+    for (week in weeks)
+    {
+      if (week.id != weekId) continue;
+      var songs:Array<Dynamic> = cast Reflect.field(week.meta, 'songs');
+      if (songs == null || songs.length == 0) return 0;
+      var total:Float = 0;
+      for (song in songs)
+      {
+        var name:String = Std.string(Std.isOfType(song, Array) ? song[0] : Reflect.field(song, 'song'));
+        total += songAccuracy(normalizeSong(name));
+      }
+      return total / songs.length;
+    }
+    return 0;
+  }
+
+  public function weekUnlocked(weekId:String):Bool
+  {
+    for (week in weeks)
+    {
+      if (week.id != weekId) continue;
+      var meta:Dynamic = week.meta;
+      if (Reflect.field(meta, 'startUnlocked') != false) return true;
+      var before:String = Std.string(Reflect.field(meta, 'weekBefore'));
+      if (before == null || before == '' || before == 'null') return true;
+      return weekClear(before);
+    }
+    return false;
+  }
+
+  public function cubeCompletion(cubeId:String):Float
+  {
+    var list:Array<Dynamic> = [];
+    for (item in getItems(cubeId)) if (item.completionExcluded != true) list.push(item);
+    if (list.length == 0) return 100;
+    var count:Int = 0;
+    for (item in list) if (ownsNode(Std.string(item.fileName))) count++;
+    return count / list.length * 100;
+  }
+
+  public function globalCompletion():Float
+  {
+    var seen:Array<String> = [];
+    var total:Int = 0;
+    var done:Int = 0;
+    for (week in weeks)
+    {
+      if (Reflect.field(week.meta, 'completionExcluded') == true) continue;
+      var songs:Array<Dynamic> = cast Reflect.field(week.meta, 'songs');
+      if (songs == null) continue;
+      for (song in songs)
+      {
+        var name:String = Std.string(Std.isOfType(song, Array) ? song[0] : Reflect.field(song, 'song'));
+        var id:String = normalizeSong(name);
+        if (id == 'null' || id.length == 0 || seen.contains(id)) continue;
+        seen.push(id);
+        total++;
+        if (songPlayed(id)) done++;
+      }
+    }
+    for (item in getItems('impostor'))
+    {
+      if (item.completionExcluded == true) continue;
+      var id:String = 'cube:' + Std.string(item.fileName);
+      if (seen.contains(id)) continue;
+      seen.push(id);
+      total++;
+      if (ownsNode(Std.string(item.fileName))) done++;
+    }
+    return total <= 0 ? 100 : done / total * 100;
+  }
+
+  public function shinies():Int
+  {
+    var count:Int = 0;
+    var songsTotal:Int = 0;
+    var songsDone:Int = 0;
+    for (week in weeks)
+    {
+      if (Reflect.field(week.meta, 'completionExcluded') == true) continue;
+      var songs:Array<Dynamic> = cast Reflect.field(week.meta, 'songs');
+      if (songs == null) continue;
+      for (song in songs)
+      {
+        songsTotal++;
+        var name:String = Std.string(Std.isOfType(song, Array) ? song[0] : Reflect.field(song, 'song'));
+        if (songPlayed(normalizeSong(name))) songsDone++;
+      }
+    }
+    if (songsTotal > 0 && songsDone == songsTotal) count++;
+    var skins:Array<Dynamic> = [];
+    var pets:Array<Dynamic> = [];
+    for (item in getItems('impostor'))
+    {
+      if (item.completionExcluded == true) continue;
+      var type:String = Std.string(item.type);
+      if (type == 'playerSkin' || type == 'speakerSkin') skins.push(item);
+      if (type == 'pet') pets.push(item);
+    }
+    if (skins.length > 0)
+    {
+      var complete:Bool = true;
+      for (item in skins) if (!ownsNode(Std.string(item.fileName))) complete = false;
+      if (complete) count++;
+    }
+    if (pets.length > 0)
+    {
+      var complete:Bool = true;
+      for (item in pets) if (!ownsNode(Std.string(item.fileName))) complete = false;
+      if (complete) count++;
+    }
+    return count;
+  }
+}

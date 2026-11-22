@@ -1,0 +1,10 @@
+{
+    "version": "1.0.0",
+    "name": "MIRA Mania",
+    "titleAsset": "storymenu/titles/extra",
+    "props": [],
+    "background": "#FFFFFF",
+    "songs": [
+        "sussus-toogus","lights-down","reactor","ejected"
+    ]
+}

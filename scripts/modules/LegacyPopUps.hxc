@@ -1,0 +1,233 @@
+import funkin.modding.module.Module;
+import flixel.FlxSprite;
+import funkin.play.PlayState;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.FunkinMemory;
+import funkin.Paths;
+import funkin.Conductor;
+import flixel.group.FlxTypedGroup;
+import flixel.FlxG;
+
+class LegacyPopUps extends Module
+{
+    public var ratingGraphic:Null<FlxSprite>;
+    public var ratingNumGroup:FlxTypedGroup;
+    public var suffix:String = '';
+    public var ratingScale:Float = 0;
+    public var combosScale:Float = 0;
+    public var combosPadding:Float = 0;
+    public var comboX:Float = 0;
+    public var ratingPop:Float = 0;
+    public var combosPop:Float = 0;
+    
+    var isImpostorStyle:Bool = false;
+
+    public function new()
+    {
+        super('LegacyPopUps', {state: PlayState});
+        for (i in 0...10)
+        {
+            FunkinMemory.cacheTexture(Paths.image('notestyles/num' + i));
+            FunkinMemory.cacheTexture(Paths.image('notestyles/num' + i + '-pixel'));
+            FunkinMemory.cacheTexture(Paths.image('notestyles/num' + i + '-nuzzus'));
+        }
+
+        FunkinMemory.cacheTexture(Paths.image('notestyles/epic'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/sick'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/good'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/bad'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/shit'));
+
+        FunkinMemory.cacheTexture(Paths.image('notestyles/epic-pixel'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/sick-pixel'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/good-pixel'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/bad-pixel'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/shit-pixel'));
+
+        FunkinMemory.cacheTexture(Paths.image('notestyles/epic-nuzzus'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/sick-nuzzus'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/good-nuzzus'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/bad-nuzzus'));
+        FunkinMemory.cacheTexture(Paths.image('notestyles/shit-nuzzus'));
+    }
+
+    override function onCountdownStart(event:Dynamic)
+    {
+        super.onCountdownStart(event);
+        
+        var ps = PlayState.instance;
+        var noteStyleId = ps.noteStyle.id.toLowerCase();
+        var songId = ps.currentSong.id.toLowerCase();
+        
+        isImpostorStyle = (noteStyleId == 'impostor' || noteStyleId == 'pixelimpostor');
+        if(!isImpostorStyle) return;
+ 
+        if(noteStyleId == 'pixelimpostor' && songId != 'sussus-nuzzus') suffix = "-pixel";
+        else if(songId == 'sussus-nuzzus') suffix = "-nuzzus";
+        else suffix = "";
+
+        ratingGraphic = new FlxSprite().loadGraphic(Paths.image('notestyles/epic'));
+        ratingGraphic.cameras = [ps.camHUD];
+        ps.add(ratingGraphic);
+        ratingGraphic.alpha = 0.001;
+        ps.remove(ps.comboPopUps);
+        
+        if(suffix == "-pixel")
+            ratingGraphic.antialiasing = false;
+
+        ratingNumGroup = new FlxTypedGroup();
+        ratingNumGroup.cameras = [ps.camHUD];
+        ps.add(ratingNumGroup);
+
+        ratingPop = (.47 / .42);
+        combosPop = (.35 / .33);
+
+        combosPadding = 0;
+
+        switch (suffix)
+        {
+            case '-pixel':
+                ratingScale = 3;
+                combosScale = 3;
+            case '-nuzzus':
+                ratingScale = 2;
+                combosScale = 2;
+            default:
+                ratingScale = .42;
+                combosScale = .33;
+                combosPadding = -30;
+        }
+    }
+
+    override function onNoteHit(event:Dynamic)
+    {
+        var ps = PlayState.instance;
+        if(ps == null || !isImpostorStyle) return;
+        super.onNoteHit(event);
+
+        switch (event.judgement)
+        {  
+            case 'sick':
+                var hitD:Float = event.hitDiff;
+                if(hitD < 0) hitD = -hitD;
+                if(hitD <= 22.5) popUpScore('notestyles/epic', event.comboCount);
+                else popUpScore('notestyles/sick', event.comboCount);
+
+            case 'good':
+                popUpScore('notestyles/good', event.comboCount);
+
+            case 'bad':
+                popUpScore('notestyles/bad', event.comboCount);
+
+            case 'shit':
+                popUpScore('notestyles/shit', event.comboCount);
+        }
+    }
+
+    public function popUpScore(judgement:String, combo:Int)
+    {
+        var ratingImage:String = judgement + suffix;
+        var posX:Float = FlxG.width * 0.35;
+
+        FlxTween.cancelTweensOf(ratingGraphic, ['scale.x', 'scale.y', 'alpha']);
+        ratingGraphic.alpha = 1;
+        ratingGraphic.loadGraphic(Paths.image(ratingImage));
+        ratingGraphic.screenCenter();
+        ratingGraphic.x = posX - 40;
+        ratingGraphic.y -= 60;
+
+        ratingGraphic.scale.set(ratingScale, ratingScale);
+        FlxTween.tween(ratingGraphic.scale, {x: ratingScale / ratingPop, y: ratingScale / ratingPop}, 0.5, {ease: FlxEase.expoOut});
+
+        ratingGraphic.updateHitbox();
+        FlxTween.tween(ratingGraphic, {alpha: 0}, 0.5, {startDelay: Conductor.instance.stepLengthMs * 0.01, ease: FlxEase.expoOut});
+
+        var memLen:Int = ratingNumGroup.members.length;
+        for (i in 0...memLen)
+        {
+            var sprite:FlxSprite = ratingNumGroup.members[i];
+            if (sprite != null && sprite.alive)
+            {
+                sprite.kill();
+            }
+        }
+
+        var d1:Int = -1;
+        var d2:Int = -1;
+        var d3:Int = -1;
+        var d4:Int = -1;
+
+        if (combo >= 1000) d1 = Std.int(combo / 1000) % 10;
+        d2 = Std.int(combo / 100) % 10;
+        d3 = Std.int(combo / 10) % 10;
+        d4 = combo % 10;
+
+        var daLoop:Int = 0;
+        
+        if (d1 != -1) { spawnDigit(d1, posX, daLoop); daLoop++; }
+        spawnDigit(d2, posX, daLoop); daLoop++;
+        spawnDigit(d3, posX, daLoop); daLoop++;
+        spawnDigit(d4, posX, daLoop);
+
+        var ps = PlayState.instance;
+        var isDown:Bool = ps.playerStrumline.isDownscroll;
+
+        if (ratingGraphic != null)
+        {
+            ratingGraphic.x = ((FlxG.width / 2) - (ratingGraphic.width / 2) + comboX);
+            ratingGraphic.y = (isDown ? (FlxG.height - ratingGraphic.height - 50) : 55);
+        }
+
+        if (ratingNumGroup != null && ratingNumGroup.members != null)
+        {
+            var totalWidth:Float = 0;
+            var groupLen:Int = ratingNumGroup.members.length;
+            
+            for (i in 0...groupLen)
+            {
+                var m:FlxSprite = ratingNumGroup.members[i];
+                if (m != null && m.exists && m.alive)
+                {
+                    totalWidth += ((m.frameWidth + combosPadding) * combosScale);
+                }
+            }
+
+            var xOffset:Float = ((FlxG.width - totalWidth) / 2);
+
+            for (i in 0...groupLen)
+            {
+                var numScore:FlxSprite = ratingNumGroup.members[i];
+                if (numScore != null && numScore.exists && numScore.alive)
+                {
+                    numScore.x = (xOffset - (numScore.frameWidth + combosPadding) * combosScale / 2 + comboX);
+                    numScore.y = (isDown ? (FlxG.height - numScore.height - 117.5) : 122.5);
+                    xOffset += ((numScore.frameWidth + combosPadding) * combosScale);
+                }
+            }
+        }
+    }
+
+    private function spawnDigit(digit:Int, posX:Float, daLoop:Int):Void
+    {
+        var numScore:FlxSprite = ratingNumGroup.recycle(FlxSprite);
+        FlxTween.cancelTweensOf(numScore);
+
+        numScore.loadGraphic(Paths.image('notestyles/num' + digit + suffix));
+        numScore.alpha = 1;
+        numScore.screenCenter();
+        numScore.x = posX + (43 * daLoop) - 90;
+        numScore.y += 80;
+        
+        if(suffix == "-pixel") 
+            numScore.antialiasing = false;
+
+        numScore.scale.set(combosScale, combosScale);
+        FlxTween.cancelTweensOf(numScore.scale);
+        FlxTween.tween(numScore.scale, {x: combosScale / combosPop, y: combosScale / combosPop}, 0.5, {ease: FlxEase.expoOut});
+
+        numScore.updateHitbox();
+        ratingNumGroup.add(numScore);
+        FlxTween.tween(numScore, {alpha: 0}, 0.5, {startDelay: Conductor.instance.stepLengthMs * 0.01, ease: FlxEase.expoOut});
+    }
+}

@@ -1,0 +1,10 @@
+import funkin.modding.module.ModuleHandler;
+
+class LegacyUtils
+{
+    public static function camSpecialThing(?dad = null, ?bf = null, ?zoom:Float = -1, ?snaptoo:Int = -1)
+    {
+        var module = ModuleHandler.getModule('LegacyModule');
+        if(module != null) module.scriptCall('camSpecialThing', [dad, bf, zoom, snaptoo]);
+    }
+}

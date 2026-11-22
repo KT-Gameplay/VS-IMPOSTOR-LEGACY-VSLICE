@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "name": "Extras",
+  "titleAsset": "storymenu/titles/Extras",
+  "visible": false,
+  "props": [
+  ],
+  "background": "#F9CF51",
+  "songs": ["sauces-moogus", "identity-crisis", "roomcode", "tomongus-tuesday",  "alpha-moogus", "actin-sus", "ow", "who", "insane-streamer", "sussus-nuzzus", "idk", "esculent", "drippypop", "crewicide", "monotone-attack", "top-10", "chippin", "chipping", "torture", "double-trouble", "monochrome", "triple-trouble", "dank-bars"]
+}

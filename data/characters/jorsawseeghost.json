@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "name": "jorsawseeghost",
+  "assetPath": "characters/jorsawsee/ghost",
+  "startingAnimation": "idle",
+  "singTime": 6,
+  "scale": 1,
+  "flipX": false,
+  "offsets": [
+    100,
+    -120
+  ],
+  "cameraOffsets": [
+    -130,
+    600
+  ],
+  "healthIcon": {
+    "id": "jorsawseeghost",
+    "scale": 1,
+    "flipX": false,
+    "isPixel": false
+  },
+  "healthbarColors": [
+    161,
+    161,
+    161
+  ],
+  "renderType": "sparrow",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "looped": false,
+      "offsets": [
+        179,
+        -271
+      ]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "right",
+      "looped": false,
+      "offsets": [
+        125,
+        -328
+      ]
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "looped": false,
+      "offsets": [
+        162,
+        -247
+      ]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "looped": false,
+      "offsets": [
+        177,
+        -187
+      ]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left",
+      "looped": false,
+      "offsets": [
+        132,
+        -341
+      ]
+    }
+  ]
+}

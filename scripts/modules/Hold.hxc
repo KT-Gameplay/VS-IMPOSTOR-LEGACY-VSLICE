@@ -1,0 +1,91 @@
+import funkin.play.PlayState;
+import funkin.modding.module.Module;
+import funkin.modding.module.ModuleHandler;
+
+class FixAnimHoldNote extends Module
+{
+    var game:PlayState;
+    var songStarted:Bool = false;
+
+    function onSongStart(event)
+    {
+        songStarted = true;
+    }
+
+    override function onStepHit(event)
+    {
+        game = PlayState.instance;
+        if (game == null) return;
+        if (songStarted == false) return;
+
+        super.onStepHit(event);
+
+        for (holdNote in game.opponentStrumline.holdNotes.members)
+        {
+            if (holdNote == null || !holdNote.alive) continue;
+
+            if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+            {
+                if (game.currentStage != null && game.currentStage.getDad() != null && game.currentStage.getDad().isSinging())
+                {
+                    game.currentStage.getDad().holdTimer = 0;
+                    onSustainNote(true, holdNote.noteData.kind, holdNote.noteData);
+                }
+            }
+        }
+
+        for (holdNote in game.playerStrumline.holdNotes.members)
+        {
+            if (holdNote == null || !holdNote.alive) continue;
+
+            if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+            {
+                if (game.currentStage != null && game.currentStage.getBoyfriend() != null && game.currentStage.getBoyfriend().isSinging())
+                {
+                    game.currentStage.getBoyfriend().holdTimer = 0;
+                    onSustainNote(false, holdNote.noteData.kind, holdNote.noteData);
+                }
+            }
+        }
+    }
+
+    function onSongRetry(e)
+    {
+        game = null;
+        songStarted = false;
+    }
+
+    function onDestroy()
+    {
+        game = null;
+        songStarted = false;
+    }
+
+    function onNoteHit(e:Dynamic)
+    {
+        game = PlayState.instance;
+        super.onNoteHit(e);
+
+        if (game == null) return;
+    }
+
+    function onSustainNote(isOpponent, type, holdNoteData)
+    {
+        var direction = holdNoteData.getDirection();
+
+        if (isOpponent)
+        {
+            if (type == null || type == 'Glitch Note')
+            {
+                game.currentStage.getDad().playSingAnimation(direction, false);
+            }
+        }
+        else
+        {
+            if (type == null)
+            {
+                game.currentStage.getBoyfriend().playSingAnimation(direction, false);
+            }
+        }
+    }
+}

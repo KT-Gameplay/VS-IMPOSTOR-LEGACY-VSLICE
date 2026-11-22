@@ -1,0 +1,259 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.addons.display.FlxBackdrop;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxAxes;
+import funkin.Conductor;
+import funkin.Paths;
+import funkin.Preferences;
+import Math;
+import Std;
+
+class DangerStage extends Stage
+{
+    public function new()
+    {
+        super('danger');
+    }
+
+    var ext = 'stages/airship/danger/';
+
+    var farCloudBg:FlxSprite;
+    var airFarClouds:FlxBackdrop;
+    var airMidClouds:FlxBackdrop;
+    var airCloseClouds:FlxBackdrop;
+    var airshipPlatform:FlxBackdrop;
+    var airSpeedlines:FlxBackdrop;
+    var airBigCloud:FlxSprite;
+    var gfBoard:FlxSprite;
+    var airshipskyflash:FlxSprite;
+
+    var blackScream:Bool = false;
+
+    var bgspeed:Float = (!Preferences.flashingLights ? 7 : 9);
+    var bigCloudSpeed:Float = 10;
+
+    override function buildStage()
+    {
+        super.buildStage();
+
+        PlayState.instance.camGame.height += 8;
+
+        var sky:FlxSprite = new FlxSprite(-1500, -897.55).loadGraphic(Paths.image(ext + 'sky'));
+        sky.setGraphicSize(5000, Std.int(sky.height * 1.5 * 4));
+        sky.updateHitbox();
+        sky.scrollFactor.set(0, 0);
+        sky.zIndex = 0;
+        add(sky);
+
+        farCloudBg = new FlxSprite(-1500).makeGraphic(3000, 1200, 0xffc0dbff);
+        farCloudBg.scrollFactor.set(0.1, 0.1);
+        farCloudBg.antialiasing = false;
+        farCloudBg.updateHitbox();
+        farCloudBg.zIndex = 1;
+        add(farCloudBg);
+
+        airFarClouds = new FlxBackdrop(Paths.image(ext + 'farthestClouds'), FlxAxes.X);
+        airFarClouds.setPosition(3385.95, -142.2);
+        airFarClouds.scrollFactor.set(0.1, 0.1);
+        airFarClouds.scale.set(2, 2);
+        airFarClouds.updateHitbox();
+        airFarClouds.zIndex = 2;
+        add(airFarClouds);
+
+        farCloudBg.y = airFarClouds.y + airFarClouds.height - 1;
+
+        airMidClouds = new FlxBackdrop(Paths.image(ext + 'backClouds'), FlxAxes.X);
+        airMidClouds.setPosition(3352.4, 76.55);
+        airMidClouds.scrollFactor.set(0.2, 0.2);
+        airMidClouds.scale.set(2, 2);
+        airMidClouds.updateHitbox();
+        airMidClouds.zIndex = 3;
+        add(airMidClouds);
+
+        var airship:FlxSprite = new FlxSprite(1114.75, -873.05).loadGraphic(Paths.image(ext + 'airship'));
+        airship.scrollFactor.set(0.25, 0.25);
+        airship.scale.set(2, 2);
+        airship.updateHitbox();
+        airship.zIndex = 4;
+        add(airship);
+
+        var fan:FlxSprite = new FlxSprite(2285.4, 102);
+        fan.frames = Paths.getSparrowAtlas(ext + 'airshipFan');
+        fan.animation.addByPrefix('idle', 'ala avion instance 1', 24, true);
+        fan.animation.play('idle');
+        fan.scrollFactor.set(0.27, 0.27);
+        fan.zIndex = 5;
+        add(fan);
+
+        airBigCloud = new FlxSprite(3507.15, -744.2).loadGraphic(Paths.image(ext + 'bigCloud'));
+        airBigCloud.scrollFactor.set(0.4, 0.4);
+        airBigCloud.scale.set(2, 2);
+        airBigCloud.updateHitbox();
+        airBigCloud.zIndex = 6;
+        add(airBigCloud);
+
+        airCloseClouds = new FlxBackdrop(Paths.image(ext + 'frontClouds'), FlxAxes.X);
+        airCloseClouds.setPosition(6092.2, 422.15);
+        airCloseClouds.scrollFactor.set(0.3, 0.3);
+        airCloseClouds.scale.set(2, 2);
+        airCloseClouds.updateHitbox();
+        airCloseClouds.zIndex = 7;
+        add(airCloseClouds);
+
+        airshipskyflash = new FlxSprite(-2000, -2500);
+        airshipskyflash.frames = Paths.getSparrowAtlas(ext + 'screamsky');
+        airshipskyflash.animation.addByPrefix('bop', 'scream sky', 24, false);
+        airshipskyflash.setGraphicSize(10000, 5500);
+        airshipskyflash.updateHitbox();
+        airshipskyflash.antialiasing = false;
+        airshipskyflash.visible = false;
+        airshipskyflash.animation.play('bop', false);
+        airshipskyflash.animation.stop();
+        airshipskyflash.zIndex = 8;
+        add(airshipskyflash);
+
+        airshipPlatform = new FlxBackdrop(Paths.image(ext + 'fgPlatform'), FlxAxes.X);
+        airshipPlatform.setPosition(-7184.8, 282.25);
+        airshipPlatform.scale.set(2, 2);
+        airshipPlatform.updateHitbox();
+        airshipPlatform.zIndex = 10;
+        add(airshipPlatform);
+
+        gfBoard = new FlxSprite(850, 550);
+        gfBoard.frames = Paths.getSparrowAtlas(ext + 'dangerboards');
+        gfBoard.animation.addByPrefix('bop', 'speakerwheel', 24, true);
+        gfBoard.animation.play('bop');
+        gfBoard.visible = false;
+        gfBoard.zIndex = 200;
+
+        add(gfBoard);
+
+        refresh();
+    }
+
+    override function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        gfBoard.visible = true;
+
+        gfBoard.zIndex = 16;
+
+        airSpeedlines = new FlxBackdrop(Paths.image(ext + 'speedlines'), FlxAxes.X);
+        airSpeedlines.setPosition(-3352.1, -1035.95);
+        airSpeedlines.alpha = 0.2;
+        airSpeedlines.scrollFactor.set(1.3, 1.3);
+        airSpeedlines.zIndex = 9;
+        add(airSpeedlines);
+
+        PlayState.instance.cameraZoomRate = 1;
+    }
+
+    override function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        var elapsed:Float = event.elapsed;
+
+        var bf = getBoyfriend();
+        if (bf != null && !bf.isDead)
+        {
+            if (!blackScream) PlayState.instance.camGame.shake(0.0008, 0.01);
+            PlayState.instance.camGame.y = Math.sin((Conductor.instance.songPosition / 280) * (Conductor.instance.bpm / 60) * 1.0) * 2 - 2;
+            PlayState.instance.camHUD.scroll.y = Math.sin((Conductor.instance.songPosition / 300) * (Conductor.instance.bpm / 60) * -1.0) * 0.6;
+            PlayState.instance.camHUD.angle = Math.sin((Conductor.instance.songPosition / 350) * (Conductor.instance.bpm / 60) * -1.0) * 0.6;
+        }
+
+        var delta:Float = elapsed * bgspeed * PlayState.instance.playbackRate;
+
+        airFarClouds.x -= delta * 7;
+        airMidClouds.x -= delta * 13;
+        airCloseClouds.x -= delta * 50;
+        airshipPlatform.x -= delta * 300;
+        if (airSpeedlines != null) airSpeedlines.x -= delta * 350;
+
+        if (airBigCloud != null)
+        {
+            airBigCloud.x -= delta * bigCloudSpeed;
+            if (airBigCloud.x < -4163.7)
+            {
+                airBigCloud.x = FlxG.random.float(3931.5, 4824.05);
+                airBigCloud.y = FlxG.random.float(-1087.5, -307.35);
+                bigCloudSpeed = FlxG.random.float(7, 15);
+            }
+        }
+    }
+
+    override function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        switch (event.eventData.eventKind)
+        {
+            case 'PlayAnimation':
+                var anim:String = Std.string(event.eventData.value.anim);
+                switch (anim)
+                {
+                    case 'scream2':
+                        blackScream = true;
+                        airshipskyflash.visible = true;
+                        airshipskyflash.alpha = 1;
+                        airshipskyflash.animation.play('bop', false);
+                        FlxTween.tween(airshipskyflash, {alpha: 0}, 0.6,
+                        {
+                            ease: FlxEase.quartOut,
+                            startDelay: 1.5,
+                            onComplete: function(_)
+                            {
+                                blackScream = false;
+                                airshipskyflash.visible = false;
+                            }
+                        });
+                }
+            case 'bye gf':
+                FlxTween.tween(getGirlfriend(), {x: getGirlfriend().x - 3500}, 4,
+                {
+                    ease: FlxEase.quartIn,
+                    onComplete: function(_) getGirlfriend().kill()
+                });
+                FlxTween.tween(gfBoard, {x: gfBoard.x - 3500}, 4,
+                {
+                    ease: FlxEase.quartIn,
+                    onComplete: function(_) gfBoard.kill()
+                });
+                FlxTween.num(bgspeed, (!Preferences.flashingLights ? 9 : 14), 5,
+                {
+                    ease: FlxEase.quadIn
+                }, function(value:Float)
+                {
+                    bgspeed = value;
+                });
+        }
+    }
+
+    override function onSongRetry(event)
+    {
+        super.onSongRetry(event);
+
+        blackScream = false;
+        airshipskyflash.visible = false;
+        airshipskyflash.alpha = 1;
+
+        if (getGirlfriend() != null) getGirlfriend().revive();
+        if (gfBoard != null)
+        {
+            gfBoard.revive();
+            gfBoard.setPosition(850, 550);
+        }
+        bgspeed = (!Preferences.flashingLights ? 7 : 9);
+    }
+
+    override function onGameOver(event)
+    {
+        FlxTween.tween(PlayState.instance.camGame, {zoom: 0.65}, 8, {ease: FlxEase.expoOut, startDelay: 0.5});
+    }
+}

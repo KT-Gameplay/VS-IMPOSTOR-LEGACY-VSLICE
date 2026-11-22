@@ -1,0 +1,81 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "LIMEGREENWEEKINVSIMPOSTOR",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "jads",
+		"isPixel": false
+	},
+	"assetPath": "characters/misc/LIME_GRTEEN",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "Idle",
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "SIng Left",
+			"offsets": [
+				24,
+				0
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Sing Down",
+			"offsets": [
+				-9,
+				-35
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Sing Up",
+			"offsets": [
+				-60,
+				32
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Sing Right",
+			"offsets": [
+				-8,
+				-7
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		}
+	]
+}

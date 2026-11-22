@@ -1,0 +1,41 @@
+{
+  "version": "2.2.4",
+  "songName": "Mando",
+  "artist": "Rareblin",
+  "charter": "loggo",
+  "offsets": {},
+  "playData": {
+    "difficulties": [
+      "normal"
+    ],
+    "stickerPack": "standard-sus",
+    "characters": {
+      "player": "bf",
+      "girlfriend": "gf",
+      "opponent": "yellow"
+    },
+    "stage": "airship",
+    "noteStyle": "impostor",
+    "ratings": {"normal": 6},
+    "album": "Impostor5",
+    "previewStart": 0,
+    "previewEnd": 0
+  },
+  "generatedBy": "Friday Night Funkin' - v0.7.5",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 260,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}

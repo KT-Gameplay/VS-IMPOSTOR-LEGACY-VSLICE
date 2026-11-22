@@ -1,0 +1,187 @@
+import flixel.math.FlxMath;
+import funkin.Conductor;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.play.character.AnimateAtlasCharacter;
+import funkin.play.notes.NoteDirection;
+import Math;
+import Std;
+import StringTools;
+
+class Danger extends AnimateAtlasCharacter
+{
+    public function new()
+    {
+        super('danger');
+    }
+
+    var legs:FunkinSprite;
+    var dadAnchorPoint:Array<Float> = [0, 0];
+    var LEG_PUSH_DOWN:Float = 0;
+    var LEG_PUSH_RIGHT:Float = 0;
+    var legPosY:Array<Int> = [13, 7, -3, -1, -1, 2, 7, 9, 7, 2, 0, 0, 3, 1, 3, 7, 13];
+    var legEvilPosY:Array<Int> = [-8, -3, 5, 2, -8, -13, -16, -14, -9, -4, 5, -4, -9, -10];
+    var blackMad:Bool = false;
+    var initialized:Bool = false;
+
+    override function onCreate(event:ScriptEvent)
+    {
+        super.onCreate(event);
+
+        ensureAnim('scream', 'black scream 1', false);
+        ensureAnim('scream2', 'black scream 2', false);
+        ensureAnim('idle-mad', 'black run mad', true);
+        ensureAnim('singLEFT-mad', 'black left mad', false);
+        ensureAnim('singDOWN-mad', 'black down mad', false);
+        ensureAnim('singUP-mad', 'black up mad', false);
+        ensureAnim('singRIGHT-mad', 'black right mad', false);
+
+        legs = new FunkinSprite();
+        legs.loadTextureAtlas('characters/story/black/danger', null, getAtlasSettings());
+        legs.anim.addByFrameLabel('legs', 'black legs', 24, true, false, false);
+        legs.anim.addByFrameLabel('legs-mad', 'black legs fast', 24, true, false, false);
+        legs.scale.set(this.scale.x, this.scale.x);
+        legs.updateHitbox();
+
+        setLegsAnim('legs');
+
+        if (currentStage != null)
+        {
+            currentStage.add(legs);
+        }
+    }
+
+    function ensureAnim(name:String, label:String, looped:Bool):Void
+    {
+        if (this.anim == null) return;
+        if (this.anim.getByName(name) != null) return;
+        this.anim.addByFrameLabel(name, label, 24, looped, false, false);
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        if (legs == null || legs.animation.curAnim == null) return;
+
+        var curAnimName:String = getCurrentAnimation();
+        var dadIdle:Bool = (curAnimName != null) && StringTools.startsWith(curAnimName, 'idle');
+
+        var legFrame:Int = Math.floor(FlxMath.mod(Conductor.instance.songPosition / Conductor.instance.beatLengthMs, 2) / 2 * legs.animation.curAnim.numFrames);
+
+        legs.animation.pause();
+        legs.animation.curAnim.curFrame = legFrame;
+
+        if (dadIdle)
+        {
+            this.animation.pause();
+            if (this.animation.curAnim != null) this.animation.curAnim.curFrame = legFrame;
+        }
+        else if (this.animation.curAnim != null)
+        {
+            this.animation.resume();
+        }
+
+        this.y = dadAnchorPoint[1] + (dadIdle ? 0 : ((blackMad ? legEvilPosY : legPosY)[legFrame]));
+        legs.setPosition(dadAnchorPoint[0] + LEG_PUSH_RIGHT, dadAnchorPoint[1] + LEG_PUSH_DOWN);
+        legs.flipX = this.flipX;
+
+        if (currentStage != null && legs.zIndex != this.zIndex - 1)
+        {
+            legs.zIndex = this.zIndex - 1;
+            currentStage.refresh();
+        }
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        setMad(false);
+
+        if (initialized) return;
+        initialized = true;
+
+        dadAnchorPoint[0] = legs.x = this.x + LEG_PUSH_RIGHT;
+        dadAnchorPoint[1] = legs.y = this.y + LEG_PUSH_DOWN;
+        this.flipX = false;
+    }
+
+    override function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        switch (event.eventData.eventKind)
+        {
+            case 'PlayAnimation':
+                if (event.eventData.value != null && StringTools.startsWith(Std.string(event.eventData.value.anim), 'scream'))
+                    setMad(true);
+        }
+    }
+
+    override function dance(force:Bool = false):Void
+    {
+        if (!blackMad || !hasAnimation('idle-mad'))
+        {
+            super.dance(force);
+            return;
+        }
+
+        if (isDead) return;
+
+        if (!force)
+        {
+            if (isSinging()) return;
+
+            var currentAnimation:String = getCurrentAnimation();
+            if (!StringTools.startsWith(currentAnimation, 'dance') && !StringTools.startsWith(currentAnimation, 'idle') && !isAnimationFinished()) return;
+        }
+
+        playAnimation('idle-mad', true);
+    }
+
+    override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
+    {
+        var curAnimName:String = getCurrentAnimation();
+        var screaming:Bool = !isAnimationFinished() && (curAnimName == 'scream' || curAnimName == 'scream2');
+        if (screaming && name != 'scream' && name != 'scream2' && !StringTools.startsWith(name, 'sing'))
+            return;
+
+        if (name == 'scream' || name == 'scream2')
+        {
+            var label:String = (name == 'scream') ? 'black scream 1' : 'black scream 2';
+            if (this.anim.getByName(name) == null)
+                this.anim.addByFrameLabel(name, label, 24, false, false, false);
+
+            this.animation.play(name, restart, reversed, 0);
+            return;
+        }
+
+        var finalName:String = name;
+        if (blackMad && StringTools.startsWith(name, 'sing') && !StringTools.endsWith(name, '-mad') && hasAnimation(name + '-mad'))
+            finalName = name + '-mad';
+
+        super.playAnimation(finalName, restart, ignoreOther, reversed);
+    }
+
+    override function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
+    {
+        var s:String = suffix;
+        if (blackMad && s == '') s = 'mad';
+
+        super.playSingAnimation(dir, miss, s);
+    }
+
+    function setMad(value:Bool):Void
+    {
+        blackMad = value;
+        setLegsAnim(value ? 'legs-mad' : 'legs');
+    }
+
+    function setLegsAnim(anim:String)
+    {
+        var lastFrame:Int = 0;
+        if (legs != null && legs.animation.curAnim != null) lastFrame = legs.animation.curAnim.curFrame;
+        legs.animation.play(anim, true, false, lastFrame);
+    }
+}

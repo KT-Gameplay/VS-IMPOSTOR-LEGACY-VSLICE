@@ -1,0 +1,103 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		-377.5,
+		19
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "ellie",
+	"cameraOffsets": [
+		-260,
+		110
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "ellie",
+		"isPixel": false
+	},
+	"assetPath": "characters/henry/Ellie_Assets",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "Ellie Idle",
+			"offsets": [
+				-30,
+				-90
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Ellie Left",
+			"offsets": [
+				214,
+				-105
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Ellie Down",
+			"offsets": [
+				-80,
+				-151
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Ellie Up",
+			"offsets": [
+				-91,
+				-39
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Ellie Right",
+			"offsets": [
+				-39,
+				-30
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Ellie Enter Animation",
+			"offsets": [
+				-30,
+				973
+			],
+			"frameRate": 24,
+			"name": "enter",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Ellie React Arm",
+			"offsets": [
+				-18,
+				-90
+			],
+			"frameRate": 24,
+			"name": "armed",
+			"looped": false
+		}
+	]
+}

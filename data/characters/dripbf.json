@@ -1,0 +1,152 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1.1,
+	"name": "dripbf",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"assetPath": "characters/bf/DrippyBF",
+	"animations": [
+		{
+			"frameIndices": [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12
+			],
+			"prefix": "BF Idle Dance",
+			"offsets": [
+				-5,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [
+				15
+			],
+			"prefix": "BF Idle Dance",
+			"offsets": [
+				-5,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle-hold",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "LeftNote",
+			"offsets": [
+				-1,
+				0
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "DownNote",
+			"offsets": [
+				3,
+				-30
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "UpNote",
+			"offsets": [
+				-19,
+				16
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "RightNote",
+			"offsets": [
+				-18,
+				-6
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "LeftMiss",
+			"offsets": [
+				23,
+				-4
+			],
+			"frameRate": 24,
+			"name": "singLEFTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "DownMiss",
+			"offsets": [
+				25,
+				25
+			],
+			"frameRate": 24,
+			"name": "singDOWNmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "UpMiss",
+			"offsets": [
+				62,
+				24
+			],
+			"frameRate": 24,
+			"name": "singUPmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "RightMiss",
+			"offsets": [
+				58,
+				-1
+			],
+			"frameRate": 24,
+			"name": "singRIGHTmiss",
+			"looped": false
+		}
+	]
+}

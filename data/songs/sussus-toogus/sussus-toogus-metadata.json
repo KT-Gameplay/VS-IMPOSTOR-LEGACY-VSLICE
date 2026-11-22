@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Sussus Toogus",
+ "artist": "EthanTheDoodler, Fabs",
+ "charter": "ashley",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "gf",
+   "opponent": "greenNotBornYesterdayOnTheLookout"
+  },
+  "album": "Impostor2",
+  "stage": "toogus",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 5},
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 150,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

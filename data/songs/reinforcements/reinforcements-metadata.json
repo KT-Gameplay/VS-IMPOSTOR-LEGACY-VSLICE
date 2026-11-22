@@ -1,0 +1,38 @@
+{
+ "version": "2.2.4",
+ "songName": "Reinforcements",
+ "artist": "EthanTheDoodler, Philplol",
+ "charter": "Gonk",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "ellie",
+   "opponent": "henry"
+  },
+  "stage": "henry",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 5},
+  "album": "Impostor26",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 115,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 16695.6522,
+   "b": 32,
+   "bpm": 155,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

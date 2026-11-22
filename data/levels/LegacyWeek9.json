@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "name": "Battling The Boyfriend",
+  "titleAsset": "storymenu/titles/Henry",
+  "visible": true,
+  "props": [
+  ],
+  "background": "#F9CF51",
+  "songs": ["titular", "greatest-plan", "reinforcements", "armed"]
+}

@@ -1,0 +1,95 @@
+{
+	"version": "1.0.0",
+	"name": "madgus",
+	"assetPath": "characters/jorsawsee/madgus",
+	"flipX": false,
+	"renderType": "multisparrow",
+	"healthIcon": {
+		"id": "redmungus",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		200,
+		-200
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 6,
+	"scale": 1,
+	"animations": [
+		{
+			"name": "singRIGHT",
+			"prefix": "right",
+			"offsets": [
+				90,
+				50
+			],
+			"looped": false,
+			"fps": 12
+		},
+		{
+			"name": "danceLeft",
+			"prefix": "DANCELEFT",
+			"offsets": [
+				50,
+				50
+			],
+			"looped": false,
+			"fps": 12
+		},
+		{
+			"name": "danceRight",
+			"prefix": "DANCERIGHT",
+			"offsets": [
+				39,
+				50
+			],
+			"looped": false,
+			"fps": 12
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "left",
+			"offsets": [
+				169,
+				50
+			],
+			"looped": false,
+			"fps": 12
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "down",
+			"offsets": [
+				85,
+				22
+			],
+			"looped": false,
+			"fps": 12
+		},
+		{
+			"name": "singUP",
+			"prefix": "up",
+			"offsets": [
+				128,
+				64
+			],
+			"looped": false,
+			"fps": 12
+		},
+		{
+			"name": "bwah",
+			"prefix": "scream",
+			"offsets": [
+				156,
+				59
+			],
+			"looped": false,
+			"fps": 12
+		}
+	]
+}

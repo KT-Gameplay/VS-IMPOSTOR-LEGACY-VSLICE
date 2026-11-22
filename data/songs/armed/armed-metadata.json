@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Armed",
+ "artist": "Punkett, EthanTheDoodler",
+ "charter": "Gonk",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "reginald",
+   "opponent": "rhm"
+  },
+  "stage": "henry",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 6},
+  "album": "Impostor27",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 215,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

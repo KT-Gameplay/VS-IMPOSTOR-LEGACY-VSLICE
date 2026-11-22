@@ -1,0 +1,74 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import flixel.FlxSprite;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import flixel.FlxG;
+import funkin.Paths;
+
+class PinkwaveSong extends Song
+{
+    public function new()
+    {
+        super("pinkwave");
+        hasPlayedEnd = false;
+    }
+
+    var pretenderDark:FlxSprite;
+    var hasPlayedEnd:Bool;
+    var props:Array<String> = ['longus', 'tomato', 'grey', 'vent'];
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+        
+        if(pretenderDark != null)
+        {
+            PlayState.instance.currentStage.remove(pretenderDark);
+            pretenderDark = null;
+        }
+
+        pretenderDark = new FlxSprite(-800, -500); // This could probably be a solid graphic that gets its color changed based off of timers
+        pretenderDark.frames = Paths.getSparrowAtlas('BG/pink/pretender_dark', 'shared');
+        pretenderDark.animation.addByPrefix('anim', 'amongdark', 24, false);
+        pretenderDark.animation.play('anim');
+        pretenderDark.alpha = 0.0001;
+        PlayState.instance.currentStage.add(pretenderDark);
+
+        if(PlayStatePlaylist.isStoryMode) hasPlayedEnd = false;
+        else hasPlayedEnd = true;
+    }
+
+    override function onSongEnd(event) // cutscene
+    {
+        super.onSongEnd(event);
+
+        if(!hasPlayedEnd)
+        {
+        if(!event.eventCanceled) event.cancel();
+        PlayState.instance.isInCutscene = true;
+        PlayState.instance.resetCamera(false, false, false);
+        PlayState.instance.cancelCameraFollowTween();
+        PlayState.instance.cameraFollowPoint.setPosition(400, 150);
+
+        for(i in props)
+        {
+            PlayState.instance.currentStage.getNamedProp(i).playAnimation('anim', true);
+        }
+        pretenderDark.animation.play('anim');
+        pretenderDark.alpha = 1;
+        FlxG.sound.play(Paths.sound('stage/pretender_kill'));
+
+        FlxTween.tween(PlayState.instance.camHUD, {alpha: 0}, 0.4);
+        FlxTween.tween(PlayState.instance.currentStage.getGirlfriend(), {alpha: 0.1}, 0.4);
+        FlxTween.tween(PlayState.instance.currentStage.getDad(), {alpha: 0.25}, 0.4);
+        FlxTween.tween(PlayState.instance.currentStage.getBoyfriend(), {alpha: 0.25}, 0.4);
+	
+        new FlxTimer().start(9, function(tmr:FlxTimer) {
+            hasPlayedEnd = true;
+            PlayState.instance.endSong();
+        });
+        }
+    }
+}

@@ -1,0 +1,1164 @@
+import flixel.FlxCamera;
+import legacy.objects.AmongUIState;
+import Reflect;
+import StringTools;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.input.mouse.FlxMouse;
+import flixel.addons.display.FlxBackdrop;
+import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxText.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
+import funkin.Assets;
+import funkin.Paths;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.module.ModuleHandler;
+
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.util.TouchUtil;
+import Sys;
+import sys.FileSystem;
+
+class LegacyCosmicubeState extends AmongUIState
+{
+  static var selectedCube:Int = 0;
+  var data:Dynamic;
+  var cubeIds:Array<String> = [];
+  var cardView:FlxSpriteGroup;
+  var cards:Array<Dynamic> = [];
+  var inTree:Bool = false;
+  var lookMode:Bool = true;
+  var treeLockMovement:Bool = false;
+  var activeId:String = '';
+  var treeCamera:FlxCamera;
+  var overlayCamera:FlxCamera;
+  var treeGroup:FlxSpriteGroup;
+  var pane:FlxSpriteGroup;
+  var treeNodes:Array<Dynamic> = [];
+  var nodeMap:Dynamic = {};
+  var selectedNode:Dynamic = null;
+  var rootNode:Dynamic = null;
+  var cubeMeta:Dynamic = null;
+  var cubeId:String = '';
+  var treeStarsBG:FlxBackdrop;
+  var treeStarsFG:FlxBackdrop;
+  var black:FlxSprite;
+  var menuBackButton:FlxSprite;
+  var currencyIcon:FlxSprite;
+  var currencyText:FlxText;
+  var cubeTitle:FlxText;
+  var equipButton:FlxSprite;
+  var equipIcon:FlxSprite;
+  var equipText:FlxText;
+  var charTitle:FlxText;
+  var charKind:FlxText;
+  var charDesc:FlxText;
+  var charHint:FlxText;
+  var dragging:Bool = false;
+  var dragged:Bool = false;
+  var treeCameraFocusRoot:Bool = true;
+  var dragX:Float = 0;
+  var dragY:Float = 0;
+  var hoverTime:Float = 0;
+  var leaving:Bool = false;
+  var menuReady:Bool = false;
+  var touchMode:Bool = false;
+  var mainBackButton:FlxSprite;
+  function new()
+  {
+    super();
+  }
+
+  override function create():Void
+  {
+    menuReady = false;
+    super.create();
+    if (!baseReady)
+    {
+      leaving = true;
+      return;
+    }
+    FlxG.camera.bgColor = FlxColor.BLACK;
+    touchMode = !Std.isOfType(TouchUtil.touch, FlxMouse);
+    FlxG.mouse.visible = !touchMode;
+    leaving = false;
+    inTree = false;
+    lockMovement = false;
+    treeLockMovement = false;
+    data = ModuleHandler.getModule('LegacyMenu');
+    if (data == null)
+    {
+      leaving = true;
+      FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+      return;
+    }
+    data.reloadCosmicubes();
+    cubeIds = data.cubes;
+    if (cubeIds == null) cubeIds = [];
+    selectedCube = cubeIds.length == 0 ? 0 : FlxMath.wrap(selectedCube, 0, cubeIds.length - 1);
+    cards = [];
+    if (upperBar != null) add(upperBar);
+    if (backButton != null)
+    {
+      backButton.setPosition(12, 8);
+      add(backButton).revive();
+    }
+    mainBackButton = backButton;
+
+    cardView = new FlxSpriteGroup();
+    cardView.setPosition(40, upperBar.height + 40);
+    add(cardView);
+    buildCards();
+    try FunkinSound.playMusic('freakyMenu', {overrideExisting: true, restartTrack: false, persist: true}) catch (e:Dynamic) trace(e);
+    FlxG.camera.fade(FlxColor.BLACK, 0.35, true);
+    menuReady = true;
+  }
+
+  function makeNormalIcon(raw:String, mirror:Bool = false):FunkinSprite
+  {
+    var name:String = raw == null || raw == '' ? 'face' : raw;
+    while (StringTools.startsWith(name, '../')) name = name.substr(3);
+    if (StringTools.startsWith(name, 'icons/')) name = name.substr(6);
+
+    var iconPath:String = Paths.image('icons/' + name);
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('icons/icon-' + name);
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('icons/face');
+    if (!Assets.exists(iconPath)) iconPath = Paths.image('icons/icon-face');
+
+    var icon:FunkinSprite = new FunkinSprite();
+    if (Assets.exists(iconPath)) icon.loadGraphic(iconPath, true, 150, 150);
+    else icon.makeGraphic(150, 150, 0xFFFFFFFF);
+
+    var count:Int = icon.numFrames;
+    if (count < 1) count = 1;
+    var order:Array<Int> = [];
+    for (i in 0...count) order.push(i);
+
+    icon.animation.add('health', order, 0, false, mirror);
+    icon.animation.play('health');
+    icon.scrollFactor.set();
+    return icon;
+  }
+
+  function loadSprite(sprite:FlxSprite, path:String):Bool
+  {
+    var imagePath:String = Paths.image(path);
+    if (Assets.exists(imagePath))
+    {
+      try
+      {
+        sprite.loadGraphic(imagePath);
+        sprite.visible = sprite.width > 0 && sprite.height > 0;
+        return sprite.visible;
+      }
+      catch (e:Dynamic) {}
+    }
+    sprite.visible = false;
+    return false;
+  }
+
+  function buildCards():Void
+  {
+    for (card in cards)
+    {
+      if (card.group != null) cardView.remove(card.group, true);
+    }
+    cards = [];
+    for (i in 0...cubeIds.length)
+    {
+      var id:String = cubeIds[i];
+      var meta:Dynamic = data.getCubeMeta(id);
+      if (meta == null) continue;
+      var group:FlxSpriteGroup = new FlxSpriteGroup(0, 0);
+      var slide:FlxSprite = new FlxSprite(8, 0);
+      var slidePath:String = 'menu/cosmicube/slides/' + id;
+      if (Assets.exists(Paths.image(slidePath))) loadSprite(slide, slidePath);
+      else loadSprite(slide, 'menu/cosmicube/slides/unknown');
+      var cover:FlxSprite = new FlxSprite(8, 8);
+      loadSprite(cover, data.activeCube() == id ? 'menu/cosmicube/selectCover' : 'menu/cosmicube/cover');
+      var border:FlxSprite = new FlxSprite();
+      loadSprite(border, 'menu/cosmicube/cardBorder');
+      slide.y += (border.height - slide.height) * 0.5;
+      group.add(slide);
+      group.add(cover);
+      group.add(border);
+      var name:FlxText = new FlxText(322, 45, 540, Std.string(meta.title));
+      name.setFormat(Paths.font('liberbold.ttf'), 36, 0xFF333333, 'left', FlxTextBorderStyle.OUTLINE, 0xFFEEEEEE);
+      name.letterSpacing = -2;
+      name.borderSize = 1;
+      group.add(name);
+      var moneyIcon:FlxSprite = new FlxSprite(322, 100);
+      loadSprite(moneyIcon, 'currency/' + Std.string(meta.currency));
+      moneyIcon.setGraphicSize(0, 30);
+      moneyIcon.updateHitbox();
+      group.add(moneyIcon);
+      var moneyText:FlxText = new FlxText(370, 100, 260, Std.string(data.balance(Std.string(meta.currency))));
+      moneyText.setFormat(Paths.font('liberbold.ttf'), 26, 0xFF333333);
+      group.add(moneyText);
+      var completion:FlxText = new FlxText(370, 135, 280, Std.string(Math.floor(data.cubeCompletion(id))) + '% completed');
+      completion.setFormat(Paths.font('liber.ttf'), 20, 0xFF333333);
+      group.add(completion);
+      var looksie:FlxSprite = new FlxSprite(0, 40);
+      loadSprite(looksie, 'menu/cosmicube/looksie');
+      group.add(looksie);
+      var checkbox:FlxSprite = new FlxSprite(0, 20);
+      try
+      {
+        if (!Assets.exists(Paths.image('menu/cosmicube/checkbox')) || !Assets.exists(Paths.file('images/menu/cosmicube/checkbox.xml'))) throw 'checkbox atlas missing';
+        checkbox.frames = Paths.getSparrowAtlas('menu/cosmicube/checkbox');
+        checkbox.animation.addByPrefix('unchecked', 'unchecked', 24, false);
+        checkbox.animation.addByPrefix('checked', 'checked', 24, false);
+        checkbox.animation.play(data.activeCube() == id ? 'checked' : 'unchecked');
+      }
+      catch (e:Dynamic)
+      {
+        checkbox.makeGraphic(50, 50, data.activeCube() == id ? 0xFF33CC66 : 0xFF555555);
+      }
+      checkbox.x = border.width - checkbox.width - 50;
+      looksie.x = checkbox.x - looksie.width - 20;
+      looksie.scale.set(0.85, 0.85);
+      group.add(checkbox);
+      group.ID = i;
+      cardView.add(group);
+      cards.push({id: id, meta: meta, group: group, slide: slide, cover: cover, border: border, title: name, currency: moneyIcon, money: moneyText, completion: completion, looksie: looksie, checkbox: checkbox, selected: false, active: data.activeCube() == id});
+    }
+    refreshCards(true);
+  }
+
+  function refreshCards(instant:Bool = false):Void
+  {
+    var topY:Float = upperBar.height + 40;
+    var spacing:Float = 215;
+    var maxY:Float = FlxG.height - 190;
+    var offset:Float = cards.length > 1 ? FlxMath.remapToRange(selectedCube, 0, cards.length - 1, topY, Math.min(topY, maxY - spacing * (cards.length - 1))) : topY;
+    for (i in 0...cards.length)
+    {
+      var card:Dynamic = cards[i];
+      var targetY:Float = spacing * i + offset;
+      card.group.y = instant ? targetY : FlxMath.lerp(card.group.y, targetY, 0.2);
+      var selected:Bool = i == selectedCube;
+      card.group.color = selected ? FlxColor.WHITE : 0xFF808080;
+      card.looksie.alpha = FlxMath.lerp(card.looksie.alpha, selected && lookMode ? 1 : 0.5, 0.2);
+      card.checkbox.alpha = FlxMath.lerp(card.checkbox.alpha, selected && !lookMode ? 1 : 0.5, 0.2);
+      card.money.text = Std.string(data.balance(Std.string(card.meta.currency)));
+      card.completion.text = Std.string(Math.floor(data.cubeCompletion(card.id))) + '% completed';
+      var isActive:Bool = data.activeCube() == card.id;
+      if (card.active != isActive)
+      {
+        card.active = isActive;
+        loadSprite(card.cover, isActive ? 'menu/cosmicube/selectCover' : 'menu/cosmicube/cover');
+        try card.checkbox.animation.play(isActive ? 'checked' : 'unchecked') catch (e:Dynamic) {}
+      }
+    }
+  }
+
+  function selectCube(delta:Int):Void
+  {
+    if (cards.length == 0) return;
+    selectedCube = FlxMath.wrap(selectedCube + delta, 0, cards.length - 1);
+    FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+    refreshCards(false);
+  }
+
+  function switchLookMode(value:Bool):Void
+  {
+    if (lookMode != value) FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+    lookMode = value;
+    refreshCards(false);
+  }
+
+  function acceptCube():Void
+  {
+    if (cards.length == 0 || lockMovement) return;
+    var card:Dynamic = cards[selectedCube];
+    if (lookMode)
+    {
+      openCube(card.id);
+    }
+    else
+    {
+      var next:String = data.activeCube() == card.id ? '' : card.id;
+      data.setActiveCube(next);
+      FlxG.sound.play(Paths.sound(next == '' ? 'cancelMenu' : 'confirmMenu'), 0.6);
+      refreshCards(false);
+    }
+  }
+
+  function openCube(id:String):Void
+  {
+    cubeId = id;
+    cubeMeta = data.getCubeMeta(id);
+    inTree = true;
+    lockMovement = true;
+    treeLockMovement = false;
+    cardView.visible = false;
+    buildTree();
+  }
+
+  function makeNodeGroup(meta:Dynamic, id:String, x:Float, y:Float):Dynamic
+  {
+    var group:FlxSpriteGroup = new FlxSpriteGroup(x, y);
+    var bg:FlxSprite = new FlxSprite();
+    try
+    {
+      if (!Assets.exists(Paths.image('menu/cosmicube/node'))) throw 'node atlas missing';
+      bg.frames = Paths.getSparrowAtlas('menu/cosmicube/node');
+      bg.animation.addByPrefix('idle', 'back', 24, false);
+      bg.animation.play('idle');
+    }
+    catch (e:Dynamic)
+    {
+      bg.makeGraphic(120, 120, 0xFFCC3333);
+    }
+    bg.x = -Math.round(bg.width * 0.5);
+    bg.y = -Math.round(bg.height * 0.5);
+    var white:FlxSprite = new FlxSprite();
+    try
+    {
+      if (!Assets.exists(Paths.image('menu/cosmicube/node'))) throw 'node atlas missing';
+      white.frames = Paths.getSparrowAtlas('menu/cosmicube/node');
+      white.animation.addByPrefix('idle', 'emptysquare', 24, false);
+      white.animation.play('idle');
+    }
+    catch (e:Dynamic)
+    {
+      white.makeGraphic(100, 100, FlxColor.WHITE);
+    }
+    white.x = -Math.round(white.width * 0.5);
+    white.y = -Math.round(white.height * 0.5);
+    var overlay:FlxSprite = new FlxSprite();
+    try
+    {
+      if (!Assets.exists(Paths.image('menu/cosmicube/node'))) throw 'node atlas missing';
+      overlay.frames = Paths.getSparrowAtlas('menu/cosmicube/node');
+      overlay.animation.addByPrefix('idle', 'overlay', 24, false);
+      overlay.animation.play('idle');
+    }
+    catch (e:Dynamic)
+    {
+      overlay.makeGraphic(100, 100, 0x55000000);
+    }
+    overlay.x = -Math.round(overlay.width * 0.5);
+    overlay.y = -Math.round(overlay.height * 0.5);
+    var portrait:FlxSprite = new FlxSprite();
+    loadSprite(portrait, 'menu/cosmicube/items/' + id);
+    portrait.x = -Math.round(portrait.width * 0.5);
+    portrait.y = -Math.round(portrait.height * 0.5);
+    var icon:FunkinSprite = null;
+    var iconId:Dynamic = Reflect.field(meta, 'icon');
+    if (iconId == null) iconId = Reflect.field(meta, 'healthicon');
+    if (iconId != null)
+    {
+      icon = makeNormalIcon(Std.string(iconId));
+      icon.setPosition(-70, -70);
+      icon.scale.set(0.75, 0.75);
+      icon.updateHitbox();
+    }
+    var hasIcon:Bool = icon != null;
+    var price:FlxText = new FlxText(-Math.round(bg.width * 0.5), 58, bg.width, Std.string(meta.price == null ? 0 : meta.price), 36);
+    price.setFormat(Paths.font('ariblk.ttf'), 36, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    price.borderSize = 3;
+    price.y -= Math.round(price.height * 0.5);
+    var color:Dynamic = Reflect.field(meta, 'color');
+    var tint:Int = 0xFFFF0000;
+    if (Std.isOfType(color, Array) && color.length >= 3) tint = FlxColor.fromRGB(Std.int(color[0]), Std.int(color[1]), Std.int(color[2]));
+    else if (color != null) tint = Std.int(color);
+    bg.color = tint;
+    overlay.color = tint;
+    group.add(bg);
+    group.add(white);
+    group.add(portrait);
+    if (icon != null) group.add(icon);
+    group.add(overlay);
+    group.add(price);
+    group.camera = treeCamera;
+    var record:Dynamic = {
+      id: id,
+      meta: meta,
+      type: Std.string(meta.type == null ? 'playerSkin' : meta.type),
+      price: Std.int(meta.price == null ? 0 : meta.price),
+      parentId: 'root',
+      direction: 'east',
+      parent: null,
+      children: {},
+      x: x,
+      y: y,
+      unlocked: data.ownsNode(id),
+      available: false,
+      visible: true,
+      group: group,
+      bg: bg,
+      white: white,
+      overlay: overlay,
+      portrait: portrait,
+      icon: icon,
+      hasIcon: hasIcon,
+      revealed: false,
+      priceText: price
+    };
+    return record;
+  }
+
+  function nodeColor(node:Dynamic):Int
+  {
+    var color:Dynamic = Reflect.field(node.meta, 'color');
+    if (Std.isOfType(color, Array) && color.length >= 3) return FlxColor.fromRGB(Std.int(color[0]), Std.int(color[1]), Std.int(color[2]));
+    if (color != null) return Std.int(color);
+    return 0xFFFF0000;
+  }
+
+  function isOppositeDirection(a:String, b:String):Bool
+  {
+    return (a == 'east' && b == 'west') || (a == 'west' && b == 'east') || (a == 'north' && b == 'south') || (a == 'south' && b == 'north');
+  }
+
+  function buildTree():Void
+  {
+    treeNodes = [];
+    nodeMap = {};
+    selectedNode = null;
+    treeCameraFocusRoot = true;
+    dragging = false;
+    dragged = false;
+    overlayCamera = new FlxCamera();
+    overlayCamera.bgColor = 0;
+    FlxG.cameras.add(overlayCamera, false);
+    treeCamera = new FlxCamera(50, 110, 860, 560);
+    treeCamera.bgColor = FlxColor.BLACK;
+    FlxG.cameras.add(treeCamera, false);
+
+    black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    black.alpha = 0.72;
+    black.camera = overlayCamera;
+    add(black);
+
+    treeStarsBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
+    treeStarsBG.camera = treeCamera;
+    treeStarsBG.scrollFactor.set();
+    treeStarsBG.velocity.x = -4.5;
+    add(treeStarsBG);
+
+    treeStarsFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
+    treeStarsFG.camera = treeCamera;
+    treeStarsFG.scrollFactor.set();
+    treeStarsFG.velocity.x = -9;
+    add(treeStarsFG);
+
+    treeGroup = new FlxSpriteGroup();
+    treeGroup.camera = treeCamera;
+    add(treeGroup);
+    rootNode = {id: 'root', x: 0.0, y: 0.0, parent: null, direction: 'none', children: {}, unlocked: true, meta: null, group: null};
+    Reflect.setField(nodeMap, 'root', rootNode);
+    var pending:Array<Dynamic> = [];
+    var itemList:Array<Dynamic> = data.getItems(cubeId);
+    for (item in itemList)
+    {
+      var id:String = Std.string(item.fileName);
+      if (id == 'root' || Reflect.field(nodeMap, id) != null) continue;
+      var node:Dynamic = makeNodeGroup(item, id, 0, 0);
+      var nodeData:Dynamic = Reflect.field(item, 'node');
+      node.parentId = Std.string(Reflect.field(nodeData, 'parent'));
+      node.direction = Std.string(Reflect.field(nodeData, 'direction')).toLowerCase();
+      if (node.parentId == null || node.parentId == 'null' || node.parentId.length == 0) node.parentId = 'root';
+      if (node.direction == null || node.direction == 'null' || node.direction.length == 0) node.direction = 'east';
+      Reflect.setField(nodeMap, id, node);
+      pending.push(node);
+    }
+    var loops:Int = 0;
+    while (pending.length > 0 && loops < itemList.length + 2)
+    {
+      loops++;
+      var next:Array<Dynamic> = [];
+      var attached:Int = 0;
+      for (node in pending)
+      {
+        var parent:Dynamic = Reflect.field(nodeMap, node.parentId);
+        if (parent == null || (parent.id != 'root' && parent.parent == null))
+        {
+          next.push(node);
+          continue;
+        }
+        var dx:Float = 0;
+        var dy:Float = 0;
+        switch (node.direction)
+        {
+          case 'west': dx = -250;
+          case 'north': dy = -250;
+          case 'south': dy = 250;
+          default: dx = 250;
+        }
+        if (parent.id != 'root' && isOppositeDirection(node.direction, parent.direction))
+        {
+          next.push(node);
+          continue;
+        }
+        var existing:Dynamic = Reflect.field(parent.children, node.direction);
+        if (existing != null)
+        {
+          existing.parent = null;
+          treeNodes.remove(existing);
+        }
+        node.x = parent.x + dx;
+        node.y = parent.y + dy;
+        node.parent = parent;
+        Reflect.setField(parent.children, node.direction, node);
+        node.group.setPosition(node.x, node.y);
+        treeNodes.push(node);
+        attached++;
+      }
+      if (attached == 0) break;
+      pending = next;
+    }
+
+    var attachedNodes:Array<Dynamic> = [];
+    for (node in treeNodes)
+    {
+      var current:Dynamic = node;
+      var attached:Bool = false;
+      while (current != null)
+      {
+        if (current.id == 'root') { attached = true; break; }
+        current = current.parent;
+      }
+      if (attached) attachedNodes.push(node);
+    }
+    treeNodes = attachedNodes;
+
+    for (node in treeNodes)
+    {
+      var parent:Dynamic = node.parent;
+      if (parent == null) continue;
+      var angle:Float = node.direction == 'west' ? 180 : (node.direction == 'north' ? 90 : (node.direction == 'south' ? -90 : 0));
+      var radians:Float = angle * Math.PI / 180;
+      var line:FlxSprite = new FlxSprite();
+      if (!loadSprite(line, 'menu/cosmicube/connector')) line.makeGraphic(140, 6, 0xFF666666);
+      line.setGraphicSize(140, line.height);
+      line.updateHitbox();
+      line.x = parent.x + Math.cos(radians) * 125 - line.width * 0.5;
+      line.y = parent.y - Math.sin(radians) * 125 - line.height * 0.5;
+      line.angle = angle;
+      line.camera = treeCamera;
+      treeGroup.add(line);
+      node.connector = line;
+    }
+    for (node in treeNodes)
+    {
+      treeGroup.add(node.group);
+      refreshNode(node);
+    }
+
+    pane = new FlxSpriteGroup();
+    pane.camera = overlayCamera;
+    add(pane);
+    var paneBG:FlxSprite = new FlxSprite();
+    if (!loadSprite(paneBG, 'menu/cosmicube/pane')) paneBG.makeGraphic(920, 650, 0xFF202020);
+    paneBG.setPosition(Math.round((FlxG.width - paneBG.width) * 0.5), Math.round((FlxG.height - paneBG.height) * 0.5));
+    pane.add(paneBG);
+    menuBackButton = new FlxSprite();
+    loadSprite(menuBackButton, 'menu/common/menuBack');
+    menuBackButton.setPosition(paneBG.x + paneBG.width - menuBackButton.width - 6, paneBG.y + 3);
+    pane.add(menuBackButton);
+    currencyIcon = new FlxSprite(45, paneBG.y + 32);
+    loadSprite(currencyIcon, 'currency/' + Std.string(cubeMeta.currency));
+    currencyIcon.setGraphicSize(0, 35);
+    currencyIcon.updateHitbox();
+    currencyIcon.y -= Math.round(currencyIcon.height * 0.5);
+    pane.add(currencyIcon);
+    currencyText = new FlxText(95, paneBG.y + 32, 150, Std.string(data.balance(Std.string(cubeMeta.currency))));
+    currencyText.setFormat(Paths.font('liberbold.ttf'), 22, FlxColor.WHITE, 'left', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    currencyText.borderSize = 1;
+    currencyText.y -= Math.round(currencyText.height * 0.5);
+    pane.add(currencyText);
+    cubeTitle = new FlxText(0, paneBG.y + 32, FlxG.width, Std.string(cubeMeta.title));
+    cubeTitle.setFormat(Paths.font('AmaticSC-Bold.ttf'), 50, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    cubeTitle.borderSize = 2;
+    cubeTitle.x = Math.round((FlxG.width - cubeTitle.width) * 0.5);
+    cubeTitle.y -= Math.round(cubeTitle.height * 0.5);
+    pane.add(cubeTitle);
+
+    equipButton = new FlxSprite(970 + 270 * 0.5, 570);
+    try
+    {
+      if (!Assets.exists(Paths.image('menu/cosmicube/button')) || !Assets.exists(Paths.file('images/menu/cosmicube/button.xml'))) throw 'button atlas missing';
+      equipButton.frames = Paths.getSparrowAtlas('menu/cosmicube/button');
+      equipButton.animation.addByPrefix('locked', 'locked', 24, false);
+      equipButton.animation.addByPrefix('equip', 'equipped', 24, false);
+      equipButton.animation.addByPrefix('equipped', 'grey', 24, false);
+      equipButton.animation.addByPrefix('buy', 'buy', 24, false);
+      equipButton.animation.play('buy');
+    }
+    catch (e:Dynamic)
+    {
+      equipButton.makeGraphic(270, 90, 0xFF555555);
+    }
+    equipButton.scale.set(0.6, 0.6);
+    equipButton.updateHitbox();
+    equipButton.x -= equipButton.width * 0.5;
+    pane.add(equipButton);
+    equipIcon = new FlxSprite();
+    pane.add(equipIcon);
+    equipText = new FlxText(equipButton.x, equipButton.y, equipButton.width, 'BUY');
+    equipText.setFormat(Paths.font('liberbold.ttf'), 35, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    equipText.setPosition(equipButton.x, equipButton.y + (equipButton.height - equipText.height) * 0.5);
+    equipText.borderSize = 2;
+    pane.add(equipText);
+    charTitle = new FlxText(970, 120, 270, '');
+    charTitle.setFormat(Paths.font('liberbold.ttf'), 34, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    charTitle.borderSize = 2;
+    pane.add(charTitle);
+    charKind = new FlxText(970, 120, 270, '');
+    charKind.setFormat(Paths.font('liberbold.ttf'), 18, FlxColor.BLACK, 'center');
+    pane.add(charKind);
+    charDesc = new FlxText(970, 306, 270, '');
+    charDesc.setFormat(Paths.font('liberbold.ttf'), 20, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    charDesc.borderSize = 1;
+    pane.add(charDesc);
+    charHint = new FlxText(970, 470, 270, '');
+    charHint.setFormat(Paths.font('liber.ttf'), 20, 0xFF333333, 'center');
+    pane.add(charHint);
+
+    treeCamera.scroll.set(Math.round(rootNode.x - treeCamera.width * 0.5), Math.round(rootNode.y - treeCamera.height * 0.5));
+    treeCamera.zoom = 1;
+    refreshTreeInfo();
+    pane.y = 120;
+    treeCamera.y += 120;
+    black.alpha = 0.72;
+    overlayCamera.alpha = 0;
+    treeCamera.alpha = 0;
+    FlxTween.tween(pane, {y: 0}, 0.35, {ease: FlxEase.circOut});
+    FlxTween.tween(overlayCamera, {alpha: 1}, 0.35, {ease: FlxEase.circOut});
+    FlxTween.tween(treeCamera, {alpha: 1, y: 110}, 0.35, {ease: FlxEase.circOut});
+  }
+
+  function completionCube():String
+  {
+    return cubeId == null || cubeId.length == 0 ? 'impostor' : cubeId;
+  }
+
+  function hasUpdogSave():Bool
+  {
+    try
+    {
+      var appData:String = Sys.getEnv('AppData');
+      if (appData == null || appData.length == 0) return false;
+      return FileSystem.isDirectory(appData + '/UpdogTeam');
+    }
+    catch (e:Dynamic)
+    {
+      return false;
+    }
+  }
+
+  function requirementComplete(node:Dynamic):Bool
+  {
+    var meta:Dynamic = node.meta;
+    var requirement:Dynamic = Reflect.field(meta, 'requirement');
+    var week:String = Std.string(Reflect.field(meta, 'week'));
+    var song:String = Std.string(Reflect.field(meta, 'song'));
+    if (week == 'null') week = '';
+    if (song == 'null') song = '';
+    if (requirement == null)
+    {
+      if (week.length > 0) return data.weekClear(week);
+      if (song.length > 0) return data.songPlayed(song);
+      return true;
+    }
+    if (Std.isOfType(requirement, Int) || Std.isOfType(requirement, Float))
+    {
+      var needed:Float = requirement;
+      if (week.length > 0) return data.weekAccuracy(week) >= needed;
+      if (song.length > 0) return data.songAccuracy(song) >= needed;
+      return true;
+    }
+    if (Std.isOfType(requirement, String))
+    {
+      var value:String = StringTools.trim(Std.string(requirement));
+      var lowered:String = value.toLowerCase();
+      if (StringTools.endsWith(value, '%'))
+      {
+        var percent:Float = Std.parseFloat(value.substr(0, value.length - 1));
+        return data.cubeCompletion(completionCube()) >= percent;
+      }
+      if (lowered == 'scripted') return true;
+      if (lowered == 'updog' || lowered == 'updogsave' || lowered == 'updog_save') return hasUpdogSave();
+      if (song.length > 0) return rankValue(data.songRank(song)) >= rankValue(value.toUpperCase());
+      return true;
+    }
+    if (requirement != null)
+    {
+      var kindValue:Dynamic = Reflect.field(requirement, 'type');
+      var kind:String = kindValue == null ? '' : Std.string(kindValue).toLowerCase();
+      if (kind == 'completion')
+      {
+        var percentValue:Dynamic = Reflect.field(requirement, 'percent');
+        var percent:Float = Std.parseFloat(Std.string(percentValue));
+        var scope:String = Std.string(Reflect.field(requirement, 'scope')).toLowerCase();
+        return (scope == 'global' ? data.globalCompletion() : data.cubeCompletion(completionCube())) >= percent;
+      }
+      if (kind == 'rank' || kind == 'songrank')
+      {
+        var targetSong:String = Std.string(Reflect.field(requirement, 'song'));
+        if (targetSong == 'null' || targetSong.length == 0) targetSong = song;
+        var rank:String = Std.string(Reflect.field(requirement, 'rank'));
+        return targetSong.length > 0 && rankValue(data.songRank(targetSong)) >= rankValue(rank);
+      }
+      if (kind == 'scripted') return true;
+      if (kind == 'updog' || kind == 'updogsave' || kind == 'updog_save') return hasUpdogSave();
+    }
+    return true;
+  }
+
+  function rankValue(rank:String):Int
+  {
+    return switch (rank == null ? '' : rank.toUpperCase())
+    {
+      case 'P': 8;
+      case 'S': 7;
+      case 'A': 6;
+      case 'B': 5;
+      case 'C': 4;
+      case 'D': 3;
+      case 'E': 2;
+      case 'F': 1;
+      default: 0;
+    };
+  }
+
+  function canProgress(node:Dynamic):Bool
+  {
+    return node.parent == null || node.parent.id == 'root' || node.parent.unlocked;
+  }
+
+  function canBuy(node:Dynamic):Bool
+  {
+    return canProgress(node) && requirementComplete(node);
+  }
+
+  function isEquipped(node:Dynamic):Bool
+  {
+    return data.equipped(node.type) == node.id;
+  }
+
+  function refreshNode(node:Dynamic):Void
+  {
+    node.unlocked = data.ownsNode(node.id);
+    node.available = node.unlocked || canBuy(node);
+    node.revealed = canProgress(node) && node.available;
+    var requirement:Dynamic = Reflect.field(node.meta, 'requirement');
+    var requirementType:String = requirement == null ? '' : (Std.isOfType(requirement, String) ? Std.string(requirement).toLowerCase() : Std.string(Reflect.field(requirement, 'type')).toLowerCase());
+    var secret:Bool = requirementType == 'updog' || requirementType == 'updogsave' || requirementType == 'updog_save';
+    var visible:Bool = !(secret && !requirementComplete(node));
+    node.group.visible = visible;
+    if (node.connector != null) node.connector.visible = visible;
+    if (!visible) return;
+    node.white.color = node.unlocked ? (selectedNode == node ? 0xFFFFFF80 : FlxColor.WHITE) : (selectedNode == node ? (node.available ? 0xFF20204A : 0xFF4A2020) : 0xFF4A4A4A);
+    node.priceText.visible = node.revealed && !node.unlocked;
+    node.portrait.color = node.revealed ? FlxColor.WHITE : FlxColor.BLACK;
+    if (node.icon != null)
+    {
+      node.icon.visible = node.revealed && node.hasIcon;
+      node.icon.active = node.icon.visible;
+    }
+    node.overlay.color = nodeColor(node);
+    node.bg.color = nodeColor(node);
+    if (node.connector != null) node.connector.color = node.unlocked ? FlxColor.WHITE : (node.available ? 0xFF06C864 : 0xFF4A4A4A);
+  }
+
+  function refreshTreeInfo():Void
+  {
+    currencyText.text = FlxStringUtil.formatMoney(Std.int(data.balance(Std.string(cubeMeta.currency))), false);
+    if (selectedNode == null)
+    {
+      charTitle.visible = false;
+      charKind.visible = false;
+      charDesc.visible = false;
+      charHint.visible = false;
+      equipText.visible = false;
+      equipButton.visible = false;
+      equipIcon.visible = false;
+      return;
+    }
+    charTitle.visible = true;
+    charKind.visible = selectedNode.unlocked;
+    charDesc.visible = true;
+    charHint.visible = true;
+    equipText.visible = true;
+    equipButton.visible = true;
+    var meta:Dynamic = selectedNode.meta;
+    charTitle.text = selectedNode.unlocked ? Std.string(meta.title == null ? selectedNode.id : meta.title) : '???';
+    charKind.text = selectedNode.unlocked ? selectedNode.type : '';
+    charKind.y = charTitle.y + charTitle.height;
+    charDesc.text = selectedNode.unlocked ? Std.string(meta.description == null ? '' : meta.description) : '???';
+    var descTopY:Float = charKind.visible ? charKind.y + charKind.height + 8 : charTitle.y + charTitle.height + 8;
+    charDesc.y = Math.max(descTopY, 282 - charDesc.height);
+    charHint.text = Std.string(meta.hint == null ? '' : meta.hint);
+    charHint.y = 470;
+    charHint.size = 20;
+    equipIcon.visible = false;
+    equipText.x = equipButton.x;
+    equipText.fieldWidth = equipButton.width;
+    equipText.wordWrap = false;
+    equipText.size = 35;
+    if (selectedNode.available)
+    {
+      if (selectedNode.unlocked)
+      {
+        var equipped:Bool = isEquipped(selectedNode);
+        equipText.text = equipped ? 'EQUIPPED' : 'EQUIP';
+        try equipButton.animation.play(equipped ? 'equipped' : 'equip') catch (e:Dynamic) {}
+      }
+      else
+      {
+        equipText.text = Std.string(selectedNode.price);
+        try equipButton.animation.play('buy') catch (e:Dynamic) {}
+        loadSprite(equipIcon, 'currency/' + Std.string(meta.currency));
+        equipIcon.setGraphicSize(0, 40);
+        equipIcon.updateHitbox();
+        equipIcon.setPosition(equipButton.x + 24, equipButton.y + (equipButton.height - equipIcon.height) * 0.5);
+        equipIcon.visible = true;
+        equipText.x += 30;
+        equipText.fieldWidth -= 30;
+      }
+    }
+    else
+    {
+      equipText.text = 'LOCKED';
+      try equipButton.animation.play('locked') catch (e:Dynamic) {}
+    }
+    while (equipText.size > 16 && equipText.textField != null && equipText.textField.textWidth > equipText.fieldWidth - 8) equipText.size -= 1;
+    equipText.y = equipButton.y + (equipButton.height - equipText.height) * 0.5;
+    while (charHint.size > 14 && charHint.y + charHint.height > equipButton.y - 6) charHint.size -= 1;
+    for (node in treeNodes) refreshNode(node);
+  }
+
+  function selectNode(node:Dynamic):Void
+  {
+    if (selectedNode != null)
+    {
+      selectedNode.white.color = selectedNode.unlocked ? FlxColor.WHITE : 0xFF4A4A4A;
+      refreshNode(selectedNode);
+    }
+    selectedNode = node;
+    treeCameraFocusRoot = node == null;
+    if (node != null)
+    {
+      refreshNode(node);
+      node.white.color = node.unlocked ? 0xFFFFFF80 : (node.available ? 0xFF20204A : 0xFF4A2020);
+      FlxG.sound.play(Paths.sound('cosmicubePop'), 0.9);
+    }
+    else
+    {
+      FlxG.sound.play(Paths.sound('panelDisappear'), 0.6);
+    }
+    refreshTreeInfo();
+  }
+
+  function moveNode(direction:String):Void
+  {
+    var current:Dynamic = selectedNode == null ? rootNode : selectedNode;
+    if (current == null) return;
+
+    var next:Dynamic = Reflect.field(current.children, direction);
+    if (next == null && current != rootNode && current.parent != null)
+    {
+      var opposite:Bool = (current.direction == 'east' && direction == 'west') || (current.direction == 'west' && direction == 'east') || (current.direction == 'north' && direction == 'south') || (current.direction == 'south' && direction == 'north');
+      if (opposite) next = current.parent;
+    }
+
+    if (next == rootNode)
+    {
+      if (selectedNode != null) selectNode(null);
+      return;
+    }
+    if (next != null) selectNode(next);
+  }
+
+  function performNodeAction():Void
+  {
+    if (selectedNode == null || treeLockMovement) return;
+    if (selectedNode.unlocked)
+    {
+      var equipped:Bool = isEquipped(selectedNode);
+      data.setEquipped(selectedNode.type, equipped ? '' : selectedNode.id);
+      FlxG.sound.play(Paths.sound(equipped ? 'cancelMenu' : 'equip'), 0.8);
+      refreshTreeInfo();
+      return;
+    }
+    if (selectedNode.available && data.spend(Std.string(selectedNode.meta.currency), selectedNode.price))
+    {
+      data.unlockNode(selectedNode.id);
+      data.checkAchievements();
+      selectedNode.unlocked = true;
+      FlxG.sound.play(Paths.sound('shopBuy'), 0.8);
+      for (node in treeNodes) refreshNode(node);
+      refreshTreeInfo();
+      return;
+    }
+    FlxG.sound.play(Paths.sound('locked'), 0.7);
+    treeCamera.shake(0.005, 0.25);
+  }
+
+  function closeTree(force:Bool = false):Void
+  {
+    if (selectedNode != null && !force)
+    {
+      selectNode(null);
+      return;
+    }
+    treeLockMovement = true;
+    FlxTween.cancelTweensOf(pane);
+    FlxTween.cancelTweensOf(black);
+    FlxTween.cancelTweensOf(treeCamera);
+    FlxTween.cancelTweensOf(overlayCamera);
+    FlxTween.tween(pane, {y: 120}, 0.25, {ease: FlxEase.sineIn});
+    FlxTween.tween(black, {alpha: 0}, 0.25, {ease: FlxEase.sineIn});
+    FlxTween.tween(treeCamera, {alpha: 0}, 0.25, {ease: FlxEase.sineIn, onComplete: function(tween:FlxTween) finishCloseTree()});
+    FlxTween.tween(overlayCamera, {alpha: 0}, 0.25, {ease: FlxEase.sineIn});
+  }
+
+  function finishCloseTree():Void
+  {
+    if (treeGroup != null) remove(treeGroup, true);
+    if (pane != null) remove(pane, true);
+    if (black != null) remove(black, true);
+    if (treeStarsBG != null) remove(treeStarsBG, true);
+    if (treeStarsFG != null) remove(treeStarsFG, true);
+    if (treeCamera != null) FlxG.cameras.remove(treeCamera, true);
+    if (overlayCamera != null) FlxG.cameras.remove(overlayCamera, true);
+    treeCamera = null;
+    overlayCamera = null;
+    treeGroup = null;
+    pane = null;
+    inTree = false;
+    lockMovement = false;
+    treeLockMovement = false;
+    cardView.visible = true;
+    buildCards();
+  }
+
+  function pointerPressed():Bool
+  {
+    return touchMode ? TouchUtil.justPressed : FlxG.mouse.justPressed;
+  }
+
+  function pointerHeld():Bool
+  {
+    return touchMode ? TouchUtil.pressed : FlxG.mouse.pressed;
+  }
+
+  function pointerReleased():Bool
+  {
+    return touchMode ? TouchUtil.justReleased : FlxG.mouse.justReleased;
+  }
+
+  function pointerX():Float
+  {
+    return touchMode && TouchUtil.touch != null ? TouchUtil.touch.gameX : FlxG.mouse.screenX;
+  }
+
+  function pointerY():Float
+  {
+    return touchMode && TouchUtil.touch != null ? TouchUtil.touch.gameY : FlxG.mouse.screenY;
+  }
+
+  function pointerOver(sprite:FlxSprite, camera:FlxCamera = null):Bool
+  {
+    if (sprite == null) return false;
+    var pointer:Dynamic = touchMode ? TouchUtil.touch : FlxG.mouse;
+    if (pointer == null) return false;
+    var cam:FlxCamera = camera == null ? FlxG.camera : camera;
+    var point:Dynamic = pointer.getWorldPosition(cam);
+    var hit:Bool = point.x >= sprite.x && point.x <= sprite.x + sprite.width && point.y >= sprite.y && point.y <= sprite.y + sprite.height;
+    point.put();
+    return hit;
+  }
+
+  override public function exit():Void
+  {
+    if (inTree)
+    {
+      closeTree();
+      return;
+    }
+    if (leaving) return;
+    leaving = true;
+    FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    if (!baseReady || !menuReady || data == null)
+    {
+      super.update(elapsed);
+      return;
+    }
+    if (leaving)
+    {
+      super.update(elapsed);
+      return;
+    }
+    if (!inTree)
+    {
+      if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.BACKSPACE || (pointerPressed() && pointerOver(mainBackButton, camUpper)))
+      {
+        leaving = true;
+        FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+        return;
+      }
+      if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W) selectCube(-1);
+      else if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S) selectCube(1);
+      if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) switchLookMode(true);
+      else if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) switchLookMode(false);
+      if (FlxG.keys.justPressed.TAB) switchLookMode(!lookMode);
+      if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) acceptCube();
+      if (FlxG.mouse.wheel != 0) selectCube(FlxG.mouse.wheel > 0 ? -1 : 1);
+      for (i in 0...cards.length)
+      {
+        var card:Dynamic = cards[i];
+        if (pointerPressed() && pointerOver(card.border))
+        {
+          if (selectedCube != i)
+          {
+            selectedCube = i;
+            refreshCards(false);
+          }
+          else if (pointerOver(card.looksie))
+          {
+            lookMode = true;
+            acceptCube();
+          }
+          else if (pointerOver(card.checkbox))
+          {
+            lookMode = false;
+            acceptCube();
+          }
+          else acceptCube();
+          break;
+        }
+      }
+      refreshCards(false);
+    }
+    else
+    {
+      hoverTime += elapsed;
+      if (!treeLockMovement)
+      {
+        if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) moveNode('west');
+        if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) moveNode('east');
+        if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W) moveNode('north');
+        if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S) moveNode('south');
+        if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.BACKSPACE)
+        {
+          closeTree();
+          super.update(elapsed);
+          return;
+        }
+        if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) performNodeAction();
+        if (pointerPressed() && pointerOver(menuBackButton, overlayCamera))
+        {
+          closeTree(true);
+          super.update(elapsed);
+          return;
+        }
+        var pointerInsideTree:Bool = pointerX() >= treeCamera.x && pointerX() <= treeCamera.x + treeCamera.width && pointerY() >= treeCamera.y && pointerY() <= treeCamera.y + treeCamera.height;
+        if (pointerPressed() && pointerInsideTree)
+        {
+          dragX = pointerX();
+          dragY = pointerY();
+          dragging = true;
+          dragged = false;
+        }
+        if (dragging && pointerHeld())
+        {
+          var dx:Float = pointerX() - dragX;
+          var dy:Float = pointerY() - dragY;
+          if (Math.abs(dx) > 4 || Math.abs(dy) > 4)
+          {
+            if (!dragged && selectedNode != null) selectNode(null);
+            dragged = true;
+            treeCameraFocusRoot = false;
+          }
+          treeCamera.scroll.x -= dx / treeCamera.zoom;
+          treeCamera.scroll.y -= dy / treeCamera.zoom;
+          dragX = pointerX();
+          dragY = pointerY();
+        }
+        if (dragging && pointerReleased())
+        {
+          if (!dragged)
+          {
+            var hitNode:Bool = false;
+            for (node in treeNodes)
+            {
+              if (node.group.visible && pointerOver(node.bg, treeCamera))
+              {
+                hitNode = true;
+                if (selectedNode == node) performNodeAction();
+                else selectNode(node);
+                break;
+              }
+            }
+            if (!hitNode && selectedNode != null) selectNode(null);
+          }
+          dragging = false;
+        }
+        if (!touchMode && FlxG.mouse.wheel != 0 && selectedNode == null)
+        {
+          var nextZoom:Float = FlxMath.bound(treeCamera.zoom + FlxG.mouse.wheel * treeCamera.zoom / 10, 0.2, 1.75);
+          var pointer:Dynamic = FlxG.mouse;
+          if (pointer != null)
+          {
+            var worldPoint:Dynamic = pointer.getWorldPosition(treeCamera);
+            treeCamera.scroll.x += (worldPoint.x - treeCamera.width * 0.5) * (1 - treeCamera.zoom / nextZoom);
+            treeCamera.scroll.y += (worldPoint.y - treeCamera.height * 0.5) * (1 - treeCamera.zoom / nextZoom);
+            worldPoint.put();
+          }
+          treeCamera.zoom = nextZoom;
+        }
+        if (selectedNode != null && pointerReleased() && pointerOver(equipButton, overlayCamera)) performNodeAction();
+      }
+      var cameraFocus:Dynamic = selectedNode;
+      if (cameraFocus == null && treeCameraFocusRoot) cameraFocus = rootNode;
+      if (cameraFocus != null)
+      {
+        var targetX:Float = cameraFocus.x - treeCamera.width * 0.5 / treeCamera.zoom;
+        var targetY:Float = cameraFocus.y - treeCamera.height * 0.5 / treeCamera.zoom;
+        treeCamera.scroll.x = FlxMath.lerp(treeCamera.scroll.x, targetX, Math.min(elapsed * 6, 1));
+        treeCamera.scroll.y = FlxMath.lerp(treeCamera.scroll.y, targetY, Math.min(elapsed * 6, 1));
+        if (selectedNode != null)
+        {
+          treeCamera.zoom = FlxMath.lerp(treeCamera.zoom, 1, Math.min(elapsed * 4, 1));
+        }
+        else if (Math.abs(treeCamera.scroll.x - targetX) < 1 && Math.abs(treeCamera.scroll.y - targetY) < 1)
+        {
+          treeCameraFocusRoot = false;
+        }
+      }
+      if (selectedNode != null && selectedNode.dots != null)
+      {
+        for (i in 0...selectedNode.dots.members.length)
+        {
+          var dot:FlxSprite = selectedNode.dots.members[i];
+          var angle:Float = (hoverTime * 15 + i * 45) * Math.PI / 180;
+          dot.x = selectedNode.x + Math.sin(angle) * 72 - dot.width * 0.5;
+          dot.y = selectedNode.y + Math.cos(angle) * 72 - dot.height * 0.5;
+        }
+      }
+      if (currencyText != null && cubeMeta != null) currencyText.text = Std.string(data.balance(Std.string(cubeMeta.currency)));
+    }
+    super.update(elapsed);
+  }
+
+  override function destroy():Void
+  {
+    if (treeCamera != null) FlxG.cameras.remove(treeCamera, true);
+    if (overlayCamera != null) FlxG.cameras.remove(overlayCamera, true);
+    super.destroy();
+  }
+}

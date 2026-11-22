@@ -1,0 +1,42 @@
+{
+ "version": "1.0.2",
+ "name": "Tuesday",
+ "props": [
+  {
+   "assetPath": "BG/tuesday/space",
+   "atlasSettings": null,
+   "name": "space",
+   "position": [0, 0],
+   "scale": 1,
+   "scroll": [0.9, 0.9],
+   "startingAnimation": ""
+  },
+  {
+   "assetPath": "BG/tuesday/bg",
+   "atlasSettings": null,
+   "name": "bg",
+   "position": [0, 0],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 1
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [1409.5, 1012],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [664, 701],
+   "zIndex": 200
+  },
+  "gf": {
+   "cameraOffsets": [0, 0],
+   "position": [943, 886],
+   "zIndex": 100
+  }
+ },
+ "cameraZoom": 0.9
+}

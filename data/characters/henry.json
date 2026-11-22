@@ -1,0 +1,103 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "henry",
+	"cameraOffsets": [
+		-60,
+		110
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 6.1,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "henry",
+		"isPixel": false
+	},
+	"assetPath": "characters/henry/HENRY_ASSS",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "Henry Idle",
+			"offsets": [
+				-30,
+				10
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Left",
+			"offsets": [
+				149,
+				-22
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Down",
+			"offsets": [
+				137,
+				-150
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Up",
+			"offsets": [
+				19,
+				2
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry Right",
+			"offsets": [
+				14,
+				-64
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "henry shock omg",
+			"offsets": [
+				-4,
+				10
+			],
+			"frameRate": 24,
+			"name": "shock",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Henry React Arm",
+			"offsets": [
+				-14,
+				30
+			],
+			"frameRate": 24,
+			"name": "armed",
+			"looped": false
+		}
+	]
+}

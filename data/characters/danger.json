@@ -1,0 +1,132 @@
+{
+	"renderType": "animateatlas",
+	"version": "1.0.1",
+	"offsets": [0, 0],
+	"danceEvery": 2,
+	"scale": 1.1,
+	"name": "danger",
+	"cameraOffsets": [0, 0],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 3.4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "black",
+		"isPixel": false
+	},
+	"assetPath": "characters/story/black/danger",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "black run",
+			"offsets": [0, -10],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black left",
+			"offsets": [0, -10],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black down",
+			"offsets": [0, -10],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black up",
+			"offsets": [0, -10],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black right",
+			"offsets": [0, -10],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black run mad",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "idle-mad",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black left mad",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singLEFT-mad",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black down mad",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singDOWN-mad",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black up mad",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singUP-mad",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black right mad",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "singRIGHT-mad",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black legs",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "legs",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black legs fast",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "legs-mad",
+			"looped": true
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black scream 1",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "scream",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "black scream 2",
+			"offsets": [0, 0],
+			"frameRate": 24,
+			"name": "scream2",
+			"looped": false
+		}
+	]
+}

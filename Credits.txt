@@ -1,0 +1,18 @@
+ FNF: Vs Impostor Legacy V-Slice Port Team
+
+Everyone played a role in this project,
+with some people joining and leaving midway through development.
+The project was a bit messy and development was paused several times.
+In the end, we managed to finish the songs,
+though we couldn't finish absolutely everything.
+
+- Team Credits -
+
+* KT(Major Contributor): Ported most of the songs, code, and other general assets.
+* Juxz(Me): Ported several songs, helped with coding, and fixed bugs or inconsistencies left by KT.
+* Zan: Ported Week 1 and the song Danger. Coded the main menu, freeplay menu, and the legacy double ghost notes.
+* JarekBoho: Helped with the porting code and was our main assistant for most of the scripting.
+* Breninho: Ported the song Turbulence.
+* DynamicLift: Ported the chart for the song Oversight.
+* Kinakomushi ! JP : Make the Turbulence Icon
+* CASSrizard: Former creator of the basic Freeplay and Story Mode icons.

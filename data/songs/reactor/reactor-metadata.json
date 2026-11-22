@@ -1,0 +1,42 @@
+{
+  "version": "2.2.4",
+  "songName": "Reactor",
+  "artist": "EthanTheDoodler, Rareblin",
+  "charter": "DuskieWhy, emi3",
+  "offsets": {},
+  "playData": {
+    "difficulties": [
+      "normal"
+    ],
+    "characters": {
+      "player": "bf-reactor",
+      "girlfriend": "gf-reactor",
+      "opponent": "greenReactor"
+    },
+    "album": "Impostor3",
+    "stage": "reactor",
+    "noteStyle": "impostor",
+    "ratings": {
+      "normal": 9
+    },
+    "previewStart": 0,
+    "previewEnd": 0
+  },
+  "generatedBy": "Friday Night Funkin' - v0.8.4",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 250,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}

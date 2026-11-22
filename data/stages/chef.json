@@ -1,0 +1,62 @@
+{
+ "version": "1.0.2",
+ "name": "Chef",
+ "props": [
+  {
+   "assetPath": "BG/chef/Chef Floor",
+   "atlasSettings": null,
+   "name": "floor",
+   "position": [-850, 1000],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 1
+  },
+  {
+   "assetPath": "BG/chef/Kitchen Counter",
+   "atlasSettings": null,
+   "name": "front",
+   "position": [800, 700],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 6
+  },
+  {
+   "assetPath": "BG/chef/bluelight",
+   "atlasSettings": null,
+   "blend": "add",
+   "name": "blue light",
+   "position": [0, -300],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 350
+  },
+  {
+   "assetPath": "BG/chef/black_overhead_shadow",
+   "atlasSettings": null,
+   "name": "black light",
+   "position": [0, -300],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 351
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [1809, 1187],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [668.5, 1127],
+   "zIndex": 200
+  },
+  "gf": {
+   "alpha": 0,
+   "cameraOffsets": [0, 0],
+   "position": [751.5, 787],
+   "zIndex": -1
+  }
+ },
+ "cameraZoom": 0.8
+}

@@ -1,0 +1,30 @@
+{
+ "version": "2.2.4",
+ "songName": "Sabotage",
+ "artist": "EthanTheDoodler",
+ "charter": "Orbyy",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "album": "Impostor1",
+  "characters": {
+   "player": "bf",
+   "girlfriend": "nogf",
+   "opponent": "red-sabotage"
+  },
+  "stage": "polus-sabotage",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 5}
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.4",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 170,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

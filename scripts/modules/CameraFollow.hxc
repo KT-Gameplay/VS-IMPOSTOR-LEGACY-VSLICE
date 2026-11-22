@@ -1,0 +1,101 @@
+import funkin.modding.module.Module;
+import flixel.FlxG;
+import StringTools;
+import funkin.play.PlayState;
+
+class CameraFollow extends Module
+{
+    public function new()
+    {
+        super("CameraFollow");
+    }
+
+    var focusedOn:String;
+
+    function onSongEvent(event)
+    {
+        if(PlayState.instance == null) return;
+        super.onSongEvent(event);
+
+        if(event.eventData.eventKind == 'FocusCamera')
+        {
+            var char:Int = event.eventData.getInt('char');
+
+            switch(char)
+            {
+                case 1:            
+                    focusedOn = 'dad';
+
+                case 0:
+                    focusedOn = 'bf';
+
+                case 2:
+                    focusedOn = 'gf';
+
+                case -1:
+                    focusedOn = null;
+            }
+        }
+    }
+
+    function onUpdate(event)
+    {
+        if(PlayState.instance == null) return;
+        if (PlayState.instance.isPaused) return;
+        super.onUpdate(event);
+
+        var isPixelCam:Bool;
+        isPixelCam = FlxG.camera.pixelPerfectRender;
+
+        if(PlayState.instance.currentSong.id.toLowerCase() == 'esculent' || PlayState.instance.currentSong.id.toLowerCase() == 'sussus-nuzzus' || PlayState.instance.currentSong.id.toLowerCase() == 'idk' || PlayState.instance.currentSong.id.toLowerCase() == 'ow') return;
+
+        switch(focusedOn)
+        {
+            case 'bf':
+                var bf = PlayState.instance.currentStage.getBoyfriend();
+                var anim = (bf != null && bf.animation.curAnim != null) ? bf.animation.curAnim.name : "";
+
+                if(StringTools.startsWith(anim, 'singLEFT')) FlxG.camera.targetOffset.set(-20, 0);
+                if(StringTools.startsWith(anim, 'singDOWN')) FlxG.camera.targetOffset.set(0, 20);           
+                if(StringTools.startsWith(anim, 'singUP')) FlxG.camera.targetOffset.set(0, -20);            
+                if(StringTools.startsWith(anim, 'singRIGHT')) FlxG.camera.targetOffset.set(20, 0);            
+                if(!StringTools.startsWith(anim, 'sing')) 
+                {
+                    FlxG.camera.targetOffset.set(0, 0);
+                    FlxG.camera.pixelPerfectRender = false;
+                }
+                else {FlxG.camera.pixelPerfectRender = isPixelCam;}
+
+            case 'dad':
+                var dad = PlayState.instance.currentStage.getDad();
+                var anim = (dad != null && dad.animation.curAnim != null) ? dad.animation.curAnim.name : "";
+
+                if(StringTools.startsWith(anim, 'singLEFT')) FlxG.camera.targetOffset.set(-20, 0);
+                if(StringTools.startsWith(anim, 'singDOWN')) FlxG.camera.targetOffset.set(0, 20);           
+                if(StringTools.startsWith(anim, 'singUP')) FlxG.camera.targetOffset.set(0, -20);            
+                if(StringTools.startsWith(anim, 'singRIGHT')) FlxG.camera.targetOffset.set(20, 0);            
+                if(!StringTools.startsWith(anim, 'sing')) 
+                {
+                    FlxG.camera.targetOffset.set(0, 0);
+                    FlxG.camera.pixelPerfectRender = false;
+                }
+                else {FlxG.camera.pixelPerfectRender = isPixelCam;}
+
+            case 'gf':
+                var gf = PlayState.instance.currentStage.getGirlfriend();
+                if(gf == null) return;
+                var anim = (gf.animation.curAnim != null) ? gf.animation.curAnim.name : "";
+
+                if(StringTools.startsWith(anim, 'singLEFT')) FlxG.camera.targetOffset.set(-20, 0);
+                if(StringTools.startsWith(anim, 'singDOWN')) FlxG.camera.targetOffset.set(0, 20);           
+                if(StringTools.startsWith(anim, 'singUP')) FlxG.camera.targetOffset.set(0, -20);            
+                if(StringTools.startsWith(anim, 'singRIGHT')) FlxG.camera.targetOffset.set(20, 0);            
+                if(!StringTools.startsWith(anim, 'sing')) 
+                {
+                    FlxG.camera.targetOffset.set(0, 0);
+                    FlxG.camera.pixelPerfectRender = false;
+                }
+                else {FlxG.camera.pixelPerfectRender = isPixelCam;}
+        }
+    }
+}

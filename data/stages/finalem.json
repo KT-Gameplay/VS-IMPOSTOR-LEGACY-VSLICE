@@ -1,0 +1,320 @@
+{
+	"cameraZoom": 0.5,
+	"props": [
+		{
+			"zIndex": 30,
+			"startingAnimation": null,
+			"position": [
+				-1200,
+				1600
+			],
+			"assetPath": "stages/void/finale/defeat",
+			"scale": [
+				1.3,
+				1.3
+			],
+			"atlasSettings": null,
+			"name": "defeatthing"
+		},
+		{
+			"zIndex": 40,
+			"startingAnimation": null,
+			"position": [
+				0,
+				275
+			],
+			"assetPath": "stages/void/defeatfnf",
+			"scale": [
+				4,
+				4
+			],
+			"alpha": 0.0001,
+			"atlasSettings": null,
+			"name": "mainoverlayDK"
+		},
+		{
+			"zIndex": 69,
+			"startingAnimation": "dead",
+			"position": [
+				1210,
+				-140
+			],
+			"assetPath": "stages/void/finale/props",
+			"scale": [
+				1.3,
+				1.3
+			],
+			"atlasSettings": null,
+			"animations": [
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "dead",
+					"atlasSettings": null,
+					"name": "dead",
+					"animType": null,
+					"looped": true
+				}
+			],
+			"name": "bg1"
+		},
+		{
+			"zIndex": 60,
+			"startingAnimation": "bg",
+			"position": [
+				-790,
+				-530
+			],
+			"assetPath": "stages/void/finale/props",
+			"scale": [
+				1.3,
+				1.3
+			],
+			"atlasSettings": null,
+			"animations": [
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "bg",
+					"atlasSettings": null,
+					"name": "bg",
+					"animType": null,
+					"looped": true
+				}
+			],
+			"name": "bg2"
+		},
+		{
+			"zIndex": 70,
+			"startingAnimation": "New Animation",
+			"position": [
+				-789,
+				-533
+			],
+			"assetPath": "stages/void/finale/props",
+			"scale": [
+				1.3,
+				1.3
+			],
+			"atlasSettings": null,
+			"animations": [
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "splat",
+					"atlasSettings": null,
+					"name": "splat",
+					"animType": null,
+					"looped": true
+				}
+			],
+			"name": "bg3"
+		},
+		{
+			"zIndex": 80,
+			"startingAnimation": "lamp",
+			"position": [
+				1576,
+				-342
+			],
+			"assetPath": "stages/void/finale/props",
+			"scale": [
+				1.3,
+				1.3
+			],
+			"atlasSettings": null,
+			"animations": [
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "lamp",
+					"atlasSettings": null,
+					"name": "lamp",
+					"animType": null,
+					"looped": true
+				}
+			],
+			"name": "bg4"
+		},
+		{
+			"zIndex": 90,
+			"startingAnimation": "fore",
+			"position": [
+				-750,
+				160
+			],
+			"assetPath": "stages/void/finale/props",
+			"scale": [
+				1.3,
+				1.3
+			],
+			"atlasSettings": null,
+			"animations": [
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "fore",
+					"atlasSettings": null,
+					"name": "fore",
+					"animType": null,
+					"looped": true
+				}
+			],
+			"name": "bg5"
+		},
+		{
+			"zIndex": 100,
+			"position": [
+				-760,
+				-341
+			],
+			"blend": "multiply",
+			"scale": [
+				1.3,
+				1.3
+			],
+			"name": "dark",
+			"startingAnimation": "dark",
+			"assetPath": "stages/void/finale/props",
+			"atlasSettings": null,
+			"animations": [
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "dark",
+					"atlasSettings": null,
+					"name": "dark",
+					"animType": null,
+					"looped": true
+				}
+			]
+		},
+		{
+			"zIndex": 110,
+			"position": [
+				727,
+				214
+			],
+			"blend": "add",
+			"scale": [
+				3.02743764172335,
+				3.70032102728732
+			],
+			"name": "finaleLight",
+			"startingAnimation": "light",
+			"assetPath": "stages/void/finale/light",
+			"atlasSettings": null,
+			"animations": [
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "light",
+					"atlasSettings": null,
+					"name": "light",
+					"animType": null,
+					"looped": true
+				}
+			]
+		},
+		{
+			"zIndex": 120,
+			"position": [
+				-890,
+				-460
+			],
+			"scale": [
+				1.6,
+				1.6
+			],
+			"name": "finaleFlashbackStuff",
+			"startingAnimation": "polus",
+			"assetPath": "stages/void/finale/finaleFlashback",
+			"atlasSettings": null,
+			"alpha": 0.001,
+			"animations": [
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "finaleFlashback moog",
+					"atlasSettings": null,
+					"name": "polus",
+					"animType": null,
+					"looped": true
+				},
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "finaleFlashback toog",
+					"atlasSettings": null,
+					"name": "mira",
+					"animType": null,
+					"looped": true
+				},
+				{
+					"renderType": null,
+					"assetPath": null,
+					"prefix": "finaleFlashback doog",
+					"atlasSettings": null,
+					"name": "airship",
+					"animType": null,
+					"looped": true
+				}
+			]
+		},
+		{
+			"zIndex": 130,
+			"startingAnimation": null,
+			"position": [
+				-241,
+				341
+			],
+			"blend": "add",
+			"assetPath": "stages/void/iluminao omaga",
+			"scale": [
+				4,
+				4
+			],
+			"atlasSettings": null,
+			"name": "lightoverlay"
+		}
+	],
+	"version": "1.0.0",
+	"directory": "Generated By: Nova Stage Editor v2.2.0-beta",
+	"characters": {
+		"bf": {
+			"zIndex": 80,
+			"position": [
+				1739,
+				1468
+			],
+			"cameraOffsets": [
+				-300,
+				-131
+			]
+		},
+		"gf": {
+			"zIndex": 100,
+			"scale": 0,
+			"position": [
+				1374,
+				1255
+			],
+			"cameraOffsets": [
+				0,
+				70
+			]
+		},
+		"dad": {
+			"zIndex": 80,
+			"position": [
+				977,
+				1700
+			],
+			"cameraOffsets": [
+				1000,
+				0
+			]
+		}
+	},
+	"name": "Finale"
+}

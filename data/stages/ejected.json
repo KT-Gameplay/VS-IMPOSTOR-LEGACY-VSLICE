@@ -1,0 +1,38 @@
+{
+  "props": [
+    {
+      "danceEvery": 0,
+      "zIndex": -10,
+      "position": [-300, -500],
+      "scale": [2.0, 2.0],
+      "name": "Sky",
+      "isPixel": false,
+      "assetPath": "stages/mira/ejected/sky",
+      "scroll": [0, 0]
+    }
+  ],
+  "cameraZoom": 0.5,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "scale": 0.9,
+      "position": [1400, 300],
+      "cameraOffsets": [-2500, -800]
+    },
+    "dad": {
+      "zIndex": 200,
+      "scale": 0.9,
+      "position": [0, 150],
+      "cameraOffsets": [380, 50]
+    },
+    "gf": {
+      "zIndex": 150,
+      "scroll": [0.75, 0.75],
+      "scale": 0.9,
+      "position": [700, 150],
+      "cameraOffsets": [470, -650]
+    }
+  },
+  "name": "Ejected"
+}

@@ -1,0 +1,41 @@
+{
+ "version": "1.0.2",
+ "name": "Lobby",
+ "props": [
+  {
+   "assetPath": "BG/lobby/roomcodebg",
+   "atlasSettings": null,
+   "name": "bg",
+   "position": [-1119.5, -649],
+   "scale": 1,
+   "startingAnimation": ""
+  },
+  {
+   "assetPath": "BG/lobby/box",
+   "atlasSettings": null,
+   "name": "box",
+   "position": [-74.65, 530.85],
+   "scale": 1,
+   "startingAnimation": "",
+   "zIndex": 1
+  }
+ ],
+ "characters": {
+  "bf": {
+   "cameraOffsets": [-100, -100],
+   "position": [1265.5, 988],
+   "zIndex": 300
+  },
+  "dad": {
+   "cameraOffsets": [150, -100],
+   "position": [300, 893],
+   "zIndex": 200
+  },
+  "gf": {
+   "cameraOffsets": [0, 0],
+   "position": [823, 818],
+   "zIndex": 100
+  }
+ },
+ "cameraZoom": 0.8
+}

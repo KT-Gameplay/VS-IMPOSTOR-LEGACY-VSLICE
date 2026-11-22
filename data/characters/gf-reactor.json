@@ -1,0 +1,94 @@
+{
+  "version": "1.0.0",
+  "name": "gf-reator",
+  "assetPath": "characters/gf/gf_reactor",
+  "startingAnimation": "danceLeft",
+  "singTime": 6,
+  "scale": 1,
+  "flipX": false,
+  "offsets": [
+    63,
+    135
+  ],
+  "healthIcon": {
+    "id": "gf",
+    "scale": 1,
+    "flipX": false,
+    "isPixel": false
+  },
+  "healthbarColors": [
+    161,
+    161,
+    161
+  ],
+  "renderType": "sparrow",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "danceLeft",
+      "prefix": "gf dance left",
+      "fps": 24,
+      "looped": false,
+      "frameIndices": [
+        30,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    {
+      "name": "danceRight",
+      "prefix": "gf dance right",
+      "fps": 24,
+      "looped": false,
+      "frameIndices": [
+        30,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    {
+      "name": "sad",
+      "prefix": "gf cry",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        0,
+        -6
+      ],
+      "frameIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ]
+}

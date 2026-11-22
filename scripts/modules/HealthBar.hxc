@@ -1,0 +1,441 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+import funkin.play.components.HealthIcon;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxRect;
+import flixel.util.FlxAxes;
+import flixel.util.FlxColor;
+import flixel.ui.FlxBar;
+import flixel.ui.FlxBarFillDirection;
+import funkin.graphics.FunkinSprite;
+
+class FinaleHealthBar extends Module
+{
+    function new()
+    {
+        super("FinaleHealthBar");
+    }
+
+    var finaleUIActive:Bool = false;
+    var initialized:Bool = false;
+
+    var finaleBarBG:FlxSprite = null;
+    var finaleBarRed:FlxSprite = null;
+    var finaleBarBlue:FlxSprite = null;
+    var finaleBarProxy:FlxBar = null;
+    var blackPIcon:FunkinSprite = null;
+
+    var originalHealthBar:FlxBar = null;
+    var originalHealthBarBG:FunkinSprite = null;
+
+    var ext:String = "ui/finale/";
+
+    public var skinColors:Map<String, Array<FlxColor>> = [
+        "character" => [0xFFFD132B, 0xFFFC5D6A, 0xFF700E4A]
+    ];
+
+    function isFinale():Bool
+    {
+        if (PlayState.instance == null) return false;
+        if (PlayState.instance.currentChart == null) return false;
+
+        return PlayState.instance.currentChart.songName.toLowerCase() == "finale";
+    }
+
+    override function onCountdownStart(event:CountdownScriptEvent):Void
+    {
+        super.onCountdownStart(event);
+
+        if (!isFinale()) return;
+        if (PlayState.instance.currentStage == null) return;
+
+        cleanup();
+
+        originalHealthBar = PlayState.instance.healthBar;
+        originalHealthBarBG = PlayState.instance.healthBarBG;
+
+        originalHealthBarBG.visible = false;
+        originalHealthBar.visible = false;
+        PlayState.instance.iconP1.visible = false;
+        PlayState.instance.iconP2.visible = false;
+
+        finaleBarBG = new FlxSprite(0, FlxG.height - 198).loadGraphic(Paths.image(ext + "healthbarBG"));
+        finaleBarBG.scale.set(0.6, 0.6);
+        finaleBarBG.updateHitbox();
+        finaleBarBG.screenCenter(FlxAxes.X);
+        finaleBarBG.cameras = [PlayState.instance.camHUD];
+        finaleBarBG.visible = false;
+        finaleBarBG.antialiasing = true;
+        finaleBarBG.zIndex = originalHealthBarBG.zIndex;
+
+        finaleBarRed = new FlxSprite(0, FlxG.height - 198).loadGraphic(Paths.image(ext + "insideRED"));
+        finaleBarRed.scale.set(0.6, 0.6);
+        finaleBarRed.updateHitbox();
+        finaleBarRed.screenCenter(FlxAxes.X);
+        finaleBarRed.cameras = [PlayState.instance.camHUD];
+        finaleBarRed.visible = false;
+        finaleBarRed.antialiasing = true;
+        finaleBarRed.zIndex = originalHealthBar.zIndex + 1;
+
+        finaleBarBlue = new FlxSprite(0, FlxG.height - 198).loadGraphic(Paths.image(ext + "insideBLUE"));
+        finaleBarBlue.scale.set(0.6, 0.6);
+        finaleBarBlue.updateHitbox();
+        finaleBarBlue.screenCenter(FlxAxes.X);
+        finaleBarBlue.cameras = [PlayState.instance.camHUD];
+        finaleBarBlue.visible = false;
+        finaleBarBlue.antialiasing = true;
+        finaleBarBlue.zIndex = originalHealthBar.zIndex + 1;
+
+        finaleBarProxy = new FlxBar(
+            finaleBarBlue.x,
+            finaleBarBlue.y,
+            FlxBarFillDirection.RIGHT_TO_LEFT,
+            Std.int(finaleBarBlue.width),
+            Std.int(finaleBarBlue.height),
+            null,
+            "",
+            0,
+            2
+        );
+
+        finaleBarProxy.visible = false;
+        finaleBarProxy.exists = true;
+        finaleBarProxy.cameras = [PlayState.instance.camHUD];
+        finaleBarProxy.value = PlayState.instance.health;
+
+        blackPIcon = FunkinSprite.createSparrow(45, 390, "ui/finale/icon-blackFinale");
+        blackPIcon.scale.set(0.8, 0.8);
+        blackPIcon.updateHitbox();
+        blackPIcon.animation.addByPrefix("winning", "black icon calm0", 24, true);
+        blackPIcon.animation.addByPrefix("losing", "black icon mad0", 24, true);
+        blackPIcon.animation.play("winning");
+        blackPIcon.offset.set(0, 0);
+        blackPIcon.visible = false;
+        blackPIcon.cameras = [PlayState.instance.camHUD];
+        blackPIcon.zIndex = originalHealthBar.zIndex + 2;
+
+        PlayState.instance.add(finaleBarBG);
+        PlayState.instance.add(finaleBarRed);
+        PlayState.instance.add(finaleBarBlue);
+        PlayState.instance.add(blackPIcon);
+
+        PlayState.instance.iconP1.autoUpdate = false;
+        PlayState.instance.iconP2.autoUpdate = false;
+
+        PlayState.instance.iconP1.bopEvery = 0;
+        PlayState.instance.iconP2.bopEvery = 0;
+
+        var down:Bool = Preferences.downscroll;
+
+        if (FlxG.onMobile && Preferences.controlsScheme == "Arrows" && !ControlsHandler.usingExternalInputDevice)
+        {
+            down = true;
+        }
+
+        if (down)
+        {
+            var pos:Float = FlxG.height - (finaleBarRed.y + finaleBarRed.height);
+
+            finaleBarBG.y = pos;
+            finaleBarRed.y = pos;
+            finaleBarBlue.y = pos;
+
+            finaleBarBG.flipY = true;
+            finaleBarRed.flipY = true;
+            finaleBarBlue.flipY = true;
+
+            blackPIcon.y = -125;
+        }
+
+        initialized = true;
+        finaleUIActive = false;
+    }
+
+    public function finaleUIOn():Void
+    {
+        if (!isFinale()) return;
+        if (!initialized) return;
+        if (finaleUIActive) return;
+
+        finaleUIActive = true;
+
+        PlayState.instance.healthBarBG.visible = false;
+        PlayState.instance.healthBar.visible = false;
+
+        PlayState.instance.healthBar = finaleBarProxy;
+
+        finaleBarBG.visible = true;
+        finaleBarRed.visible = true;
+        finaleBarBlue.visible = true;
+        blackPIcon.visible = true;
+
+        PlayState.instance.iconP1.visible = true;
+
+        PlayState.instance.iconP1.x = finaleBarRed.x + (finaleBarRed.width / 1.4) + 40;
+        PlayState.instance.iconP1.y = finaleBarRed.y + 60;
+
+        var down:Bool = Preferences.downscroll;
+
+        if (FlxG.onMobile && Preferences.controlsScheme == "Arrows" && !ControlsHandler.usingExternalInputDevice)
+        {
+            down = true;
+        }
+
+        if (down)
+        {
+            PlayState.instance.iconP1.y += 10;
+        }
+
+        finaleBarProxy.value = PlayState.instance.health;
+        updateHealthBar();
+    }
+
+    override function onUpdate(event:UpdateScriptEvent):Void
+    {
+        super.onUpdate(event);
+
+        if (!isFinale()) return;
+        if (!finaleUIActive) return;
+
+        finaleBarProxy.value = PlayState.instance.health;
+
+        updateHealthBar();
+        updateParasiteIcon((100 - finaleBarProxy.percent) * 0.01);
+    }
+
+    function updateHealthBar():Void
+    {
+        if (!isFinale()) return;
+        if (finaleBarRed == null || finaleBarBlue == null || finaleBarProxy == null) return;
+
+        var width:Int = Std.int(Math.max(1, finaleBarRed.frameWidth));
+        var height:Int = Std.int(Math.max(1, finaleBarRed.frameHeight));
+
+        var percentage:Float = finaleBarProxy.percent * 0.01;
+        percentage = Math.max(0, Math.min(1, percentage));
+
+        var split:Int = Std.int(Math.round(width * (1 - percentage)));
+        split = Std.int(Math.max(0, Math.min(width, split)));
+
+        finaleBarRed.clipRect = new FlxRect(
+            0,
+            0,
+            split,
+            height
+        );
+
+        finaleBarBlue.clipRect = new FlxRect(
+            split,
+            0,
+            width - split,
+            height
+        );
+
+        PlayState.instance.iconP1.x = finaleBarRed.x + (finaleBarRed.width / 1.4) + 40;
+        PlayState.instance.iconP1.y = finaleBarRed.y + 60;
+
+        var down:Bool = Preferences.downscroll;
+
+        if (FlxG.onMobile && Preferences.controlsScheme == "Arrows" && !ControlsHandler.usingExternalInputDevice)
+        {
+            down = true;
+        }
+
+        if (down)
+        {
+            PlayState.instance.iconP1.y += 10;
+        }
+
+        PlayState.instance.iconP1.updateHealthIcon(PlayState.instance.health);
+
+        var opponentHealth:Float = HealthIcon.MAXIMUM_HEALTH - PlayState.instance.health;
+
+        if (opponentHealth < 0)
+        {
+            opponentHealth = 0;
+        }
+
+        if (opponentHealth > HealthIcon.MAXIMUM_HEALTH)
+        {
+            opponentHealth = HealthIcon.MAXIMUM_HEALTH;
+        }
+
+        PlayState.instance.iconP2.updateHealthIcon(opponentHealth);
+    }
+
+    function updateParasiteIcon(curHealth:Float):Void
+    {
+        if (!isFinale()) return;
+        if (blackPIcon == null) return;
+
+        if (curHealth < 0.2)
+        {
+            blackPIcon.animation.play("losing");
+            blackPIcon.offset.set(0, 39);
+        }
+        else
+        {
+            blackPIcon.animation.play("winning");
+            blackPIcon.offset.set(0, 0);
+        }
+    }
+
+    override function onStepHit(event:SongTimeScriptEvent):Void
+    {
+        super.onStepHit(event);
+
+        if (!isFinale()) return;
+        if (PlayState.instance.currentStage == null) return;
+
+        if (event.step == 272)
+        {
+            finaleUIOn();
+        }
+
+        if (!finaleUIActive) return;
+
+        if (finaleBarProxy != null)
+        {
+            finaleBarProxy.value = PlayState.instance.health;
+        }
+    }
+
+    override function onNoteHit(event:HitNoteScriptEvent):Void
+    {
+        super.onNoteHit(event);
+
+        if (!isFinale()) return;
+        if (!finaleUIActive) return;
+        if (event.note == null) return;
+
+        if (!event.note.noteData.getMustHitNote())
+        {
+            var currentHealth:Float = PlayState.instance.health;
+            var damage:Float = Math.max(currentHealth - 0.2, 0) * (event.note.isHoldNote ? 0.005 : 0.1);
+
+            PlayState.instance.health = currentHealth - damage;
+        }
+    }
+
+    override function onSongRetry(event:SongRetryEvent):Void
+    {
+        super.onSongRetry(event);
+
+        if (!isFinale()) return;
+
+        restoreDefaultHUD();
+    }
+
+    override function onSongEnd(event:ScriptEvent):Void
+    {
+        super.onSongEnd(event);
+
+        if (!isFinale()) return;
+
+        restoreDefaultHUD();
+    }
+
+    override function onGameOver(event:ScriptEvent):Void
+    {
+        super.onGameOver(event);
+
+        if (!isFinale()) return;
+
+        restoreDefaultHUD();
+    }
+
+    override function onDestroy(event:ScriptEvent):Void
+    {
+        if (initialized)
+        {
+            restoreDefaultHUD();
+        }
+
+        super.onDestroy(event);
+    }
+
+    function restoreDefaultHUD():Void
+    {
+        if (PlayState.instance == null) return;
+
+        if (originalHealthBar != null)
+        {
+            PlayState.instance.healthBar = originalHealthBar;
+            originalHealthBar.visible = true;
+        }
+
+        if (originalHealthBarBG != null)
+        {
+            originalHealthBarBG.visible = true;
+        }
+
+        if (PlayState.instance.iconP1 != null)
+        {
+            PlayState.instance.iconP1.visible = true;
+            PlayState.instance.iconP1.autoUpdate = true;
+            PlayState.instance.iconP1.bopEvery = 4;
+        }
+
+        if (PlayState.instance.iconP2 != null)
+        {
+            PlayState.instance.iconP2.visible = true;
+            PlayState.instance.iconP2.autoUpdate = true;
+            PlayState.instance.iconP2.bopEvery = 4;
+        }
+
+        removeSprite(finaleBarBG);
+        removeSprite(finaleBarRed);
+        removeSprite(finaleBarBlue);
+        removeSprite(blackPIcon);
+
+        if (finaleBarProxy != null)
+        {
+            finaleBarProxy.kill();
+            finaleBarProxy = null;
+        }
+
+        finaleBarBG = null;
+        finaleBarRed = null;
+        finaleBarBlue = null;
+        blackPIcon = null;
+
+        originalHealthBar = null;
+        originalHealthBarBG = null;
+
+        finaleUIActive = false;
+        initialized = false;
+    }
+
+    function cleanup():Void
+    {
+        removeSprite(finaleBarBG);
+        removeSprite(finaleBarRed);
+        removeSprite(finaleBarBlue);
+        removeSprite(blackPIcon);
+
+        finaleBarBG = null;
+        finaleBarRed = null;
+        finaleBarBlue = null;
+        blackPIcon = null;
+
+        if (finaleBarProxy != null)
+        {
+            finaleBarProxy.kill();
+            finaleBarProxy = null;
+        }
+
+        finaleUIActive = false;
+        initialized = false;
+    }
+
+    function removeSprite(sprite:FlxSprite):Void
+    {
+        if (sprite != null && PlayState.instance != null)
+        {
+            PlayState.instance.remove(sprite);
+        }
+    }
+}

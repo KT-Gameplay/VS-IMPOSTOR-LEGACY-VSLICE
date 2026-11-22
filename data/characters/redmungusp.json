@@ -1,0 +1,75 @@
+{
+	"version": "1.0.0",
+	"name": "redmungusp",
+	"assetPath": "characters/jorsawsee/mungusParasite",
+	"flipX": false,
+	"renderType": "multianimateatlas",
+	"healthIcon": {
+		"id": "redmungus",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		-180,
+		-3
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 6,
+	"scale": 1,
+	"animations": [
+		{
+			"name": "singDOWN",
+			"prefix": "down",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "left",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "right",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUP",
+			"prefix": "up",
+			"offsets": [
+				1,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "idle",
+			"prefix": "idle",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": true,
+			"fps": 24
+		}
+	]
+}

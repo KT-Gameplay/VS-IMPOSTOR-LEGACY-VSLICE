@@ -1,0 +1,119 @@
+import funkin.play.PlayState;
+import flixel.FlxG;
+import funkin.play.event.SongEvent;
+import flixel.math.FlxMath;
+import funkin.modding.module.Module;
+import funkin.modding.module.ModuleHandler;
+import Math;
+import funkin.util.Constants;
+import flixel.FlxCamera;
+
+class ClassicCameraZoomEvent extends SongEvent
+{
+  public function new()
+  {
+    super('ClassicCameraZoom', {
+      processOldEvents: true
+    });
+  }
+
+  public override function handleEvent(data:SongEventData):Void
+  {
+    // Does nothing if there is no PlayState camera or stage.
+    if (PlayState.instance == null) return;
+
+    var zoom:Float = data.getFloat('zoom') ?? 1;
+    var mode:String = data.getString('mode') ?? DEFAULT_MODE;
+    var isDirectMode:Bool = (mode == 'direct');
+    var module = ModuleHandler.getModule('ClassicCameraModule');
+
+    if(zoom != null)
+    {
+      if(module == null) return;
+      module.scriptCall('lerpCameraZoom', [zoom, isDirectMode]);
+    }
+  }
+
+  public override function getTitle():String
+  {
+    return 'Classic Camera Zoom';
+  }
+
+  public override function getEventSchema():SongEventSchema
+  {
+    return[{
+      name: 'zoom',
+      title: 'Zoom Level',
+      defaultValue: 1,
+      min: 0,
+      step: 0.05,
+      type: 'float',
+      units: 'x'
+    },
+  {
+        name: 'mode',
+        title: 'Mode',
+        defaultValue: 'stage',
+        type: 'enum',
+        keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
+      }];
+  }
+}
+
+class ClassicCameraModule extends Module
+{
+  var cameraZoomLerp:Float = 0.0;
+  var targetCameraZoom:Float = 0.0;
+
+  function onCountdownStart(event)
+  {
+    super.onCountdownStart(event);
+
+    targetCameraZoom = 0.0;
+    cameraZoomLerp = 0.0;
+  }
+  
+  function onUpdate(event)
+  {
+    if(PlayState.instance == null) return;
+    super.onUpdate(event);
+
+    if(PlayState.instance.needsReset)
+    {
+      targetCameraZoom = 0.0;
+      cameraZoomLerp = 0.0;
+    }
+
+    if(PlayState.instance.cameraZoomTween != null)
+    {
+      cameraZoomLerp = 0;
+    }
+
+    updateZoomLerp(event.elapsed);
+  }
+
+  public function updateZoomLerp(elapsed:Float)
+  {
+    // Do not lerp if the target zoom is impossible for a camera to have or the lerp is 0.
+    if (targetCameraZoom <= 0 || cameraZoomLerp == 0) return;
+
+    if (cameraZoomLerp >= 1)
+    {
+      PlayState.instance.currentCameraZoom = targetCameraZoom;
+      return;
+    }
+
+    // Adjust lerp based on the current frame rate so lerp is less framerate dependant
+    final adjustedLerp:Float = 1.0 - Math.pow(1.0 - cameraZoomLerp, elapsed * 60);
+
+    PlayState.instance.currentCameraZoom = FlxMath.lerp(PlayState.instance.currentCameraZoom, targetCameraZoom, adjustedLerp);
+  }
+
+  public function lerpCameraZoom(zoom:Float = 1, direct:Bool = false)
+  {
+    var targetZoom:Float = zoom * (direct ? FlxCamera.defaultZoom : PlayState.instance.stageZoom);
+
+    cameraZoomLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
+    targetCameraZoom = targetZoom;
+  }
+}

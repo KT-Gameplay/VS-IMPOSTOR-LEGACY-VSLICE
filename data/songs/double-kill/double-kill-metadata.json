@@ -1,0 +1,40 @@
+{
+  "version": "2.2.4",
+  "songName": "Double Kill",
+  "artist": "Rareblin",
+  "charter": "Orbyy, DuskieWhy",
+  "offsets": {},
+  "playData": {
+    "difficulties": [
+      "normal"
+    ],
+    "characters": {
+      "player": "bf",
+      "girlfriend": "blackdktrue",
+      "opponent": "whitedk"
+    },
+    "album": "Impostor7",
+    "stage": "cargo",
+    "noteStyle": "impostor",
+    "ratings": {"normal": 9},
+    "previewStart": 0,
+    "previewEnd": 0
+  },
+  "generatedBy": "Funkin' Tools",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 200,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}

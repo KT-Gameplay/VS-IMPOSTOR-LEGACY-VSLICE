@@ -1,0 +1,214 @@
+{
+	"version": "1.0.0",
+	"renderType": "multianimateatlas",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 1,
+	"applyStageMatrix": false,
+	"scale": 1,
+	"flipX": false,
+	"name": "black",
+	"cameraOffsets": [
+		-880,
+		-100
+	],
+	"singTime": 3.7,
+	"startingAnimation": "idle",
+	"isPixel": false,
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"isPixel": false,
+		"scale": 1,
+		"id": "black",
+		"flipX": false
+	},
+	"assetPath": "characters/story/black/black",
+	"atlasSettings": {
+		"applyStageMatrix": false,
+		"useRenderTexture": false,
+		"filterQuality": 1,
+		"cacheOnLoad": false,
+		"swfMode": true
+	},
+	"animations": [
+		{
+			"offsets": [
+				341,
+				17
+			],
+			"fps": 24,
+			"prefix": "black left",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singLEFT",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				365,
+				29
+			],
+			"fps": 24,
+			"prefix": "black idle remast",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "idle",
+			"looped": true,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				300,
+				6
+			],
+			"fps": 24,
+			"prefix": "black right",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singRIGHT",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				292,
+				10
+			],
+			"fps": 24,
+			"prefix": "black down",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singDOWN",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				277,
+				-2
+			],
+			"fps": 24,
+			"prefix": "black up",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singUP",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				725,
+				398
+			],
+			"fps": 24,
+			"prefix": "kill1",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "kill",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				723,
+				400
+			],
+			"fps": 24,
+			"prefix": "kill2",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "kill2",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				591,
+				-18
+			],
+			"fps": 24,
+			"frameIndices": [
+				2,
+				3,
+				4
+			],
+			"prefix": "black left",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singLEFT-alt",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				352,
+				-27
+			],
+			"fps": 24,
+			"frameIndices": [
+				2,
+				3,
+				4
+			],
+			"prefix": "black right",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singRIGHT-alt",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				641,
+				41
+			],
+			"fps": 24,
+			"frameIndices": [
+				2,
+				3,
+				4
+			],
+			"prefix": "black up",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singUP-alt",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				571,
+				280
+			],
+			"fps": 24,
+			"frameIndices": [
+				2,
+				3,
+				4
+			],
+			"prefix": "black down",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singDOWN-alt",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		}
+	]
+}

@@ -1,0 +1,304 @@
+{
+	"renderType": "multianimateatlas",
+		"cameraOffsets": [
+			0,
+			200
+		],
+	"offsets": [
+		0,
+		0
+	],
+	"applyStageMatrix": false,
+	"startingAnimation": "idle",
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"assetPath": "characters/bf/bfFly",
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"isPixel": false,
+		"scale": 1,
+		"id": "bf",
+		"flipX": false
+	},
+	"version": "1.0.0",
+	"danceEvery": 1,
+	"scale": 1,
+	"flipX": true,
+	"name": "bf-fall",
+	"cameraOffsets": [
+		2300,
+		730
+	],
+	"singTime": 6,
+	"isPixel": false,
+	"atlasSettings": {
+		"applyStageMatrix": false,
+		"useRenderTexture": false,
+		"filterQuality": 1,
+		"cacheOnLoad": false,
+		"swfMode": true
+	},
+	"animations": [
+		{
+			"offsets": [
+				16,
+				0
+			],
+			"fps": 24,
+			"prefix": "animations/hey",
+			"flipX": false,
+			"looped": false,
+			"name": "hey",
+			"animType": "symbol",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				16,
+				0
+			],
+			"fps": 24,
+			"frameIndices": [
+				4,
+				5,
+				6
+			],
+			"prefix": "animations/hey",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "hey-loop",
+			"looped": true,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-5,
+				0
+			],
+			"fps": 24,
+			"prefix": "animations/idle",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "idle",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				408,
+				1051
+			],
+			"fps": 24,
+			"prefix": "animations/left",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "singLEFT",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				8,
+				-37
+			],
+			"fps": 24,
+			"prefix": "animations/down",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singDOWN",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-66,
+				59
+			],
+			"fps": 24,
+			"prefix": "animations/up",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singUP",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				1,
+				-1
+			],
+			"fps": 24,
+			"prefix": "animations/MISS 0left",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singLEFTmiss",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				8,
+				-37
+			],
+			"fps": 24,
+			"prefix": "animations/MISS 1down",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singDOWNmiss",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-66,
+				59
+			],
+			"fps": 24,
+			"prefix": "animations/MISS 2up",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singUPmiss",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-63,
+				-5
+			],
+			"fps": 24,
+			"prefix": "animations/MISS 3right",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singRIGHTmiss",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-5,
+				0
+			],
+			"fps": 24,
+			"frameIndices": [
+				7,
+				8,
+				9
+			],
+			"prefix": "animations/idle",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "idle-loop",
+			"looped": true,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"fps": 24,
+			"frameIndices": [
+				2,
+				3,
+				4
+			],
+			"prefix": "animations/left",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singLEFT-loop",
+			"looped": true,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				8,
+				-37
+			],
+			"fps": 24,
+			"frameIndices": [
+				2,
+				3,
+				4
+			],
+			"prefix": "animations/down",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singDOWN-loop",
+			"looped": true,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-63,
+				-5
+			],
+			"fps": 24,
+			"prefix": "animations/right",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singRIGHT",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-64,
+				-5
+			],
+			"fps": 24,
+			"frameIndices": [
+				2,
+				3,
+				4
+			],
+			"prefix": "animations/right",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singRIGHT-loop",
+			"looped": true,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-66,
+				59
+			],
+			"fps": 24,
+			"frameIndices": [
+				2,
+				3,
+				4
+			],
+			"prefix": "animations/up",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singUP-loop",
+			"looped": true,
+			"flipY": false,
+			"frameRate": 24
+		}
+	]
+}

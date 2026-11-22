@@ -1,0 +1,48 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import flixel.FlxG;
+import funkin.util.Constants;
+
+class ChippingSong extends Song
+{
+    public function new()
+    {
+        super('chipping');
+    }
+
+    var fugly_cam_event:Bool = false;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        fugly_cam_event = false;
+    }
+
+    function onStepHit(event)
+    {
+        super.onStepHit(event);
+
+        if (event.step == 448)
+        {	
+            LegacyUtils.camSpecialThing([750, 300], [750, 300]);
+            fugly_cam_event = true;
+        }
+    }
+
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        var DALAPSED:Float;
+
+        if (fugly_cam_event && PlayState.instance.currentCameraZoom > 0.4)
+        {
+            DALAPSED = event.elapsed / 0.016;
+            PlayState.instance.currentCameraZoom -= 0.0005 * DALAPSED;
+        }
+
+        if (PlayState.instance.currentCameraZoom <= 0.4 && fugly_cam_event) fugly_cam_event = false;
+    }
+}

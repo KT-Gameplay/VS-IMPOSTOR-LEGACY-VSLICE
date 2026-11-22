@@ -1,0 +1,36 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.FlxG;
+import funkin.Paths;
+
+class DaveStage extends Stage
+{
+   function new()
+   {
+      super("dave");
+   }
+
+   function onCountdownStart(event)
+   {
+    super.onCountdownStart(event);
+
+    PlayState.instance.tweenCameraToPosition(900, 720, 0);
+    PlayState.instance.currentStage.getDad().alpha = 1;
+    PlayState.instance.currentStage.getNamedProp('die').alpha = 0.001;
+    Paths.sound('stage/davewindowsmash');
+   }
+
+   function onStepHit(event)
+   {
+      super.onStepHit(event);
+
+      if(event.step >= 2042) PlayState.instance.currentStage.getDad().shouldBop = false;
+      if(event.step == 2064)
+      {
+         PlayState.instance.currentStage.getDad().alpha = 0.001;
+         PlayState.instance.currentStage.getNamedProp('die').alpha = 1;
+         FlxG.sound.play(Paths.sound('stage/davewindowsmash'));
+         FlxG.camera.shake(0.02, 0.3, null, true, 0x11); // it was XY
+      }
+   }
+}

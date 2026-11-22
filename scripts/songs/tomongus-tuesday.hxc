@@ -1,0 +1,30 @@
+import funkin.play.PlayState;
+import funkin.play.song.Song;
+import flixel.FlxG;
+import funkin.Paths;
+
+class TomongusTuesdaySong extends Song
+{
+    public function new()
+    {
+        super('tomongus-tuesday');
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        LegacyUtils.camSpecialThing([850, 650], [1200, 650]);
+        PlayState.instance.tweenCameraToPosition(850, 650, 0);
+    }
+
+    function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        if(event.eventData.eventKind == 'tuesdayblast')
+        {
+            FlxG.sound.play(Paths.sound('stage/soundTuesday'));
+        }
+    }
+}

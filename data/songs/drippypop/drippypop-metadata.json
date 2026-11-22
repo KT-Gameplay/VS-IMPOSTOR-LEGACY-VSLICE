@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Drippypop",
+ "artist": "EthanTheDoodler, NeatoNG, Lil Nas X",
+ "charter": "Thales",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "dripbf",
+   "girlfriend": "drippico",
+   "opponent": "drippypop"
+  },
+  "stage": "drippypop",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 7},
+  "album": "Impostor14",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 190,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

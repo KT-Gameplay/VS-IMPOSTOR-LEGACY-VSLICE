@@ -1,0 +1,681 @@
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
+import funkin.play.PlayState;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.modding.events.SongEventScriptEvent;
+import flixel.FlxG;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import openfl.display.BlendMode;
+
+class TurbulenceStage extends Stage
+{
+	static inline final PATH:String = "stages/jorsawsee/turbulence/";
+	static final PROP_NAMES:Dynamic = ["balloon0", "balloon copy"];
+
+	var shownPink:Bool;
+	var coolX:Float;
+	var speed:Float;
+
+	var nextFrontCloud:Float;
+	var nextBackCloud:Float;
+	var nextProp:Float;
+
+	var awesomeTime:Float;
+	var musicTime:Float;
+	var musicDelta:Float;
+
+	var dadX:Float;
+	var dadY:Float;
+
+	var activeFrontClouds:Dynamic;
+	var idleFrontClouds:Dynamic;
+	var activeBackClouds:Dynamic;
+	var idleBackClouds:Dynamic;
+	var activeProps:Dynamic;
+	var idleProps:Dynamic;
+
+	var frontCloudCount:Int;
+	var backCloudCount:Int;
+	var propCount:Int;
+
+	var skyDark:StageProp;
+	var skyLight:StageProp;
+	var sun:StageProp;
+	var overlay:StageProp;
+	var speedlines1:StageProp;
+	var speedlines2:StageProp;
+	var claw:StageProp;
+	var rope:StageProp;
+
+	var lastHUDYOffset:Float;
+	var lastHUDAngleOffset:Float;
+	var lastScrollXOffset:Float;
+	var lastScrollYOffset:Float;
+
+	var goDelayXTimer:FlxTimer;
+	var goDelayYTimer:FlxTimer;
+
+	public function new()
+	{
+		super("turbulence");
+	}
+
+	function lt(a:Float, b:Float):Bool { return Math.min(a, b) == a && a != b; }
+	function gt(a:Float, b:Float):Bool { return Math.max(a, b) == a && a != b; }
+	function lte(a:Float, b:Float):Bool { return Math.min(a, b) == a; }
+	function gte(a:Float, b:Float):Bool { return Math.max(a, b) == a; }
+
+	override function onCreate(event:ScriptEvent)
+	{
+		super.onCreate(event);
+
+		shownPink = false;
+		coolX = 5000;
+		speed = 2;
+
+		nextFrontCloud = 0;
+		nextBackCloud = 0;
+		nextProp = 0;
+
+		awesomeTime = 0;
+		musicTime = 0;
+		musicDelta = 0;
+
+		dadX = -900;
+		dadY = -100;
+
+		activeFrontClouds = [];
+		idleFrontClouds = [];
+		activeBackClouds = [];
+		idleBackClouds = [];
+		activeProps = [];
+		idleProps = [];
+
+		frontCloudCount = 0;
+		backCloudCount = 0;
+		propCount = 0;
+
+		lastHUDYOffset = 0;
+		lastHUDAngleOffset = 0;
+		lastScrollXOffset = 0;
+		lastScrollYOffset = 0;
+
+		skyDark = new StageProp();
+		skyDark.loadTexture(PATH + "skyDark");
+		skyDark.x = -100;
+		skyDark.y = 0;
+		skyDark.scale.set(200, 1.1);
+		skyDark.scrollFactor.set(0, 0);
+		skyDark.screenCenter();
+		addProp(skyDark, "skyDark");
+
+		skyLight = new StageProp();
+		skyLight.loadTexture(PATH + "skyLight");
+		skyLight.x = -100;
+		skyLight.y = 0;
+		skyLight.scale.set(200, 1.1);
+		skyLight.scrollFactor.set(0, 0);
+		skyLight.screenCenter();
+		addProp(skyLight, "skyLight");
+
+		sun = new StageProp();
+		sun.loadTexture(PATH + "sun");
+		sun.scrollFactor.set(0.05, 0.05);
+		addProp(sun, "sun");
+
+		overlay = new StageProp();
+		overlay.loadTexture(PATH + "overlay");
+		overlay.scrollFactor.set(0, 0);
+		overlay.scale.set(4, 4);
+		overlay.screenCenter();
+		overlay.x -= 100;
+		overlay.y += 50;
+		overlay.blend = BlendMode.NORMAL;
+		overlay.zIndex = 500;
+		addProp(overlay, "overlay");
+
+		speedlines1 = new StageProp();
+		speedlines1.loadTexture(PATH + "speedlines");
+		speedlines1.scale.set(3, 3);
+		speedlines1.scrollFactor.set(0.3, 0.3);
+		speedlines1.alpha = 0.5;
+		speedlines1.zIndex = 500;
+		addProp(speedlines1, "speedlines1");
+
+		speedlines2 = new StageProp();
+		speedlines2.loadTexture(PATH + "speedlines");
+		speedlines2.scale.set(3, 3);
+		speedlines2.scrollFactor.set(0.3, 0.3);
+		speedlines2.alpha = 0.5;
+		speedlines2.zIndex = 500;
+		addProp(speedlines2, "speedlines2");
+
+		claw = new StageProp();
+		claw.loadSparrow(PATH + "claw");
+		claw.animation.addByPrefix("anim", "crane", 24, true);
+		claw.animation.play("anim", true);
+		claw.x = 930;
+		claw.y = 800;
+		claw.zIndex = 500;
+		addProp(claw, "claw");
+
+		rope = new StageProp();
+		rope.loadTexture(PATH + "rope");
+		rope.x = -1280;
+		rope.y = 925;
+		rope.zIndex = 500;
+		addProp(rope, "rope");
+
+		var dad = getDad();
+		if (dad != null)
+		{
+			dad.scrollFactor.set(0.9, 0.9);
+			dadX = dad.x;
+			dadY = dad.y;
+		}
+
+		refresh();
+	}
+
+	override function onSongStart(event:ScriptEvent)
+	{
+		super.onSongStart(event);
+
+		musicTime = 0;
+		musicDelta = 0;
+	}
+
+	override function onUpdate(event:UpdateScriptEvent)
+	{
+		super.onUpdate(event);
+
+		var game = PlayState.instance;
+		if (game == null) return;
+
+		musicDelta = event.elapsed * 1000;
+		musicTime += musicDelta;
+
+		var crazy:Float = 1;
+
+		var dad = getDad();
+		if (dad != null)
+		{
+			dad.x = dadX;
+			dad.y = dadY;
+		}
+
+		if (gte(musicTime, 108214))
+		{
+			var d1:Float = delta(musicTime, 108214, 124058);
+			var d2:Float = delta(musicTime, 123800, 124158);
+			var d3:Float = delta(musicTime, 108214, 124158);
+
+			var dadXOffset:Float = easeQuadIn(d1) * 2100 + easeQuartIn(d2) * 2200;
+			var dadYOffset:Float = easeQuintIn(d3) * 300;
+
+			if (dad != null)
+			{
+				dad.x = dadX + dadXOffset;
+				dad.y = dadY + dadYOffset;
+			}
+
+			if (lt(musicTime, 124058))
+			{
+				crazy += easeSineIn(d1) * 4;
+			}
+			else
+			{
+				crazy += 4 - easeQuadOut(delta(musicTime, 124058, 124058 + 2500)) * 4;
+			}
+		}
+
+		var flashingLightsEnabled:Bool = Preferences.flashingLights;
+
+		if (flashingLightsEnabled)
+		{
+			if (game.camGame != null) game.camGame.shake(0.001 * (crazy * 2 - 1), 0.1);
+			if (game.camHUD != null) game.camHUD.shake(0.001 * (crazy * 1 - 1), 0.1);
+		}
+		else
+		{
+			crazy = 1;
+		}
+
+		var bpm:Float = (Conductor.crochet != null && gt(Conductor.crochet, 0)) ? (60000 / Conductor.crochet) : 100;
+
+		if (game.camHUD != null)
+		{
+			var newHUDYOffset:Float = Math.sin((musicTime / 1000) * (bpm / 60) * 1.0) * 8 * (crazy * 0.5 + 0.5);
+			var newHUDAngleOffset:Float = Math.sin((musicTime / 1200) * (bpm / 60) * -1.0) * (crazy * 0.5 + 0.5);
+
+			game.camHUD.y += newHUDYOffset - lastHUDYOffset;
+			game.camHUD.angle += newHUDAngleOffset - lastHUDAngleOffset;
+
+			lastHUDYOffset = newHUDYOffset;
+			lastHUDAngleOffset = newHUDAngleOffset;
+		}
+
+		if (game.camGame != null)
+		{
+			var newScrollXOffset:Float = Math.sin(musicTime / 412) * 20 * crazy;
+			var newScrollYOffset:Float = Math.cos(musicTime / 877) * 20 * crazy;
+
+			game.camGame.scroll.x += newScrollXOffset - lastScrollXOffset;
+			game.camGame.scroll.y += newScrollYOffset - lastScrollYOffset;
+
+			lastScrollXOffset = newScrollXOffset;
+			lastScrollYOffset = newScrollYOffset;
+		}
+
+		var timeFactor:Float = flashingLightsEnabled ? 1.0 : 0.5;
+		coolX += speed * musicDelta * timeFactor;
+
+		var speedlineX:Float = coolX * 1.5;
+		var speedlineWidth:Float = speedlines1 != null ? speedlines1.width : 0;
+
+		if (gt(speedlineWidth, 0))
+		{
+			var loopX:Float = speedlineX % speedlineWidth;
+			if (speedlines1 != null) speedlines1.x = loopX - speedlineWidth;
+			if (speedlines2 != null) speedlines2.x = loopX;
+		}
+
+		while (gt(coolX, nextFrontCloud))
+		{
+			spawnThing(nextFrontCloud - FlxG.random.float(0, 100), FlxG.random.float(1600, 2200), false);
+			nextFrontCloud += FlxG.random.float(1000, 1200);
+		}
+		while (gt(coolX, nextBackCloud))
+		{
+			spawnThing(nextBackCloud - FlxG.random.float(0, 300), FlxG.random.float(3800, 4800), false);
+			nextBackCloud += FlxG.random.float(1800, 2800);
+		}
+		while (gt(coolX, nextProp))
+		{
+			spawnThing(nextProp - FlxG.random.float(0, 600), FlxG.random.float(22800, 41200), true);
+			nextProp += FlxG.random.float(5000, 20000);
+		}
+
+		updatePooledGroup(activeFrontClouds, idleFrontClouds);
+		updatePooledGroup(activeBackClouds, idleBackClouds);
+		updatePooledGroup(activeProps, idleProps);
+
+		var songLength:Float = FlxG.sound.music != null ? FlxG.sound.music.length : 1;
+		if (lte(songLength, 0)) songLength = 1;
+
+		awesomeTime = remapToRange(musicTime, 0, songLength, 16, 19);
+		var songPercent:Float = musicTime / songLength;
+
+		var sunRad:Float = (1.5 - awesomeTime / 12) * Math.PI;
+		if (sun != null)
+		{
+			sun.x = 400 + songPercent * 120 + Math.cos(sunRad) * 800;
+			sun.y = -100 - Math.sin(sunRad) * 800;
+		}
+
+		if (skyLight != null)
+		{
+			skyLight.alpha = remapToRange(awesomeTime, 16, 19, 1, 0);
+		}
+
+		var r:Int = 255;
+		var g:Int = Std.int(255 + (158 - 255) * songPercent);
+		var b:Int = Std.int(255 + (170 - 255) * songPercent);
+		var colorVal:FlxColor = FlxColor.fromRGB(r, g, b);
+
+		if (dad != null) dad.color = colorVal;
+
+		var bf = getBoyfriend();
+		if (bf != null) bf.color = colorVal;
+	}
+
+	override function onUpdatePost(event:UpdateScriptEvent)
+	{
+		super.onUpdatePost(event);
+
+		var bf = getBoyfriend();
+		if (bf == null || claw == null) return;
+
+		var clawX:Float = claw.x;
+		var clawY:Float = claw.y;
+		var bfWidth:Float = bf.width;
+		var bfHeight:Float = bf.height;
+		var bfScaleX:Float = bf.scale.x;
+		var clawHeight:Float = claw.height;
+
+		var targetX:Float = clawX + ((bfWidth - bfHeight) * -0.5 + 50);
+		var targetY:Float = clawY + ((clawHeight - bfWidth * bfScaleX) * 0.5 + 10);
+
+		var bfName:String = bf.characterId ?? "";
+
+		if (bfName == "pinkplayable")
+		{
+			targetX -= 60;
+			targetY += 40;
+		}
+		else if (bfName == "minigrey")
+		{
+			targetX -= 80;
+			targetY += 20;
+		}
+
+		bf.x = targetX;
+		bf.y = targetY;
+	}
+
+	override function onSongEvent(event:SongEventScriptEvent)
+	{
+		super.onSongEvent(event);
+
+		switch (event.eventId)
+		{
+			case "Turbulence Speed":
+				var newSpeed:Float = Std.parseFloat(event.value1 ?? "1");
+				var duration:Float = Std.parseFloat(event.value2 ?? "0.5");
+				if (Math.isNaN(newSpeed)) newSpeed = 1;
+				if (Math.isNaN(duration)) duration = 0.5;
+
+				FlxTween.cancelTweensOf(this);
+				FlxTween.tween(this, {speed: newSpeed}, duration, {
+					ease: FlxEase.quadInOut
+				});
+
+				if (Preferences.flashingLights)
+				{
+					if (speedlines1 != null)
+					{
+						FlxTween.cancelTweensOf(speedlines1);
+						FlxTween.tween(speedlines1, {alpha: 0.5 * newSpeed}, 1, {
+							ease: FlxEase.linear
+						});
+					}
+					if (speedlines2 != null)
+					{
+						FlxTween.cancelTweensOf(speedlines2);
+						FlxTween.tween(speedlines2, {alpha: 0.5 * newSpeed}, 1, {
+							ease: FlxEase.linear
+						});
+					}
+				}
+
+			case "Turbulence Ending":
+				if (overlay != null) overlay.zIndex = 500;
+		}
+	}
+
+	override function onNoteHit(event:HitNoteScriptEvent):Void
+	{
+		super.onNoteHit(event);
+
+		if (event.note == null || !event.note.mustPress) return;
+
+		var bf = getBoyfriend();
+		if (bf == null) return;
+
+		var noteKind:String = event.note.kind ?? "";
+
+		if (noteKind == "Hey!")
+		{
+			bf.playAnimation("hey", true);
+		}
+	}
+
+	override function onGameOver(event:ScriptEvent):Void
+	{
+		super.onGameOver(event);
+
+		var bf = getBoyfriend();
+		if (bf == null) return;
+
+		bf.angle = -90;
+		bf.y -= bf.width;
+
+		if (goDelayXTimer != null) goDelayXTimer.cancel();
+		if (goDelayYTimer != null) goDelayYTimer.cancel();
+
+		goDelayXTimer = new FlxTimer();
+		goDelayXTimer.start(0.35, function(timer:FlxTimer):Void
+		{
+			var bfRef = getBoyfriend();
+			if (bfRef == null) return;
+
+			bfRef.angle = 90;
+			FlxTween.tween(bfRef, {x: bfRef.x + 2000}, 0.55, {
+				ease: FlxEase.quadIn
+			});
+		});
+
+		goDelayYTimer = new FlxTimer();
+		goDelayYTimer.start(0.33, function(timer:FlxTimer):Void
+		{
+			var bfRef = getBoyfriend();
+			if (bfRef == null) return;
+
+			FlxTween.tween(bfRef, {y: bfRef.y + 1800}, 0.55, {
+				ease: FlxEase.quartIn
+			});
+		});
+	}
+
+	override function onDestroy(event:ScriptEvent):Void
+	{
+		FlxTween.cancelTweensOf(this);
+
+		if (goDelayXTimer != null) goDelayXTimer.cancel();
+		if (goDelayYTimer != null) goDelayYTimer.cancel();
+
+		super.onDestroy(event);
+	}
+
+	function spawnThing(time:Float, z:Float, isProp:Bool):Void
+	{
+		if (gte(coolX, time + z)) return;
+
+		var dadZIndex:Int = 200;
+
+		if (isProp)
+		{
+			var item:Dynamic = null;
+			if (gt(idleProps.length, 0)) {
+				item = idleProps.pop();
+			}
+
+			if (item == null) {
+				propCount++;
+				var tag:String = "turb_prop_" + propCount;
+				var sprite:StageProp = new StageProp();
+				sprite.loadSparrow(PATH + "props");
+				sprite.zIndex = dadZIndex - 1;
+				addProp(sprite, tag);
+				item = {sprite: sprite, vx: time, vy: z, yBase: 0, isProp: true};
+				refresh();
+			} else {
+				item.vx = time;
+				item.vy = z;
+				item.sprite.visible = true;
+			}
+
+			var variant:String = PROP_NAMES[FlxG.random.int(0, PROP_NAMES.length - 1)];
+			var songLength:Float = FlxG.sound.music != null ? FlxG.sound.music.length : 1;
+			var posThresh = songLength * 0.75 + FlxG.random.float(-11000, 11000);
+			var somewhereMidsong:Bool = gte(Conductor.songPosition, posThresh);
+
+			if ((Math.min(FlxG.random.int(1, 10), 1) == 1 || somewhereMidsong) && !shownPink)
+			{
+				shownPink = true;
+				variant = "pink";
+			}
+
+			item.sprite.animation.addByPrefix(variant, variant, 24, true);
+			item.sprite.animation.play(variant, true);
+
+			var scale:Float = remapToRange(z, 22800, 41200, 0.72, 0.45);
+			var scroll:Float = remapToRange(z, 22800, 41200, 0.3, 0.2);
+			item.sprite.scale.set(scale, scale);
+			item.sprite.scrollFactor.set(scroll, scroll);
+
+			item.yBase = FlxG.random.float(80, 350) - remapToRange(z, 22800, 41200, 0, 100);
+
+			var m:Float = remapToRange(z, 22800, 41200, 1, 0.35);
+			var blueness:Float = 1 - m;
+			var r:Int = Std.int(m * 255 + blueness * 100);
+			var g:Int = Std.int(m * 255 + blueness * 200);
+			var b:Int = Std.int(m * 255 + blueness * 255);
+			item.sprite.color = FlxColor.fromRGB(r, g, b);
+
+			if (FlxG.random.bool(50) && !shownPink)
+			{
+				item.sprite.flipX = true;
+			}
+			else
+			{
+				item.sprite.flipX = false;
+			}
+
+			activeProps.push(item);
+		}
+		else
+		{
+			var isFront:Bool = lt(z, 3500);
+			var item:Dynamic = null;
+			
+			if (isFront && gt(idleFrontClouds.length, 0)) item = idleFrontClouds.pop();
+			else if (!isFront && gt(idleBackClouds.length, 0)) item = idleBackClouds.pop();
+
+			if (item == null) {
+				var tag:String;
+				if (isFront) {
+					frontCloudCount++;
+					tag = "turb_fcloud_" + frontCloudCount;
+				} else {
+					backCloudCount++;
+					tag = "turb_bcloud_" + backCloudCount;
+				}
+
+				var sprite:StageProp = new StageProp();
+				sprite.loadSparrow(PATH + "clouds");
+				sprite.zIndex = isFront ? 600 : dadZIndex - 2;
+				addProp(sprite, tag);
+				item = {sprite: sprite, vx: time, vy: z, yBase: 0, isProp: false};
+				refresh();
+			} else {
+				item.vx = time;
+				item.vy = z;
+				item.sprite.visible = true;
+			}
+
+			var variant:Int = FlxG.random.int(1, 4);
+			item.sprite.animation.addByPrefix("cloud" + variant, "export cloud " + variant, 24, true);
+			item.sprite.animation.play("cloud" + variant, true);
+
+			var scale:Float = remapToRange(z, 1600, 4800, 1, 0.38);
+			var scroll:Float = remapToRange(z, 1600, 4800, 1.2, 0.35);
+			item.sprite.scale.set(scale, scale);
+			item.sprite.scrollFactor.set(scroll, scroll);
+
+			var alpha:Float = FlxG.random.float(0.7, 0.9) * remapToRange(z, 1600, 4800, 1, 0.25);
+			item.sprite.alpha = alpha;
+
+			item.yBase = FlxG.random.float(1000, 1280) - remapToRange(z, 1600, 4800, 0, 900);
+
+			if (FlxG.random.bool(50))
+			{
+				item.sprite.flipX = true;
+			}
+			else
+			{
+				item.sprite.flipX = false;
+			}
+
+			if (isFront) activeFrontClouds.push(item);
+			else activeBackClouds.push(item);
+		}
+	}
+
+	function updatePooledGroup(activeGroup:Dynamic, idleGroup:Dynamic):Void
+	{
+		var i:Int = activeGroup.length - 1;
+
+		while (gte(i, 0))
+		{
+			var item:Dynamic = activeGroup[i];
+
+			if (item != null && item.sprite != null)
+			{
+				var z:Float = item.vy;
+				var itemX:Float = ((coolX - item.vx) / z) * 2000 - 2500 - item.sprite.width;
+				item.sprite.x = itemX;
+
+				if (item.isProp)
+				{
+					item.sprite.y = item.yBase + (Math.sin(Conductor.songPosition / z * 20) * 0.2);
+				}
+				else
+				{
+					item.sprite.y = item.yBase;
+				}
+
+				if (gte(itemX, FlxG.width * 2))
+				{
+					item.sprite.visible = false;
+					idleGroup.push(item);
+					activeGroup.splice(i, 1);
+				}
+			}
+
+			i--;
+		}
+	}
+
+	function remapToRange(value:Float, start1:Float, stop1:Float, start2:Float, stop2:Float):Float
+	{
+		return start2 + (value - start1) * (stop2 - start2) / (stop1 - start1);
+	}
+
+	function bound(value:Float, min:Float, max:Float):Float
+	{
+		return Math.max(min, Math.min(max, value));
+	}
+
+	function delta(n:Float, min:Float, max:Float):Float
+	{
+		return bound(remapToRange(n, min, max, 0, 1), 0, 1);
+	}
+
+	function easeSineInOut(t:Float):Float
+	{
+		return 0.5 * (1 - Math.cos(t * Math.PI));
+	}
+
+	function easeQuadIn(t:Float):Float
+	{
+		return t * t;
+	}
+
+	function easeSineIn(t:Float):Float
+	{
+		return 1 - Math.cos(t * (Math.PI / 2));
+	}
+
+	function easeQuadOut(t:Float):Float
+	{
+		return t * (2 - t);
+	}
+
+	function easeQuartIn(t:Float):Float
+	{
+		return t * t * t * t;
+	}
+
+	function easeQuintIn(t:Float):Float
+	{
+		return t * t * t * t * t;
+	}
+}

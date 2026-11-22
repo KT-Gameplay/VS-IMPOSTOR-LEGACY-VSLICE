@@ -1,0 +1,109 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+import flixel.FlxG;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import Math;
+import Std;
+import funkin.Conductor;
+
+class CameraTwistEvent extends SongEvent
+{
+    public function new()
+    {
+        super("CameraTwist");
+    }
+
+    var _intensity:Float;
+    var _intensity2:Float;
+    var camTwist:Bool = false;
+
+    override public function handleEvent(data)
+    {
+        if(PlayState.instance == null) return;
+
+        camTwist = true;
+
+        _intensity = Std.parseFloat(data.getString('intensity1'));
+        if (Math.isNaN(_intensity)) _intensity = 0;
+
+        _intensity2 = Std.parseFloat(data.getString('intensity2'));
+        if (Math.isNaN(_intensity2)) _intensity2 = 0;
+
+        if (_intensity2 == 0)
+		{
+			camTwist = false;
+			FlxTween.tween(PlayState.instance.camHUD, {angle: 0}, 1, {ease: FlxEase.sineInOut});
+			FlxTween.tween(PlayState.instance.camGame, {angle: 0}, 1, {ease: FlxEase.sineInOut});
+		}
+    }
+
+    override public function getTitle():String
+    {
+        return 'Camera Twist';
+    }
+
+    override public function getEventSchema()
+    {
+        return[
+            {
+                name: "intensity1",
+                title: "Intensity 1",
+                type: "string",
+                defaultValue: 0
+            },
+            {
+                name: "intensity2",
+                title: "Intensity 2",
+                type: "string",
+                defaultValue: 0
+            }
+        ];
+    }
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        camTwist = false;
+    }
+    
+    function onStepHit(event)
+    {
+        if(PlayState.instance == null) return;
+        super.onStepHit(event);
+
+        if(camTwist)
+        {
+            if (event.step % 4 == 0) FlxTween.tween(PlayState.instance.camHUD, {y: -6 * _intensity2}, Conductor.instance.stepLengthMs * 0.002, {ease: FlxEase.circOut});
+            if (event.step % 4 == 2) FlxTween.tween(PlayState.instance.camHUD, {y: 0}, Conductor.instance.stepLengthMs * 0.002, {ease: FlxEase.sineIn});
+        }
+    }
+
+    function onBeatHit(event)
+    {
+        if(PlayState.instance == null) return;
+        super.onBeatHit(event);
+
+        var twistShit:Float;
+        var twistAmount:Float = 1;
+
+        if (camTwist)
+        {
+            if (event.beat % 2 == 0)
+            {
+                twistShit = twistAmount;
+            }
+            else
+            {
+                twistShit = -twistAmount;
+            }
+            PlayState.instance.camHUD.angle = twistShit * _intensity2;
+            PlayState.instance.camGame.angle = twistShit * _intensity2;
+            FlxTween.tween(PlayState.instance.camHUD, {angle: twistShit * _intensity}, Conductor.instance.stepLengthMs * 0.002, {ease: FlxEase.circOut});
+            FlxTween.tween(PlayState.instance.camHUD, {x: -twistShit * _intensity}, Conductor.instance.beatLengthMs * 0.001, {ease: FlxEase.linear});
+            FlxTween.tween(PlayState.instance.camGame, {angle: twistShit * _intensity}, Conductor.instance.stepLengthMs * 0.002, {ease: FlxEase.circOut});
+            FlxTween.tween(PlayState.instance.camGame, {x: -twistShit * _intensity}, Conductor.instance.beatLengthMs * 0.001, {ease: FlxEase.linear});
+        }
+    }
+}

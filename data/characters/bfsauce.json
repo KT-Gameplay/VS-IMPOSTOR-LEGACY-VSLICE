@@ -1,0 +1,147 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 1,
+	"name": "bfsauce",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": true,
+	"isPixel": false,
+	"singTime": 4,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"assetPath": "characters/bf/bfsauce",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "BF idle dance",
+			"offsets": [
+				-5,
+				0
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE LEFT0",
+			"offsets": [
+				35,
+				-16
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE DOWN0",
+			"offsets": [
+				9,
+				-47
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE UP0",
+			"offsets": [
+				-21,
+				-20
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE RIGHT0",
+			"offsets": [
+				-21,
+				-2
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE LEFT MISS",
+			"offsets": [
+				28,
+				-18
+			],
+			"frameRate": 24,
+			"name": "singLEFTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE DOWN MISS",
+			"offsets": [
+				13,
+				-40
+			],
+			"frameRate": 24,
+			"name": "singDOWNmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE UP MISS",
+			"offsets": [
+				-18,
+				-12
+			],
+			"frameRate": 24,
+			"name": "singUPmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE RIGHT MISS",
+			"offsets": [
+				-15,
+				-2
+			],
+			"frameRate": 24,
+			"name": "singRIGHTmiss",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE UP VIBRATO0",
+			"offsets": [
+				-12,
+				-5
+			],
+			"frameRate": 24,
+			"name": "singUP-alt",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "BF NOTE DOWN VIBRATO0",
+			"offsets": [
+				17,
+				-45
+			],
+			"frameRate": 24,
+			"name": "singDOWN-alt",
+			"looped": false
+		}
+	]
+}

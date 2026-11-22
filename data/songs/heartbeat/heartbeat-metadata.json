@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Heartbeat",
+ "artist": "Saster",
+ "charter": "Gonk",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bfmira",
+   "girlfriend": "gfmira",
+   "opponent": "pink"
+  },
+  "stage": "pink",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 6},
+  "album": "Impostor11",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 87,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

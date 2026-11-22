@@ -1,0 +1,32 @@
+{
+ "version": "2.2.4",
+ "songName": "Greatest Plan",
+ "artist": "EthanTheDoodler",
+ "charter": "Gibz, emi3",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "henryphone",
+   "girlfriend": "gf",
+   "opponent": "charles"
+  },
+  "stage": "henry",
+  "noteStyle": "impostor",
+  "ratings": {"hard": 6},
+  "album": "Impostor25",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 180,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

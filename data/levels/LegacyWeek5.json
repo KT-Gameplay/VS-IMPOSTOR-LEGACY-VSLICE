@@ -1,0 +1,13 @@
+{
+    "version": "1.0.0",
+    "name": "Magmatic Monstrosity",
+    "titleAsset": "storymenu/titles/magmaticmonstrosity",
+  "capsule": {
+    "name": "Magmatic Monstrosity"
+  },
+    "props": [],
+    "background": "#FFFFFF",
+    "songs": [
+        "ashes", "magmatic", "boiling-point"
+    ]
+}

@@ -1,0 +1,9 @@
+import funkin.play.notes.notekind.NoteKind;
+import funkin.play.PlayState;
+
+class AltNote extends NoteKind {
+  function new() {
+    super("Alt", "Alt Animation");
+    this.suffix = 'alt';
+  }
+}

@@ -1,0 +1,75 @@
+{
+	"version": "1.0.0",
+	"name": "jorsawsee",
+	"assetPath": "characters/jorsawsee/jorsawsee",
+	"flipX": false,
+	"renderType": "multianimateatlas",
+	"healthIcon": {
+		"id": "jorsawsee",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		-130,
+		290
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 6,
+	"scale": 1,
+	"animations": [
+		{
+			"name": "idle",
+			"prefix": "idle",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "singRIGHT",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "singDOWN",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "singLEFT",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUP",
+			"prefix": "singUP",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		}
+	]
+}

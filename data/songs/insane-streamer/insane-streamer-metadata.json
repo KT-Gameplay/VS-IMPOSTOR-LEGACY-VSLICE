@@ -1,0 +1,31 @@
+{
+ "version": "2.2.4",
+ "songName": "Insane Streamer",
+ "artist": "EthanTheDoodler, NeatoNG",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "normal"
+  ],
+  "characters": {
+   "player": "bf",
+   "girlfriend": "gf",
+   "opponent": "jerma"
+  },
+  "stage": "jerma",
+  "noteStyle": "impostor",
+  "ratings": {"normal": 4},
+  "album": "Impostor37",
+  "stickerPack": "default",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 210,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

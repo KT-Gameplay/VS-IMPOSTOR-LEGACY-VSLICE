@@ -1,0 +1,44 @@
+import flixel.FlxG;
+import funkin.play.ResultState;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.ui.story.StoryMenuState;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.MusicBeatState;
+import funkin.modding.module.Module;
+import funkin.modding.PolymodHandler; // Import necessário para o reload de assets
+
+class SkipResultsModule extends Module {
+    public function new() { 
+        // Prioridade 1000 garante que rode antes de outros módulos que possam modificar a tela de resultados
+        super("SkipResultsModule", 1000); 
+    }
+
+    public function onSubStateOpenBegin(event:SubStateScriptEvent) {
+        super.onSubStateOpenBegin(event);
+
+        // Retorna imediatamente se estiver no modo de edição (Chart Editor)
+        if (PlayState.instance != null && PlayState.instance.isChartingMode) return;
+
+        // Verifica se o substate alvo é a tela de resultados padrão do jogo
+        if (Std.isOfType(event.targetState, ResultState)) {
+            
+            // Cancela o evento original, impedindo a engine de construir o ResultState
+            event.cancel();
+
+            // Interrompe qualquer áudio residual que a tela de resultados tentaria tocar
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+            }
+
+            // Recarrega todos os assets em cache antes de voltar para o menu
+            PolymodHandler.forceReloadAssets();
+
+            // Avalia o modo de jogo atual para rotear de volta à tela correta
+            var isStoryMode:Bool = PlayStatePlaylist.isStoryMode;
+            var newState:MusicBeatState = isStoryMode ? new StoryMenuState() : new FreeplayState();
+            
+            FlxG.switchState(newState);
+        }
+    }
+}

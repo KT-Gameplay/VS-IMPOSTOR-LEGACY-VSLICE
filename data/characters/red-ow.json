@@ -1,0 +1,81 @@
+{
+	"renderType": "sparrow",
+	"version": "1.0.1",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 0.8,
+	"name": "redOW",
+	"cameraOffsets": [
+		-80,
+		390
+	],
+	"flipX": false,
+	"isPixel": false,
+	"singTime": 10,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"id": "red-ow",
+		"isPixel": false
+	},
+	"assetPath": "characters/freeplay/redOW",
+	"animations": [
+		{
+			"frameIndices": [],
+			"prefix": "red idle",
+			"offsets": [
+				30,
+				-291
+			],
+			"frameRate": 24,
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "red right",
+			"offsets": [
+				-10,
+				-274
+			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "red down",
+			"offsets": [
+				-8,
+				-249
+			],
+			"frameRate": 24,
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "red left",
+			"offsets": [
+				56,
+				-260
+			],
+			"frameRate": 24,
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"frameIndices": [],
+			"prefix": "red up",
+			"offsets": [
+				20,
+				-270
+			],
+			"frameRate": 24,
+			"name": "singUP",
+			"looped": false
+		}
+	]
+}

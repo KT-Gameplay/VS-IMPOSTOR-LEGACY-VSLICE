@@ -1,0 +1,77 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import flixel.effects.particles.FlxEmitter;
+import flixel.effects.particles.FlxEmitterMode;
+import flixel.effects.particles.FlxParticle;
+import openfl.display.BlendMode;
+
+class Emitters extends Module
+{
+    public function new()
+    {
+       super("Emitters");
+    }
+
+    var emberEmitter:FlxEmitter;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        if(PlayState.instance.currentChart.songName.toLowerCase() == 'boiling point')
+        {
+            if(emberEmitter != null) return;
+
+	emberEmitter = new FlxEmitter(-1200, 1000);
+	
+	for (i in 0...150)
+	{
+		var p = new FlxParticle();
+		p.frames = Paths.getSparrowAtlas('emitters/ember');
+		p.animation.addByPrefix('ember', 'ember', 24, true);
+		p.animation.play('ember');
+		p.exists = false;
+		p.animation.curAnim.curFrame = FlxG.random.int(0, 9);
+		p.blend = BlendMode.ADD;
+		emberEmitter.add(p);
+	}
+	emberEmitter.launchMode = FlxEmitterMode.SQUARE;
+	emberEmitter.velocity.set(-50, -400, 50, -800, -100, 0, 100, -800);
+	emberEmitter.scale.set(1, 1, 0.8, 0.8, 0, 0, 0, 0);
+	emberEmitter.drag.set(0, 0, 0, 0, 5, 5, 10, 10);
+	emberEmitter.width = 4200.45;
+	emberEmitter.alpha.set(1, 1);
+	emberEmitter.lifespan.set(4, 4.5);
+
+	emberEmitter.start(false, FlxG.random.float(0.3, 0.4), 100000);
+
+	snowEmitter = new FlxEmitter(900, -800, 2700);
+	snowEmitter.start(false, 0.5);
+	snowEmitter.width = 2700;
+        snowEmitter.launchAngle.set(100, 160);
+        snowEmitter.angularVelocity.set(-80, 100);
+        snowEmitter.lifespan.set(10); //fuck it
+        snowEmitter.speed.set(500, 700);
+	snowEmitter.alpha.set(1, null, 0, 1);
+	PlayState.instance.add(snowEmitter);
+	snowEmitter.alpha.active = false;
+	snowEmitter.zIndex = 13;
+
+	for (i in 0...2700)
+	{
+	var particle = new FlxParticle();
+	particle.frames = Paths.getSparrowAtlas('snow_particles');
+	particle.animation.addByPrefix('snow', 'snow', 0, false);
+	particle.animation.frameIndex = FlxG.random.int(0, 7);
+	particle.scrollFactor.set(FlxG.random.float(1, 1.5), FlxG.random.float(1, 1.5));
+	snowEmitter.add(particle);
+	particle.alpha = 0.3;
+	}
+
+	PlayState.instance.add(snowEmitter);
+	snowEmitter.zIndex = 2;
+	PlayState.instance.add(emberEmitter);
+	emberEmitter.zIndex = 2;
+        }
+    }
+}

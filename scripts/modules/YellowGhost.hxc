@@ -1,0 +1,94 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterDataParser;
+import funkin.modding.events.CountdownScriptEvent;
+import funkin.modding.events.HitNoteScriptEvent;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+class DoubleKillYellowGhost extends Module
+{
+var yellowGhostChar = null;
+
+public function new()
+{
+    super("double-kill-yellow-ghost");
+}
+
+function isTargetSong():Bool
+{
+    if (PlayState.instance == null) return false;
+    if (PlayState.instance.currentSong == null) return false;
+
+    return PlayState.instance.currentSong.id.toLowerCase() == "double-kill";
+}
+
+override function onCountdownStart(event:CountdownScriptEvent):Void
+{
+    super.onCountdownStart(event);
+
+    if (!isTargetSong()) return;
+    if (PlayState.instance.currentStage == null) return;
+
+    var boyfriend = PlayState.instance.currentStage.getBoyfriend();
+    if (boyfriend == null) return;
+
+    yellowGhostChar = CharacterDataParser.fetchCharacter("yellow-ghost");
+    if (yellowGhostChar == null) return;
+
+    PlayState.instance.currentStage.add(yellowGhostChar);
+
+    yellowGhostChar.x = boyfriend.x - 150;
+    yellowGhostChar.y = boyfriend.y - 100;
+    yellowGhostChar.zIndex = boyfriend.zIndex - 100;
+    yellowGhostChar.alpha = 0;
+
+    PlayState.instance.currentStage.characters.set("yellow-ghost", yellowGhostChar);
+    PlayState.instance.currentStage.refresh();
+}
+
+override function onStepHit(event:StepHitScriptEvent):Void
+{
+    super.onStepHit(event);
+
+    if (!isTargetSong()) return;
+    if (yellowGhostChar == null) return;
+
+    if (event.step == 2209)
+    {
+        FlxTween.tween(
+            yellowGhostChar,
+            {alpha: 1},
+            1.5,
+            {ease: FlxEase.quadInOut}
+        );
+    }
+
+    if (event.step == 3285)
+    {
+        FlxTween.tween(
+            yellowGhostChar,
+            {alpha: 0},
+            1.5,
+            {ease: FlxEase.quadInOut}
+        );
+    }
+}
+
+override function onNoteHit(event:HitNoteScriptEvent):Void
+{
+    super.onNoteHit(event);
+
+    if (!isTargetSong()) return;
+    if (yellowGhostChar == null) return;
+    if (yellowGhostChar.alpha <= 0) return;
+    if (event == null || event.note == null || event.note.noteData == null) return;
+
+    if (!event.note.noteData.getMustHitNote()) return;
+
+    var dir:Int = event.note.noteData.getDirection();
+
+    yellowGhostChar.playSingAnimation(dir, false);
+    yellowGhostChar.holdTimer = 0;
+}
+}

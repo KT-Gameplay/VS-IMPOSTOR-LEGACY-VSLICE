@@ -1,0 +1,205 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.data.character.CharacterDataParser;
+import flixel.math.FlxMath;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.addons.display.FlxRuntimeShader;
+import funkin.graphics.FunkinSprite;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.cutscene.CutsceneType;
+import flixel.util.FlxColor;
+
+class HenryStage extends Stage
+{
+    public function new()
+    {
+        super('henry');
+    }
+
+    var reinforceGF = null;
+    var greatestBF = null;
+    var charlesEnter:Bool = false;
+    var dad;
+    var targetX;
+
+    var colorShader:FlxRuntimeShader = null;
+
+    function onCountdownStart(event)
+    {
+        super.onCountdownStart(event);
+
+        LegacyUtils.camSpecialThing([700, 550], [1000, 550]);
+
+        charlesEnter = false;
+        dad = this.getDad();
+        targetX = dad.x + 600;
+        
+        if(PlayState.instance.currentSong.id.toLowerCase() == 'reinforcements' || PlayState.instance.currentSong.id.toLowerCase() == 'armed')
+        {
+            if(this.getCharacter('second-gf') != null) return;
+
+            reinforceGF = CharacterDataParser.fetchCharacter('gf');
+            reinforceGF.x = 876 - reinforceGF.characterOrigin.x;
+            reinforceGF.y = 875 - reinforceGF.characterOrigin.y;
+            reinforceGF.zIndex = this.getGirlfriend().zIndex;
+
+            this.add(reinforceGF);
+            this.characters.set('second-gf', reinforceGF);
+
+            if(PlayState.instance.currentSong.id.toLowerCase() == 'reinforcements') this.getGirlfriend().alpha = 0.001;
+
+            if(PlayState.instance.currentSong.id.toLowerCase() == 'armed') this.getGirlfriend().alpha = (event.eventCanceled) ? 0.001 : 1;
+            
+            this.getGirlfriend().zIndex = 250;
+    
+            this.refresh();
+        }
+
+        if(PlayState.instance.currentSong.id.toLowerCase() == 'greatest-plan')
+        {
+            if(this.getCharacter('second-bf') != null) return;
+
+            greatestBF = CharacterDataParser.fetchCharacter('bf');
+            greatestBF.x = 1291 - greatestBF.characterOrigin.x;
+            greatestBF.y = 964 - greatestBF.characterOrigin.y;
+            greatestBF.zIndex = this.getBoyfriend().zIndex;
+            greatestBF.flipX = false;
+
+            this.add(greatestBF);
+            this.characters.set('second-bf', greatestBF);
+            this.refresh();
+        }
+
+        if(PlayState.instance.currentSong.id.toLowerCase() == 'greatest-plan')
+        {      
+            this.getBoyfriend().playAnimation('intro', true);
+            PlayState.instance.tweenCameraToPosition(1000, 550, 0);
+        }
+
+        if(PlayState.instance.currentSong.id.toLowerCase() == 'armed')
+        {
+            if(event.eventCanceled)
+            {
+                reinforceGF.alpha = 0.001;
+                new FlxTimer().start(3.2, function(tmr:FlxTimer) {
+                    FlxTween.tween(reinforceGF, {alpha: 1}, 1.5);
+                });
+            }
+        }
+
+        colorShader = new FlxRuntimeShader(Assets.getText(Paths.frag('colorSwap-legacy')));
+        colorShader.setFloat('u_hue', 0);
+        colorShader.setFloat('u_saturation', 0);
+        colorShader.setFloat('u_brightness', 0);
+        colorShader.setFloat('u_alpha', 1);
+    }
+
+    function onSongEvent(event)
+    {
+        super.onSongEvent(event);
+
+        switch(event.eventData.eventKind)
+        {
+            case 'enter':
+                charlesEnter = true;
+
+            case 'Ellie Drop':
+                this.getGirlfriend().alpha = 1;
+                this.getGirlfriend().playAnimation('enter', false);
+        }
+    }
+
+    function onStepHit(event)
+    {
+        super.onStepHit(event);
+
+        if(PlayState.instance.currentSong.id.toLowerCase() == 'reinforcements')
+        {
+            if(event.step >= 696) this.getGirlfriend().alpha = 1;
+        }
+    }
+
+    function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        if(charlesEnter) dad.x = FlxMath.lerp(dad.x, targetX, FlxMath.bound(event.elapsed * 2.1, 0, 1));
+    }
+
+    public function outro()
+    {
+        PlayState.instance.resetCamera(false, false, false);
+        PlayState.instance.cancelCameraFollowTween();
+        PlayState.instance.cameraFollowPoint.setPosition(1000, 550);
+
+        this.getBoyfriend().shader = colorShader;
+
+        FlxTween.tween(PlayState.instance.camHUD, {alpha: 0}, 0.7, {ease: FlxEase.quadInOut});
+        FlxG.sound.play(Paths.sound('stage/teleport_sound'));
+
+        new FlxTimer().start(0.45, function(tmr:FlxTimer) {
+            shaderFlash(0, 0.73);
+        });
+
+        new FlxTimer().start(1.28, function(tmr:FlxTimer) {
+            shaderFlash(0.1, 0.55);
+            reinforceGF.shader = colorShader;
+        });
+
+        new FlxTimer().start(1.93, function(tmr:FlxTimer) {
+            shaderFlash(0.2, 0.2);
+        });
+
+        new FlxTimer().start(1.3, function(tmr:FlxTimer) {
+            shaderFlash(0.1, 0.55);
+        });
+
+        new FlxTimer().start(2.23, function(tmr:FlxTimer) {
+            /*if (ClientPrefs.flashing)*/ shaderFlash(0.4, 0.22);
+            //else FlxTween.tween(colorShader, {flash: 1}, 0.47, {ease: FlxEase.expoIn});
+        });
+
+        new FlxTimer().start(2.55, function(tmr:FlxTimer) {
+            shaderFlash(0.8, 0.05);
+        });
+
+        new FlxTimer().start(2.7, function(tmr:FlxTimer) {
+            colorShader.setFloat('u_flash', 1);
+            FlxTween.tween(this.getBoyfriend(), {"scale.y": 0}, 0.7, {ease: FlxEase.expoOut});
+            FlxTween.tween(this.getBoyfriend(), {"scale.x": 3.5}, 0.7, {ease: FlxEase.expoOut});
+        });
+
+        new FlxTimer().start(2.8, function(tmr:FlxTimer) {
+            FlxTween.tween(reinforceGF, {"scale.y": 0}, 0.7, {ease: FlxEase.expoOut});
+            FlxTween.tween(reinforceGF, {"scale.x": 3.5}, 0.7, {ease: FlxEase.expoOut});
+        });
+
+        new FlxTimer().start(4, function(tmr:FlxTimer) {
+            PlayState.instance.resetCamera(false, false, false);
+            PlayState.instance.cancelCameraFollowTween();
+            PlayState.instance.cameraFollowPoint.setPosition(700, 550);
+        });
+
+        new FlxTimer().start(4.5, function(tmr:FlxTimer) {
+            FlxG.camera.fade(FlxColor.BLACK, 1.4, false, function() {
+			var bgSprite = new FunkinSprite(-100, -100);
+			bgSprite.makeSolidColor(2000, 2500, 0xFF000000);
+			bgSprite.cameras = [PlayState.instance.camHUD]; // Show over the HUD.
+			bgSprite.zIndex = 1000000;
+			PlayState.instance.add(bgSprite);
+			PlayState.instance.refresh();
+
+            VideoCutscene.play(Paths.videos('henry/henryEnd'), CutsceneType.ENDING);
+            PlayState.instance.currentSong.scriptSet('hasPlayedEnd', true);
+		}, true);
+	});
+    }
+
+    function shaderFlash(a = 0, b = 0.05)
+    {
+        colorShader.setFloat('u_flash', 1);
+        FlxTween.num(1, a, b, {ease: FlxEase.expoOut}, function(num) {colorShader.setFloat('u_flash', num);});
+    }
+}
