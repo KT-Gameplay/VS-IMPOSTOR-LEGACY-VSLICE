@@ -1,0 +1,136 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+import funkin.modding.events.CountdownScriptEvent;
+import flixel.FlxSprite;
+import flixel.graphics.FlxGraphic;
+import openfl.display.BlendMode;
+
+class Reactor extends Stage
+{
+	var toogusorange:FlxSprite;
+	var toogusblue:FlxSprite;
+	var coreGlow:FlxSprite;
+	var coreRing:FlxSprite;
+	var coreClaw:FlxSprite;
+	var yeahman:FlxSprite;
+
+	public function new()
+	{
+		super('reactor');
+	}
+
+	public override function buildStage():Void
+	{
+		super.buildStage();
+
+		toogusorange = this.getNamedProp('toogusorange');
+		toogusblue = this.getNamedProp('toogusblue');
+		coreGlow = this.getNamedProp('coreGlow');
+		coreRing = this.getNamedProp('coreRing');
+		coreClaw = this.getNamedProp('coreClaw');
+		yeahman = this.getNamedProp('yeahman');
+
+		if (coreRing != null)
+		{
+			coreRing.blend = BlendMode.ADD;
+		}
+
+		if (yeahman != null)
+		{
+			yeahman.blend = BlendMode.ADD;
+		}
+
+		if (coreGlow != null)
+		{
+			coreGlow.animation.play('bop');
+		}
+
+		if (toogusorange != null)
+		{
+			toogusorange.animation.play('bop');
+		}
+
+		if (toogusblue != null)
+		{
+			toogusblue.animation.play('bop');
+		}
+
+		var reactorColor:FlxGraphic = null;
+	}
+
+	public override function onCountdownTick(event:CountdownScriptEvent):Void
+	{
+		super.onCountdownTick(event);
+
+		if (event.step % 2 == 0)
+		{
+			if (toogusorange != null)
+			{
+				toogusorange.animation.play('bop', true);
+			}
+
+			if (toogusblue != null)
+			{
+				toogusblue.animation.play('bop', true);
+			}
+		}
+	}
+
+	public override function onBeatHit(event:SongTimeScriptEvent):Void
+	{
+		super.onBeatHit(event);
+
+		if (toogusorange != null)
+		{
+			toogusorange.animation.play('bop', true);
+		}
+
+		if (toogusblue != null)
+		{
+			toogusblue.animation.play('bop', true);
+		}
+
+		if (yeahman != null)
+		{
+			yeahman.animation.play('bop', true);
+		}
+
+		if (event.beat % 2 == 0)
+		{
+			if (coreGlow != null)
+			{
+				coreGlow.animation.play('bop', true);
+			}
+		}
+	}
+
+	public override function onSongStart(event:ScriptEvent):Void
+	{
+		super.onSongStart(event);
+
+		if (PlayState.instance != null)
+		{
+			if (PlayState.instance.boyfriend != null)
+			{
+				PlayState.instance.boyfriend.color = 0xFFE080A6;
+			}
+
+			if (PlayState.instance.gf != null)
+			{
+				PlayState.instance.gf.color = 0xFFE080A6;
+			}
+
+			if (PlayState.instance.dad != null)
+			{
+				PlayState.instance.dad.color = 0xFFE080A6;
+			}
+
+			if (PlayState.instance.pet != null)
+			{
+				PlayState.instance.pet.color = 0xFFE080A6;
+			}
+		}
+	}
+}

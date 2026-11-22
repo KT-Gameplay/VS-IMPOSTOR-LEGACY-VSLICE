@@ -20,7 +20,7 @@
 		"id": "henry",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/henry/charles",
+	"assetPath": "characters/henry/charles",
 	"animations": [
 		{
 			"frameIndices": [],

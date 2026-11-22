@@ -53,7 +53,7 @@ class ClassicCameraZoomEvent extends SongEvent
   {
         name: 'mode',
         title: 'Mode',
-        defaultValue: 'direct',
+        defaultValue: 'stage',
         type: 'enum',
         keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
       }];
@@ -113,7 +113,6 @@ class ClassicCameraModule extends Module
   {
     var targetZoom:Float = zoom * (direct ? FlxCamera.defaultZoom : PlayState.instance.stageZoom);
 
-    PlayState.instance.cancelCameraZoomTween();
     cameraZoomLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
     targetCameraZoom = targetZoom;
   }

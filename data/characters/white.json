@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "name": "white",
+  "assetPath": "characters/story/white/white",
+  "singTime": 6,
+  "scale": 1,
+  "cameraOffsets": [248,97],
+  "healthIcon": {
+    "id": "white",
+    "scale": 1,
+    "isPixel": false
+  },
+  "renderType": "multianimateatlas",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "right",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singUP-alt",
+      "prefix": "alUp",
+      "fps": 24,
+      "looped": false
+    },
+    {
+      "name": "singDOWN-alt",
+      "prefix": "alDown",
+      "fps": 24,
+      "looped": false
+    }
+  ]
+}

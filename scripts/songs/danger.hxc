@@ -1,0 +1,122 @@
+import funkin.play.PlayState;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.song.Song;
+import funkin.Conductor;
+import funkin.FunkinMemory;
+import funkin.Paths;
+import flixel.tweens.FlxEase;
+
+class DangerSong extends Song
+{
+public function new()
+{
+super('danger');
+
+    preloadAssets();
+}
+
+var hasPlayedIntro:Bool = false;
+
+function preloadAssets()
+{
+    var images:Array<String> = [
+        'stage/airship/danger/sky',
+        'stage/airship/danger/farthestClouds',
+        'stage/airship/danger/backClouds',
+        'stage/airship/danger/airship',
+        'stage/airship/danger/airshipFan',
+        'stage/airship/danger/bigCloud',
+        'stage/airship/danger/frontClouds',
+        'stage/airship/danger/screamsky',
+        'stage/airship/danger/fgPlatform',
+        'stage/airship/danger/dangerboards',
+        'stage/airship/danger/speedlines',
+        'characters/story/black/danger/spritemap1',
+        'characters/bf/bfRun/spritemap1',
+        'characters/gf/spritemap1'
+    ];
+
+    for (img in images)
+    {
+        FunkinMemory.cacheTexture(Paths.image(img));
+    }
+
+    FunkinMemory.cacheTexture(Paths.image('icons/icon-black'));
+}
+
+function zoomTo(zoom:Float)
+{
+    PlayState.instance.tweenCameraZoom(zoom, 0.6, true, FlxEase.quadOut);
+}
+
+function onCountdownStart(event)
+{
+    super.onCountdownStart(event);
+
+    if (hasPlayedIntro) return;
+    hasPlayedIntro = true;
+
+    event.cancel();
+    VideoCutscene.play(Paths.videos('week3/danger'), CutsceneType.STARTING);
+
+    PlayState.instance.tweenCameraToPosition(1634.05, -54.3, 0);
+    LegacyUtils.camSpecialThing([1634.05, -54.3], [1734.05, -54.3]);
+    zoomTo(0.3);
+}
+
+function onBeatHit(event)
+{
+    super.onBeatHit(event);
+
+    switch (event.beat)
+    {
+        case 1:
+            LegacyUtils.camSpecialThing([1634.05, -54.3], [1634.05, -54.3]);
+            zoomTo(0.3);
+        case 64:
+            LegacyUtils.camSpecialThing([800, 150], [1200, 150]);
+            zoomTo(0.4);
+        case 96:
+            LegacyUtils.camSpecialThing([700, 150], [1200, 150]);
+            zoomTo(0.6);
+        case 128:
+            LegacyUtils.camSpecialThing([800, 150], [1200, 150]);
+            zoomTo(0.4);
+        case 144:
+            LegacyUtils.camSpecialThing([800, 150], [1200, 150]);
+            zoomTo(0.5);
+        case 152:
+            LegacyUtils.camSpecialThing([800, 150], [1200, 150]);
+            zoomTo(0.6);
+        case 154:
+            LegacyUtils.camSpecialThing([600, 150], [600, 150]);
+            zoomTo(0.6);
+        case 156:
+            LegacyUtils.camSpecialThing([450, 150], [450, 150]);
+            zoomTo(0.8);
+        case 158:
+            PlayState.instance.camGame.shake(0.01, (Conductor.instance.stepLengthMs / 1000) * 4);
+            LegacyUtils.camSpecialThing([450, 150], [450, 150]);
+            zoomTo(0.6);
+        case 160:
+            LegacyUtils.camSpecialThing([800, 150], [1200, 150]);
+            zoomTo(0.4);
+        case 192:
+            LegacyUtils.camSpecialThing([700, 150], [1200, 150]);
+            zoomTo(0.6);
+        case 256:
+            LegacyUtils.camSpecialThing([800, 150], [1200, 150]);
+            zoomTo(0.4);
+        case 288:
+            LegacyUtils.camSpecialThing([700, 150], [1200, 150]);
+            zoomTo(0.6);
+        case 320:
+            LegacyUtils.camSpecialThing([1634.05, -54.3], [1634.05, -54.3]);
+            zoomTo(0.3);
+        case 384:
+            LegacyUtils.camSpecialThing([700, 150], [1200, 150]);
+            zoomTo(0.6);
+    }
+}
+}

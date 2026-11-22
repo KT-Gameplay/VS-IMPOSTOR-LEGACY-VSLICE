@@ -5,26 +5,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf",
    "girlfriend": "gf",
-   "opponent": "LIMEGREENWEEKINVSIMPOSTOR",
-   "opponentVocals": [
-    "LIMEGREENWEEKINVSIMPOSTOR"
-   ],
-   "playerVocals": []
+   "opponent": "LIMEGREENWEEKINVSIMPOSTOR"
   },
   "stage": "jads",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 5},
+  "album": "Impostor39d",
   "stickerPack": "default",
   "previewEnd": 0
  },

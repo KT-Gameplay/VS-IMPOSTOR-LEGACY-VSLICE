@@ -6,26 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf",
    "girlfriend": "gf",
-   "opponent": "green-crewmate",
-   "opponentVocals": [
-    "green-crewmate"
-   ],
-   "playerVocals": []
+   "opponent": "greenNotBornYesterdayOnTheLookout"
   },
+  "album": "Impostor2",
   "stage": "toogus",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 5},
   "stickerPack": "default",
   "previewEnd": 0
  },

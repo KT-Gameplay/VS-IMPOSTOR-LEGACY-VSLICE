@@ -1,0 +1,418 @@
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import flixel.FlxSprite;
+import flixel.util.FlxTimer;
+import flixel.text.FlxTextBorderStyle;
+import flixel.group.FlxSpriteGroup;
+import flixel.text.FlxText;
+import funkin.PlayerSettings;
+import flixel.FlxG;
+import funkin.Highscore;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.modding.events.CountdownScriptEvent;
+import funkin.modding.events.NoteScriptEvent;
+import funkin.Paths;
+
+class DefeatSong extends Song
+{
+var missLimitCount:Int = 5;
+var missCount:Int = 0;
+var curSelection:Int = 0;
+var onAmongDeathSubstate:Bool = true;
+var maximumMissLimit:Int = 5;
+var hasEnteredMissSelection:Bool = false;
+var isDeadFlag:Bool = false;
+
+var blackBG:FlxSprite;
+var dummySprites:FlxSpriteGroup;
+var missAmountArrow:FlxSprite;
+var missTxt:FlxText;
+
+public function new()
+{
+	super('defeat');
+}
+
+override function onCreate(event:ScriptEvent):Void
+{
+	super.onCreate(event);
+
+	missLimitCount = 5;
+	missCount = 0;
+	curSelection = 0;
+	onAmongDeathSubstate = true;
+	maximumMissLimit = 5;
+	hasEnteredMissSelection = false;
+	isDeadFlag = false;
+}
+
+override function onCountdownStart(event:CountdownScriptEvent):Void
+{
+	super.onCountdownStart(event);
+
+	if (PlayState.instance != null && PlayState.instance.scoreText != null)
+	{
+		PlayState.instance.scoreText.color = 0xFFFF0000;
+	}
+
+	missCount = 0;
+	isDeadFlag = false;
+
+	if (onAmongDeathSubstate)
+	{
+		AmongDeathSubstate(event);
+	}
+}
+
+override function onNoteMiss(event:NoteScriptEvent):Void
+{
+	super.onNoteMiss(event);
+
+	if (event == null)
+	{
+		return;
+	}
+
+	if (PlayState.instance == null)
+	{
+		return;
+	}
+
+	if (isDeadFlag)
+	{
+		return;
+	}
+
+	missCount++;
+
+	if (missCount > missLimitCount)
+	{
+		isDeadFlag = true;
+		event.healthChange = -999;
+		event.playSound = true;
+		PlayState.instance.health = -1;
+	}
+}
+
+override function onUpdate(event:UpdateScriptEvent):Void
+{
+	super.onUpdate(event);
+
+	if (PlayState.instance == null)
+	{
+		return;
+	}
+
+	if (PlayState.instance.healthBar != null)
+	{
+		PlayState.instance.healthBar.visible = false;
+	}
+
+	if (PlayState.instance.healthBarBG != null)
+	{
+		PlayState.instance.healthBarBG.visible = false;
+	}
+
+	if (!isDeadFlag)
+	{
+		missLimitManager();
+	}
+
+	if (!onAmongDeathSubstate)
+	{
+		return;
+	}
+
+	var rightP:Bool = false;
+	var leftP:Bool = false;
+	var accepted:Bool = false;
+
+	if (PlayerSettings.player1 != null && PlayerSettings.player1.controls != null)
+	{
+		rightP = PlayerSettings.player1.controls.UI_RIGHT_P;
+		leftP = PlayerSettings.player1.controls.UI_LEFT_P;
+		accepted = PlayerSettings.player1.controls.ACCEPT;
+	}
+
+	var currentDummy:FlxSprite = null;
+
+	if (dummySprites != null)
+	{
+		dummySprites.forEach(function(spr:FlxSprite)
+		{
+			if (spr.ID == curSelection)
+			{
+				currentDummy = spr;
+			}
+		});
+	}
+
+	if ((accepted && hasEnteredMissSelection) || (FlxG.onMobile && currentDummy != null && TouchUtil.overlapsComplex(currentDummy) && TouchUtil.justPressed && hasEnteredMissSelection))
+	{
+		hasEnteredMissSelection = false;
+		FlxG.sound.play(Paths.sound('kill'), 0.9);
+
+		if (missTxt != null)
+		{
+			missTxt.alpha = 0;
+		}
+
+		if (missAmountArrow != null)
+		{
+			missAmountArrow.alpha = 0;
+		}
+
+		if (dummySprites != null)
+		{
+			dummySprites.forEach(function(spr:FlxSprite)
+			{
+				spr.alpha = 0;
+			});
+		}
+
+		if (blackBG != null)
+		{
+			blackBG.alpha = 1;
+		}
+
+		new FlxTimer().start(1.0, function(tmr:FlxTimer)
+		{
+			if (blackBG != null)
+			{
+				blackBG.alpha = 0;
+			}
+
+			onAmongDeathSubstate = false;
+
+			if (PlayState.instance != null)
+			{
+				if (PlayState.instance.camGame != null)
+				{
+					PlayState.instance.camGame.alpha = 1;
+				}
+
+				if (PlayState.instance.camHUD != null)
+				{
+					PlayState.instance.camHUD.alpha = 1;
+				}
+
+				PlayState.instance.disableKeys = false;
+				PlayState.instance.startCountdown();
+			}
+		});
+	}
+
+	if (rightP || (FlxG.onMobile && SwipeUtil.justSwipedRight))
+	{
+		if (hasEnteredMissSelection)
+		{
+			changeMissAmount(1);
+		}
+	}
+
+	if (leftP || (FlxG.onMobile && SwipeUtil.justSwipedLeft))
+	{
+		if (hasEnteredMissSelection)
+		{
+			changeMissAmount(-1);
+		}
+	}
+}
+
+function missLimitManager():Void
+{
+	if (PlayState.instance == null)
+	{
+		return;
+	}
+
+	if (isDeadFlag)
+	{
+		return;
+	}
+
+	if (missCount > missLimitCount)
+	{
+		isDeadFlag = true;
+		PlayState.instance.health = -1;
+		return;
+	}
+
+	PlayState.instance.health = 1;
+}
+
+function AmongDeathSubstate(event:CountdownScriptEvent):Void
+{
+	if (PlayState.instance == null)
+	{
+		return;
+	}
+
+	if (PlayState.instance.camGame != null)
+	{
+		PlayState.instance.camGame.alpha = 0;
+	}
+
+	if (PlayState.instance.camHUD != null)
+	{
+		PlayState.instance.camHUD.alpha = 0;
+	}
+
+	if (FlxG.sound.music != null)
+	{
+		FlxG.sound.music.fadeOut(2);
+	}
+
+	blackBG = new FlxSprite().makeGraphic(1920, 1080, FlxColor.BLACK);
+	blackBG.alpha = 0;
+	PlayState.instance.add(blackBG);
+	blackBG.cameras = [PlayState.instance.camCutscene];
+
+	dummySprites = new FlxSpriteGroup();
+
+	var spacing:Int = 180;
+
+	for (i in 0...maximumMissLimit + 1)
+	{
+		var dummypostor:FlxSprite = new FlxSprite(i * spacing, 300).loadGraphic(Paths.image('menu/freeplay/miss/dummypostor' + (i + 1)));
+		dummypostor.scale.set(0.8, 0.8);
+		dummypostor.updateHitbox();
+		dummypostor.alpha = 0;
+		dummypostor.ID = i;
+		dummySprites.add(dummypostor);
+	}
+
+	if (dummySprites.members != null && dummySprites.members.length > maximumMissLimit)
+	{
+		var last:FlxSprite = dummySprites.members[maximumMissLimit];
+
+		if (last != null)
+		{
+			var totalWidth:Float = last.x + last.width;
+			var offsetX:Float = (FlxG.width - totalWidth) / 2;
+
+			dummySprites.forEach(function(spr:FlxSprite)
+			{
+				spr.x += offsetX;
+			});
+		}
+	}
+
+	PlayState.instance.add(dummySprites);
+	dummySprites.cameras = [PlayState.instance.camCutscene];
+
+	missAmountArrow = new FlxSprite(0, 400).loadGraphic(Paths.image('menu/freeplay/miss/missAmountArrow'));
+	missAmountArrow.alpha = 0;
+	PlayState.instance.add(missAmountArrow);
+	missAmountArrow.cameras = [PlayState.instance.camCutscene];
+
+	missTxt = new FlxText(0, 125, FlxG.width, "", 20);
+	missTxt.setFormat(Paths.font("vcr.ttf"), 80, FlxColor.RED, "center", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	missTxt.antialiasing = false;
+	missTxt.scrollFactor.set();
+	missTxt.alpha = 0;
+	missTxt.borderSize = 3;
+	PlayState.instance.add(missTxt);
+	missTxt.cameras = [PlayState.instance.camCutscene];
+
+	changeMissAmount(0);
+	openMissLimit();
+
+	if (event != null)
+	{
+		event.cancelEvent();
+	}
+
+	PlayState.instance.disableKeys = true;
+}
+
+function changeMissAmount(change:Int):Void
+{
+	if (change != 0)
+	{
+		FlxG.sound.play(Paths.sound('hover'), 0.5);
+	}
+
+	curSelection += change;
+
+	if (curSelection > maximumMissLimit)
+	{
+		curSelection = 0;
+	}
+
+	if (curSelection < 0)
+	{
+		curSelection = maximumMissLimit;
+	}
+
+	missLimitCount = maximumMissLimit - curSelection;
+
+	if (dummySprites != null)
+	{
+		dummySprites.forEach(function(spr:FlxSprite)
+		{
+			var selected:Bool = spr.ID == curSelection;
+			var mult:Float = selected ? 1.0 : 0.0;
+			var inv:Float = selected ? 0.0 : 1.0;
+
+			spr.setColorTransform(mult, mult, mult, spr.alpha, inv * 49, inv * 36, inv * 44);
+
+			if (selected && missAmountArrow != null)
+			{
+				missAmountArrow.setPosition(spr.x + (spr.width - missAmountArrow.width) / 2, spr.y - 25);
+			}
+		});
+	}
+
+	if (missTxt != null)
+	{
+		if (missLimitCount == 1)
+		{
+			missTxt.text = missLimitCount + ' MISS';
+		}
+		else
+		{
+			missTxt.text = missLimitCount + ' MISSES';
+		}
+
+		missTxt.x = ((FlxG.width / 2) - (missTxt.width / 2));
+	}
+}
+
+function openMissLimit():Void
+{
+	if (blackBG != null)
+	{
+		FlxTween.tween(blackBG, {alpha: 1}, 0.25, {ease: FlxEase.circIn});
+	}
+
+	if (missAmountArrow != null)
+	{
+		FlxTween.tween(missAmountArrow, {alpha: 1}, 0.25, {ease: FlxEase.circIn});
+	}
+
+	if (missTxt != null)
+	{
+		FlxTween.tween(missTxt, {alpha: 1}, 0.25, {ease: FlxEase.circIn});
+	}
+
+	if (dummySprites != null)
+	{
+		dummySprites.forEach(function(spr:FlxSprite)
+		{
+			FlxTween.tween(spr, {alpha: 1}, 0.25, {ease: FlxEase.circIn});
+		});
+	}
+
+	new FlxTimer().start(0.2, function(tmr:FlxTimer)
+	{
+		hasEnteredMissSelection = true;
+	});
+}
+}

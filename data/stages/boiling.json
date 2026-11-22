@@ -62,7 +62,7 @@
    "zIndex": 1
   },
   "dad": {
-   "cameraOffsets": [150, -250],
+   "cameraOffsets": [70, -250],
    "position": [1685.6, 869.6],
    "zIndex": 1
   },
@@ -73,5 +73,5 @@
    "zIndex": 100
   }
  },
- "cameraZoom": 0.65
+ "cameraZoom": 0.68
 }

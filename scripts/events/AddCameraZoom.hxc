@@ -13,7 +13,7 @@ class AddCameraZoomEvent extends SongEvent
 {
   public function new()
   {
-    super('AddCameraZoom', {
+    super('Add Camera Zoom', {
       processOldEvents: true
     });
   }
@@ -43,6 +43,7 @@ class AddCameraZoomEvent extends SongEvent
       name: 'intensity',
       title: 'HUD Zoom Intensity',
       defaultValue: 0.03,
+      min: 0,
       step: 0.1,
       type: 'float',
       units: 'x'
@@ -51,6 +52,7 @@ class AddCameraZoomEvent extends SongEvent
       name: 'gameIntensity',
       title: 'Camera Zoom Intensity',
       defaultValue: 0.015,
+      min: 0,
       step: 0.1,
       type: 'float',
       units: 'x'

@@ -1,0 +1,260 @@
+import flixel.tweens.FlxEase;
+import funkin.graphics.FunkinSprite;
+import flixel.tweens.FlxTween;
+import funkin.Paths;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxMath;
+import flixel.util.FlxTimer;
+import funkin.Conductor;
+import funkin.modding.events.CountdownScriptEvent;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+
+class MeltdownSong extends Song
+{
+	var flashSprite:FlxSprite;
+	var hasPlayedCutscene:Bool;
+	var hasPlayedEnding:Bool;
+
+	public function new()
+	{
+		super('meltdown');
+		hasPlayedCutscene = false;
+		hasPlayedEnding = false;
+	}
+
+	public override function onCountdownStart(event:CountdownScriptEvent):Void
+	{
+		super.onCountdownStart(event);
+
+		if (!PlayStatePlaylist.isStoryMode)
+		{
+			hasPlayedCutscene = true;
+		}
+
+		if (!hasPlayedCutscene)
+		{
+			hasPlayedCutscene = true;
+			event.cancel();
+			startIntroVideo();
+		}
+
+		flashSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFB30000);
+		flashSprite.screenCenter();
+		flashSprite.alpha = 0.001;
+		flashSprite.cameras = [PlayState.instance.camCutscene];
+		PlayState.instance.add(flashSprite);
+	}
+
+	function startIntroVideo()
+	{
+		VideoCutscene.play(Paths.videos('week1/meltdown'), CutsceneType.STARTING);
+	}
+
+	public override function onSongEnd(event:ScriptEvent):Void
+	{
+		super.onSongEnd(event);
+
+		if (hasPlayedEnding) return;
+
+		hasPlayedEnding = true;
+
+		if (!PlayStatePlaylist.isStoryMode) return;
+
+		event.cancel();
+
+		if (FlxG.sound.music != null)
+		{
+			FlxG.sound.music.fadeOut(1);
+		}
+
+		startEndingVideo();
+	}
+
+	function startEndingVideo()
+	{
+		VideoCutscene.play(Paths.videos('week1/post-week1'), CutsceneType.ENDING);
+	}
+
+	function onSongRetry(event:ScriptEvent)
+	{
+		super.onSongRetry(event);
+		hasPlayedCutscene = true;
+		hasPlayedEnding = false;
+	}
+
+	function onCreate(event:ScriptEvent):Void
+	{
+		super.onCreate(event);
+		hasPlayedCutscene = false;
+		hasPlayedEnding = false;
+	}
+
+	function onUpdate(event:UpdateScriptEvent)
+	{
+		super.onUpdate(event);
+
+		if (flashSprite?.alpha != 0.001)
+			flashSprite?.alpha = FlxMath.lerp(flashSprite?.alpha, 0.001, event.elapsed * 3);
+	}
+
+	function reactorBeep()
+	{
+		if (PlayState.instance == null) return;
+		flashSprite.alpha = 0.3;
+	}
+
+	function playMeltdownVideo()
+	{
+		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
+		black.scrollFactor.set();
+		black.cameras = [PlayState.instance.camCutscene];
+		PlayState.instance.add(black);
+		VideoCutscene.play(Paths.videos('week1/meltdownEnd'), CutsceneType.MIDSONG);
+	}
+
+	function addCameraZoom(gameIntensity:Float = 0.015, hudIntensity:Float = 0.03)
+	{
+		if (PlayState.instance == null) return;
+		PlayState.instance.camHUD.zoom += hudIntensity;
+		PlayState.instance.cameraBopMultiplier = 1 + gameIntensity;
+	}
+
+	override function onStepHit(event:SongTimeScriptEvent)
+	{
+		super.onStepHit(event);
+
+		switch(event.step)
+		{
+			case 0:
+				reactorBeep();
+				addCameraZoom(0, 0);
+			case 32:
+				reactorBeep();
+				addCameraZoom(0, 0);
+			case 64:
+				reactorBeep();
+				addCameraZoom(0, 0);
+			case 96:
+				reactorBeep();
+				addCameraZoom(0, 0);
+			case 128:
+				reactorBeep();
+			case 144:
+				reactorBeep();
+			case 160:
+				reactorBeep();
+			case 176:
+				reactorBeep();
+			case 192:
+				reactorBeep();
+			case 208:
+				reactorBeep();
+			case 224:
+				reactorBeep();
+			case 240:
+				reactorBeep();
+			case 256:
+				reactorBeep();
+			case 272:
+				reactorBeep();
+			case 288:
+				reactorBeep();
+			case 304:
+				reactorBeep();
+			case 320:
+				reactorBeep();
+			case 336:
+				reactorBeep();
+			case 352:
+				reactorBeep();
+			case 368:
+				reactorBeep();
+			case 384:
+				reactorBeep();
+			case 400:
+				reactorBeep();
+			case 416:
+				reactorBeep();
+			case 432:
+				reactorBeep();
+			case 448:
+				reactorBeep();
+			case 464:
+				reactorBeep();
+			case 480:
+				reactorBeep();
+			case 496:
+				reactorBeep();
+			case 512:
+				reactorBeep();
+			case 544:
+				reactorBeep();
+			case 576:
+				reactorBeep();
+			case 608:
+				reactorBeep();
+			case 640:
+				reactorBeep();
+			case 672:
+				reactorBeep();
+			case 704:
+				reactorBeep();
+			case 736:
+				reactorBeep();
+			case 768:
+				reactorBeep();
+			case 784:
+				reactorBeep();
+			case 800:
+				reactorBeep();
+			case 816:
+				reactorBeep();
+			case 832:
+				reactorBeep();
+			case 848:
+				reactorBeep();
+			case 864:
+				reactorBeep();
+			case 880:
+				reactorBeep();
+			case 896:
+				reactorBeep();
+			case 912:
+				reactorBeep();
+			case 928:
+				reactorBeep();
+			case 944:
+				reactorBeep();
+			case 960:
+				reactorBeep();
+			case 976:
+				reactorBeep();
+			case 992:
+				reactorBeep();
+			case 1008:
+				reactorBeep();
+			case 1024:
+				reactorBeep();
+			case 1056:
+				reactorBeep();
+			case 1088:
+				reactorBeep();
+			case 1120:
+				reactorBeep();
+			case 1152:
+				reactorBeep();
+				addCameraZoom(0.045, 0.06);
+			case 1156:
+				reactorBeep();
+				playMeltdownVideo();
+		}
+	}
+}

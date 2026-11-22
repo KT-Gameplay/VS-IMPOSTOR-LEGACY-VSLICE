@@ -1,0 +1,87 @@
+{
+  "version": "1.0.0",
+  "name": "red",
+  "assetPath": "characters/story/red/red",
+  "startingAnimation": "idle",
+  "singTime": 6,
+  "scale": 1,
+  "flipX": false,
+  "offsets": [
+    50,
+    -30
+  ],
+  "cameraOffsets": [
+    130,
+    670
+  ],
+  "healthIcon": {
+    "id": "red",
+    "scale": 1,
+    "flipX": false,
+    "isPixel": false
+  },
+  "healthbarColors": [
+    161,
+    161,
+    161
+  ],
+  "renderType": "multianimateatlas",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "animations/impostor idle",
+      "fps": 24,
+      "animType": "symbol",
+      "looped": false,
+      "offsets": [
+        102,
+        -257
+      ]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "animations/impostor right",
+      "fps": 24,
+      "animType": "symbol",
+      "looped": false,
+      "offsets": [
+        -47,
+        -294
+      ]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "animations/impostor down",
+      "fps": 24,
+      "animType": "symbol",
+      "looped": false,
+      "offsets": [
+        80,
+        -225
+      ]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "animations/imposter left",
+      "fps": 24,
+      "animType": "symbol",
+      "looped": false,
+      "offsets": [
+        264,
+        -283
+      ]
+    },
+    {
+      "name": "singUP",
+      "prefix": "animations/impostor up2",
+      "fps": 24,
+      "animType": "symbol",
+      "looped": false,
+      "offsets": [
+        -3,
+        -234
+      ]
+    }
+  ]
+}

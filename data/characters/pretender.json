@@ -20,7 +20,7 @@
 		"id": "pretenderpink",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/triple/pink/pretender",
+	"assetPath": "characters/triple/pink/pretender",
 	"animations": [
 		{
 			"frameIndices": [],

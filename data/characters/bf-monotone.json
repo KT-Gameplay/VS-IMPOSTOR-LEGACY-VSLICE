@@ -1,0 +1,75 @@
+{
+	"version": "1.0.0",
+	"name": "bf-monotone",
+	"assetPath": "characters/story/monotone/boyfriend",
+	"flipX": false,
+	"renderType": "multisparrow",
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		-400,
+		-50
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 6,
+	"scale": 1,
+	"animations": [
+		{
+			"name": "idle",
+			"prefix": "Bf idle",
+			"offsets": [
+				-12,
+				-180
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "BF right",
+			"offsets": [
+				-51,
+				-193
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "BF down",
+			"offsets": [
+				-9,
+				-217
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "BF left",
+			"offsets": [
+				9,
+				-184
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUP",
+			"prefix": "BF up",
+			"offsets": [
+				-20,
+				-168
+			],
+			"looped": false,
+			"fps": 24
+		}
+	]
+}

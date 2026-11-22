@@ -6,25 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf",
    "girlfriend": "gf",
-   "opponent": "nuzzus",
-   "opponentVocals": [
-    "nuzzus"
-   ],
-   "playerVocals": []
+   "opponent": "nuzzus"
   },
   "stage": "nuzzus",
   "noteStyle": "pixelImpostor",
-  "ratings": {
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 5},
+  "album": "Impostor36",
   "stickerPack": "default",
   "previewEnd": 0
  },

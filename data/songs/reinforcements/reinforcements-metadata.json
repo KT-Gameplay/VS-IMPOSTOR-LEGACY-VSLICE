@@ -6,27 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf",
    "girlfriend": "ellie",
-   "opponent": "henry",
-   "opponentVocals": [
-    "henry"
-   ],
-   "playerVocals": []
+   "opponent": "henry"
   },
   "stage": "henry",
   "noteStyle": "impostor",
-  "ratings": {
-   "easy": 0,
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 5},
+  "album": "Impostor26",
   "stickerPack": "default",
   "previewEnd": 0
  },

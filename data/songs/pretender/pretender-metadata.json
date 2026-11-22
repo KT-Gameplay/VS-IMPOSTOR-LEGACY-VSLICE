@@ -6,26 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "pretender",
    "girlfriend": "gfmira",
-   "opponent": "grey",
-   "opponentVocals": [
-    "grey"
-   ],
-   "playerVocals": []
+   "opponent": "greythreat"
   },
   "stage": "pretender",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 6},
+  "album": "Impostor12",
   "stickerPack": "default",
   "previewEnd": 0
  },

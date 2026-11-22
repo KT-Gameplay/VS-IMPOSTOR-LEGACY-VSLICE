@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="foe.png" width="870" height="988">
+	<SubTexture name="clowfoe0000" x="1" y="1" width="448" height="486" frameX="-0" frameY="-17" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0001" x="1" y="1" width="448" height="486" frameX="-0" frameY="-17" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0002" x="424" y="508" width="445" height="479" frameX="-1" frameY="-24" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0003" x="424" y="508" width="445" height="479" frameX="-1" frameY="-24" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0004" x="1" y="490" width="420" height="495" frameX="-16" frameY="-8" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0005" x="1" y="490" width="420" height="495" frameX="-16" frameY="-8" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0006" x="452" y="1" width="408" height="504" frameX="-23" frameY="-0" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0007" x="452" y="1" width="408" height="504" frameX="-23" frameY="-0" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0008" x="1" y="1" width="448" height="486" frameX="-0" frameY="-17" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0009" x="1" y="1" width="448" height="486" frameX="-0" frameY="-17" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0010" x="424" y="508" width="445" height="479" frameX="-1" frameY="-24" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0011" x="424" y="508" width="445" height="479" frameX="-1" frameY="-24" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0012" x="1" y="490" width="420" height="495" frameX="-16" frameY="-8" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0013" x="1" y="490" width="420" height="495" frameX="-16" frameY="-8" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0014" x="452" y="1" width="408" height="504" frameX="-23" frameY="-0" frameWidth="448" frameHeight="504"/>
+	<SubTexture name="clowfoe0015" x="452" y="1" width="408" height="504" frameX="-23" frameY="-0" frameWidth="448" frameHeight="504"/>
+</TextureAtlas>

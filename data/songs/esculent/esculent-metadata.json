@@ -6,26 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf",
    "girlfriend": "gf",
-   "opponent": "esculent",
-   "opponentVocals": [
-    "esculent"
-   ],
-   "playerVocals": []
+   "opponent": "esculent"
   },
   "stage": "esculent",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 7},
+  "album": "Impostor36d",
   "stickerPack": "default",
   "previewEnd": 0
  },

@@ -20,7 +20,7 @@
 		"id": "maroon",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/triple/maroon/maroon",
+	"assetPath": "characters/triple/maroon/maroon",
 	"animations": [
 		{
 			"frameIndices": [],

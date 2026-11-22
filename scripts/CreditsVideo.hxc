@@ -1,0 +1,143 @@
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.credits.CreditsState;
+import funkin.graphics.video.FunkinVideoSprite;
+import funkin.modding.module.Module;
+import funkin.modding.events.StateChangeScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.save.Save;
+import funkin.graphics.FunkinSprite;
+import funkin.Paths;
+import flixel.FlxG;
+
+using StringTools;
+
+class CreditsVideo extends Module
+{
+  final VIDEO_PATH:String = 'creditsLEGACY';
+
+  public var vid:FunkinVideoSprite;
+  public var vidBG:FunkinSprite;
+
+  var playingVideo:Bool = false;
+
+  public function new()
+  {
+    super('creditsVideo', 1000, {state: CreditsState});
+  }
+
+  override public function onStateChangeEnd(event:StateChangeScriptEvent):Void
+  {
+    super.onStateChangeEnd(event);
+
+    var bg:FunkinSprite = FunkinSprite.create(0, 0, 'menuDesat');
+    bg.setGraphicSize(FlxG.width);
+    bg.updateHitbox();
+    bg.screenCenter();
+    bg.scrollFactor.set();
+    bg.alpha = 0.5;
+    bg.color = 0xFFB57EDC;
+    event.targetState.insert(0, bg);
+
+    event.targetState.scrollPaused = true;
+    event.targetState.creditsGroup.y += FlxG.height / 4;
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+
+    if (!Save.instance.modOptions.exists('seenCreditsVideo'))
+    {
+      Save.instance.modOptions.set('seenCreditsVideo', true);
+      Save.instance.flush();
+    }
+
+    startVideo();
+  }
+
+  public function startVideo():Void
+  {
+    vidBG = new FunkinSprite();
+    vidBG.makeSolidColor(FlxG.width, FlxG.height, 0xFF000000);
+    FlxG.state.add(vidBG);
+
+    vid = new FunkinVideoSprite();
+    playingVideo = true;
+
+    if (vid != null)
+    {
+      vid.bitmap.onEncounteredError.add((msg:String) -> {
+        trace('[VLC] Encountered an error: $msg');
+        stopVideo();
+      });
+
+      vid.bitmap.onEndReached.add(stopVideo);
+
+      vid.bitmap.onFormatSetup.add(() -> {
+        vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
+        vid.updateHitbox();
+        vid.screenCenter();
+      });
+
+      FlxG.state.add(vid);
+
+      var filePath:String = Paths.videos(VIDEO_PATH);
+      if (vid.load(filePath)) vid.play();
+    }
+    else
+    {
+      trace('ALERT: Video is null! Could not play credits video!');
+      stopVideo();
+    }
+  }
+
+  public function stopVideo():Void
+  {
+    if (vid != null)
+    {
+      vid.stop();
+      playingVideo = false;
+    }
+
+    FlxG.switchState(new MainMenuState());
+  }
+
+  override public function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+    if (vid != null && vid.bitmap != null)
+    {
+      var pressingEnter:Bool = FlxG.keys.pressed.ENTER || FlxG.keys.pressed.SPACE;
+
+      if (playingVideo)
+      {
+        vid.bitmap.rate = pressingEnter ? 2 : 1;
+
+        if (FlxG.keys.justPressed.SHIFT) vid.pause();
+        else if (FlxG.keys.justReleased.SHIFT) vid.resume();
+      }
+      else if (pressingEnter)
+      {
+        vid.y -= CreditsState.CREDITS_SCROLL_FAST_SPEED * event.elapsed;
+      }
+      else if (FlxG.keys.pressed.SHIFT)
+      {
+        vid.y -= CreditsState.CREDITS_SCROLL_PAUSE_SPEED * event.elapsed;
+      }
+      else
+      {
+        vid.y -= CreditsState.CREDITS_SCROLL_BASE_SPEED * event.elapsed;
+      }
+
+      if (vidBG != null) vidBG.y = vid.y;
+
+      if (vid.y <= -vid.height)
+      {
+        vid.destroy();
+        vid = null;
+
+        vidBG.destroy();
+        vidBG = null;
+
+        trace('killed video');
+      }
+    }
+  }
+}

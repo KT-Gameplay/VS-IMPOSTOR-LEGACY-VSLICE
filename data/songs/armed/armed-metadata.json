@@ -6,27 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf",
    "girlfriend": "reginald",
-   "opponent": "rhm",
-   "opponentVocals": [
-    "rhm"
-   ],
-   "playerVocals": []
+   "opponent": "rhm"
   },
   "stage": "henry",
   "noteStyle": "impostor",
-  "ratings": {
-   "easy": 0,
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 6},
+  "album": "Impostor27",
   "stickerPack": "default",
   "previewEnd": 0
  },

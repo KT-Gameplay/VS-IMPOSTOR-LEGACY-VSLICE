@@ -132,7 +132,7 @@ class TortureStage extends Stage
 						}
 					});
 				
-				PlayState.instance.tweenCameraZoom(1.1, 0, true);
+				PlayState.instance.currentCameraZoom = 2.1;
 				PlayState.instance.tweenCameraZoom(1.1, 10, true, FlxEase.sineIn);
 
             case 'saw':

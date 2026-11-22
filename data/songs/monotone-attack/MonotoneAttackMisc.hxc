@@ -5,7 +5,6 @@ import flixel.math.FlxMath;
 import funkin.util.Constants;
 import funkin.modding.module.ModuleHandler;
 
-// This script is made especially for the variants.
 class MonotoneAttackMisc extends Module
 {
    public function new()
@@ -13,58 +12,68 @@ class MonotoneAttackMisc extends Module
       super("MonotoneAttackMisc");
    }
 
-   var playerX;
+   var playerX:Float;
 
-    var isOpp:Bool = false;
-    var MAXIMUM_HEALTH:Float = Constants.HEALTH_MAX;
-    var module = null;
+   var isOpp:Bool = false;
+   var MAXIMUM_HEALTH:Float = Constants.HEALTH_MAX;
 
-    function onCountdownStart(event)
-    {
-       super.onCountdownStart(event);
-       isOpp = false;
-       if(PlayState.instance.currentSong.id.toLowerCase() != "monotone-attack") return;
+   function onCountdownStart(event)
+   {
+      super.onCountdownStart(event);
+      isOpp = false;
+      if(PlayState.instance.currentSong.id.toLowerCase() != "monotone-attack") return;
 
-       if(ModuleHandler.getModule('MonotoneAttackScript')?.scriptGet('attackCharacter') == 3)
-       {
-          PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
-          PlayState.instance.currentStage.getDad().initHealthIcon(true);
-       }
+      var attackMod:Dynamic = ModuleHandler.getModule('monotone-attack');
+      var attackCharacter:Int = 0;
+      
+      if(attackMod != null && attackMod.attackCharacter != null)
+      {
+         attackCharacter = attackMod.attackCharacter;
+      }
 
-       if(ModuleHandler.getModule('MonotoneAttackScript')?.scriptGet('attackCharacter') == 1 || ModuleHandler.getModule('MonotoneAttackScript').scriptGet('attackCharacter') == 2)
-       {
-          if(!FlxG.onMobile)
-          {
-             playerX = PlayState.instance.playerStrumline.x;
-             PlayState.instance.playerStrumline.x = PlayState.instance.opponentStrumline.x;
-             PlayState.instance.opponentStrumline.x = playerX;
-          }
-          
-          isOpp = true;
-          PlayState.instance.healthBar.flipX = true;
-          PlayState.instance.currentStage.getBoyfriend()._data.healthIcon.flipX = true;
-          PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
-          PlayState.instance.currentStage.getDad()._data.healthIcon.flipX = true;
-          PlayState.instance.currentStage.getDad().initHealthIcon(true);
-       }
-       else {isOpp = false;}
-    }
+      if(attackCharacter == 3)
+      {
+         PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
+         PlayState.instance.currentStage.getDad().initHealthIcon(true);
+      }
 
-    function onSongRetry(event)
-    {
-       super.onSongRetry(event);
-       if(!isOpp) return;
+      if(attackCharacter == 1 || attackCharacter == 2)
+      {
+         if(!FlxG.onMobile)
+         {
+            playerX = PlayState.instance.playerStrumline.x;
+            PlayState.instance.playerStrumline.x = PlayState.instance.opponentStrumline.x;
+            PlayState.instance.opponentStrumline.x = playerX;
+         }
+         
+         isOpp = true;
+         PlayState.instance.healthBar.flipX = true;
+         PlayState.instance.currentStage.getBoyfriend()._data.healthIcon.flipX = true;
+         PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
+         PlayState.instance.currentStage.getDad()._data.healthIcon.flipX = true;
+         PlayState.instance.currentStage.getDad().initHealthIcon(true);
+      }
+      else 
+      {
+         isOpp = false;
+      }
+   }
 
-        if(!FlxG.onMobile)
-          {
-             playerX = PlayState.instance.playerStrumline.x;
-             PlayState.instance.playerStrumline.x = PlayState.instance.opponentStrumline.x;
-             PlayState.instance.opponentStrumline.x = playerX;
-          }
-    }
+   function onSongRetry(event)
+   {
+      super.onSongRetry(event);
+      if(!isOpp) return;
 
-    function onUpdate(event)
-    {
+      if(!FlxG.onMobile)
+      {
+         playerX = PlayState.instance.playerStrumline.x;
+         PlayState.instance.playerStrumline.x = PlayState.instance.opponentStrumline.x;
+         PlayState.instance.opponentStrumline.x = playerX;
+      }
+   }
+
+   function onUpdate(event)
+   {
       if(PlayState.instance == null) return;
       super.onUpdate(event);
       if(PlayState.instance.currentSong.id.toLowerCase() != "monotone-attack") return;
@@ -77,10 +86,10 @@ class MonotoneAttackMisc extends Module
       PlayState.instance.iconP1.updateHealthIcon(PlayState.instance.health);
 
       PlayState.instance.iconP1.x = PlayState.instance.healthBar.x
-          + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 0, 100) * 0.01))
-          - (PlayState.instance.iconP1.width - 26);
+         + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 0, 100) * 0.01))
+         - (PlayState.instance.iconP1.width - 26);
 
       PlayState.instance.iconP2.x = PlayState.instance.healthBar.x
-          + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 0, 100) * 0.01) - 26);
-    }
+         + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 0, 100) * 0.01) - 26);
+   }
 }

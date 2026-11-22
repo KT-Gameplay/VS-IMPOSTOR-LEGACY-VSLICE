@@ -1,0 +1,473 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.Paths;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+import funkin.modding.events.CountdownScriptEvent;
+import funkin.modding.events.NoteScriptEvent;
+import funkin.modding.events.HoldNoteScriptEvent;
+import funkin.modding.events.GhostMissNoteScriptEvent;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.modding.events.SongRetryEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.FlxG;
+
+class Victory extends Stage
+{
+    var crewmates:Array<FlxSprite> = [];
+    var victoryText:FlxText;
+    var overlay:FlxSprite;
+    var stageVoid:FlxSprite;
+    var leftBitches:FlxSprite;
+    var rightBitches:FlxSprite;
+    var lastProcessedStep:Int = -1;
+
+    var chars:Array<Dynamic> = [
+        ['jorsawsee', 320, [200, 450, 643]],
+        ['warchief', 305, [320, 500, 660]],
+        ['jelqer', 344, [330, 520, 680]]
+    ];
+
+    public function new()
+    {
+        super('victory');
+    }
+
+    public override function buildStage():Void
+    {
+        super.buildStage();
+
+        stageVoid = this.getNamedProp('void');
+        overlay = this.getNamedProp('overlay');
+        leftBitches = this.getNamedProp('ghosts');
+        rightBitches = this.getNamedProp('ghosts2');
+
+        for (i in 0...chars.length)
+        {
+            var prop:FlxSprite = new FlxSprite(chars[i][2][0], chars[i][1]);
+            prop.frames = Paths.getSparrowAtlas('stages/jorsawsee/victory/middle_chars');
+            prop.animation.addByPrefix('bop', 'idle' + chars[i][0], 24, false);
+            prop.animation.play('bop');
+            prop.scrollFactor.set(0.8, 0.8);
+            prop.zIndex = -1;
+
+            this.add(prop);
+            crewmates.push(prop);
+        }
+
+        victoryText = new FlxText(280, 30, 0, 'VICTORY');
+        victoryText.setFormat(Paths.font('vcr.ttf'), 195, 0xFF4DFFFF);
+        victoryText.antialiasing = false;
+        victoryText.scrollFactor.set(0.5, 0.5);
+        victoryText.updateHitbox();
+        victoryText.x = 700 - (victoryText.width / 2);
+        this.add(victoryText);
+
+        this.refresh();
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.camHUD.alpha = 0.001;
+            PlayState.instance.camGame.alpha = 0.001;
+            hideHealthBar();
+        }
+
+        moveCrew(0, -1);
+        moveCrew(1, -1);
+        moveCrew(2, 1);
+    }
+
+    public override function onSongStart(event:ScriptEvent):Void
+    {
+        super.onSongStart(event);
+
+        lastProcessedStep = -1;
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.camGame.alpha = 1;
+            PlayState.instance.camHUD.alpha = 0.001;
+            PlayState.instance.health = 2;
+            hideHealthBar();
+        }
+    }
+
+    public override function onUpdate(event:UpdateScriptEvent):Void
+    {
+        super.onUpdate(event);
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.health = 2;
+            PlayState.instance.isPlayerDying = false;
+            PlayState.instance.isGameOverState = false;
+
+            hideHealthBar();
+        }
+    }
+
+    public override function onGameOver(event:ScriptEvent):Void
+    {
+        super.onGameOver(event);
+        event.cancel();
+        
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.health = 2;
+            PlayState.instance.isPlayerDying = false;
+            PlayState.instance.isGameOverState = false;
+        }
+    }
+
+    public override function onNoteMiss(event:NoteScriptEvent):Void
+    {
+        super.onNoteMiss(event);
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.health = 2;
+        }
+    }
+
+    public override function onNoteHoldDrop(event:HoldNoteScriptEvent):Void
+    {
+        super.onNoteHoldDrop(event);
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.health = 2;
+        }
+    }
+
+    public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
+    {
+        super.onNoteGhostMiss(event);
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.health = 2;
+        }
+    }
+
+    public override function onCountdownStep(event:CountdownScriptEvent):Void
+    {
+        super.onCountdownStep(event);
+
+        for (crew in crewmates)
+        {
+            if (crew != null)
+            {
+                crew.animation.play('bop', true);
+            }
+        }
+
+        if (event.step % 2 == 0 && leftBitches != null)
+        {
+            leftBitches.animation.play('bop', true);
+        }
+
+        if (event.step % 2 == 1 && rightBitches != null)
+        {
+            rightBitches.animation.play('bop', true);
+        }
+    }
+
+    public override function onBeatHit(event:SongTimeScriptEvent):Void
+    {
+        super.onBeatHit(event);
+
+        if (crewmates[0] != null)
+        {
+            crewmates[0].animation.play('bop', true);
+        }
+
+        if (crewmates[2] != null)
+        {
+            crewmates[2].animation.play('bop', true);
+        }
+
+        if (event.beat % 2 == 0)
+        {
+            if (crewmates[1] != null)
+            {
+                crewmates[1].animation.play('bop', true);
+            }
+
+            if (overlay != null)
+            {
+                overlay.animation.play('bop', true);
+            }
+
+            if (leftBitches != null)
+            {
+                leftBitches.animation.play('bop', true);
+            }
+        }
+        else
+        {
+            if (rightBitches != null)
+            {
+                rightBitches.animation.play('bop', true);
+            }
+        }
+    }
+
+    public override function onStepHit(event:SongTimeScriptEvent):Void
+    {
+        super.onStepHit(event);
+
+        var currentStep:Int = event.step;
+
+        if (currentStep <= lastProcessedStep)
+        {
+            return;
+        }
+
+        var startStep:Int = lastProcessedStep + 1;
+
+        if (startStep < 0)
+        {
+            startStep = 0;
+        }
+
+        for (step in startStep...currentStep + 1)
+        {
+            processStep(step);
+        }
+
+        lastProcessedStep = currentStep;
+    }
+
+    function processStep(step:Int):Void
+    {
+        switch (step)
+        {
+            case 120:
+                setVictoryDarkness(true);
+
+            case 121:
+                if (victoryText != null)
+                {
+                    victoryText.alpha = 1;
+                }
+
+            case 128:
+                setVictoryDarkness(false);
+
+                if (PlayState.instance != null)
+                {
+                    PlayState.instance.camHUD.alpha = 1;
+                    hideHealthBar();
+                }
+
+            case 448:
+                setVictoryDarkness(true);
+
+            case 458:
+                moveCrew(1, 1);
+                moveCrew(2, -1);
+
+            case 464:
+                setVictoryDarkness(false);
+
+                if (PlayState.instance != null)
+                {
+                    PlayState.instance.camHUD.alpha = 1;
+                    hideHealthBar();
+                }
+
+            case 716:
+                setVictoryDarkness(true);
+
+            case 718:
+                moveCrew(1, 0);
+                moveCrew(2, 2);
+                hideVictory();
+
+            case 720:
+                setVictoryDarkness(false);
+
+                if (PlayState.instance != null)
+                {
+                    PlayState.instance.camHUD.alpha = 1;
+                    hideHealthBar();
+                }
+
+            case 976:
+                setVictoryDarkness(true);
+
+            case 980:
+                moveCrew(0, 2);
+                moveCrew(1, -1);
+                moveCrew(2, 0);
+
+            case 987:
+                revealVictory();
+
+            case 992:
+                setVictoryDarkness(false);
+
+                if (PlayState.instance != null)
+                {
+                    PlayState.instance.camHUD.alpha = 1;
+                    hideHealthBar();
+                }
+
+            case 1052:
+                setVictoryDarkness(true);
+
+            case 1054:
+                moveCrew(0, 2);
+                moveCrew(1, 0);
+                moveCrew(2, -1);
+
+            case 1056:
+                setVictoryDarkness(false);
+
+                if (PlayState.instance != null)
+                {
+                    PlayState.instance.camHUD.alpha = 1;
+                    hideHealthBar();
+                }
+
+            case 1116:
+                setVictoryDarkness(true);
+
+            case 1118:
+                moveCrew(0, -1);
+                moveCrew(1, 0);
+                moveCrew(2, 2);
+
+            case 1120:
+                setVictoryDarkness(false);
+
+                if (PlayState.instance != null)
+                {
+                    PlayState.instance.camHUD.alpha = 1;
+                    hideHealthBar();
+                }
+        }
+    }
+
+    function setVictoryDarkness(enabled:Bool):Void
+    {
+        if (PlayState.instance == null)
+        {
+            return;
+        }
+
+        if (enabled)
+        {
+            FlxG.sound.play(Paths.sound('stage/playerdisconnect'));
+            PlayState.instance.camGame.visible = false;
+        }
+        else
+        {
+            PlayState.instance.camGame.visible = true;
+        }
+    }
+
+    function hideHealthBar():Void
+    {
+        if (PlayState.instance == null)
+        {
+            return;
+        }
+
+        if (PlayState.instance.healthBar != null)
+        {
+            PlayState.instance.healthBar.alpha = 0;
+            PlayState.instance.healthBar.visible = false;
+        }
+
+        if (PlayState.instance.healthBarBG != null)
+        {
+            PlayState.instance.healthBarBG.alpha = 0;
+            PlayState.instance.healthBarBG.visible = false;
+        }
+
+        if (PlayState.instance.iconP1 != null)
+        {
+            PlayState.instance.iconP1.alpha = 0;
+            PlayState.instance.iconP1.visible = false;
+        }
+
+        if (PlayState.instance.iconP2 != null)
+        {
+            PlayState.instance.iconP2.alpha = 0;
+            PlayState.instance.iconP2.visible = false;
+        }
+    }
+
+    function moveCrew(crewIndex:Int, posIndex:Int):Void
+    {
+        if (crewmates[crewIndex] != null)
+        {
+            crewmates[crewIndex].visible = (posIndex > -1);
+
+            if (posIndex > -1)
+            {
+                crewmates[crewIndex].x = chars[crewIndex][2][posIndex];
+            }
+        }
+    }
+
+    function hideVictory():Void
+    {
+        if (victoryText != null)
+        {
+            victoryText.alpha = 0;
+        }
+
+        if (leftBitches != null)
+        {
+            leftBitches.alpha = 0;
+        }
+
+        if (rightBitches != null)
+        {
+            rightBitches.alpha = 0;
+        }
+
+        for (crew in crewmates)
+        {
+            if (crew != null)
+            {
+                crew.alpha = 0;
+            }
+        }
+    }
+
+    function revealVictory():Void
+    {
+        if (victoryText != null)
+        {
+            victoryText.alpha = 1;
+        }
+
+        if (leftBitches != null)
+        {
+            leftBitches.alpha = 1;
+        }
+
+        if (rightBitches != null)
+        {
+            rightBitches.alpha = 1;
+        }
+
+        for (crew in crewmates)
+        {
+            if (crew != null)
+            {
+                crew.alpha = 1;
+            }
+        }
+
+        if (stageVoid != null)
+        {
+            stageVoid.alpha = 0.5;
+        }
+    }
+}

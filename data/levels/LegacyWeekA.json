@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "name": "Rousey Rival",
+  "titleAsset": "storymenu/titles/rouseyrivals",
+  "visible": true,
+  "props": [
+  ],
+  "background": "#FF7F50",
+  "songs": ["sussy-bussy", "rivals", "chewmate"]
+}

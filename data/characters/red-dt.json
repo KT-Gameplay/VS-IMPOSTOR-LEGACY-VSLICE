@@ -20,7 +20,7 @@
 		"id": "face",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/freeplay/doubleTroubleRed",
+	"assetPath": "characters/freeplay/doubleTroubleRed",
 	"animations": [
 		{
 			"frameIndices": [],

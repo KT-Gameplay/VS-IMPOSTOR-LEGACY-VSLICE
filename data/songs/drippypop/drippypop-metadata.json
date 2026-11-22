@@ -6,25 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "dripbf",
    "girlfriend": "drippico",
-   "opponent": "drippypop",
-   "opponentVocals": [
-    "drippypop"
-   ],
-   "playerVocals": []
+   "opponent": "drippypop"
   },
   "stage": "drippypop",
   "noteStyle": "impostor",
-  "ratings": {
-   "easy": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 7},
+  "album": "Impostor14",
   "stickerPack": "default",
   "previewEnd": 0
  },

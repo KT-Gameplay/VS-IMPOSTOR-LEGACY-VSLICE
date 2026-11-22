@@ -177,12 +177,12 @@
    "zIndex": 300
   },
   "dad": {
-   "cameraOffsets": [125, -125],
+   "cameraOffsets": [350, -155],
    "position": [732.5, 1389],
    "zIndex": 200
   },
   "gf": {
-   "cameraOffsets": [95, -265],
+   "cameraOffsets": [295, -265],
    "position": [483.65, 1418.6],
    "zIndex": 100
   }

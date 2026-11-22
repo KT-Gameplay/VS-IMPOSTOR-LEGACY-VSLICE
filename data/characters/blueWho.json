@@ -20,7 +20,7 @@
 		"id": "blue-who",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/freeplay/bluewho",
+	"assetPath": "characters/freeplay/bluewho",
 	"animations": [
 		{
 			"frameIndices": [],

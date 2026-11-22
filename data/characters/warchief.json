@@ -1,0 +1,75 @@
+{
+	"version": "1.0.0",
+	"name": "warchief",
+	"assetPath": "characters/jorsawsee/warchief",
+	"flipX": false,
+	"renderType": "multisparrow",
+	"healthIcon": {
+		"id": "warchief",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		110,
+		140
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 6,
+	"scale": 1,
+	"animations": [
+		{
+			"name": "idle",
+			"prefix": "idle",
+			"offsets": [
+				-30,
+				-90
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "left",
+			"offsets": [
+				-35,
+				-114
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "down",
+			"offsets": [
+				-153,
+				-161
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUP",
+			"prefix": "up",
+			"offsets": [
+				-86,
+				-115
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "right",
+			"offsets": [
+				-167,
+				-114
+			],
+			"looped": false,
+			"fps": 24
+		}
+	]
+}

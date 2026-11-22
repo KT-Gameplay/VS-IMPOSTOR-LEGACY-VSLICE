@@ -1,40 +1,19 @@
 {
- "version": "2.2.4",
- "songName": "Sussy Bussy",
- "artist": "Saruky",
- "charter": "KlutchDJ",
- "offsets": { },
- "playData": {
-  "difficulties": [
-   "easy",
-   "normal",
-   "hard"
-  ],
-  "characters": {
-   "player": "bf-pixel",
-   "girlfriend": "gf-pixel",
-   "opponent": "tomongus",
-   "opponentVocals": [
-    "tomongus"
-   ],
-   "playerVocals": []
-  },
-  "stage": "tomongus",
-  "noteStyle": "pixelImpostor",
-  "ratings": {
-   "hard": 0
-  },
-  "album": "volume1",
-  "stickerPack": "default",
-  "previewEnd": 0
- },
- "generatedBy": "Friday Night Funkin' - v0.8.5",
- "timeChanges": [
-  {
-   "t": 0,
-   "b": 0,
-   "bpm": 132,
-   "bt": [4, 4, 4, 4]
-  }
- ]
+	"timeFormat": "ms",
+	"artist": "Saruky",
+	"charter": "KlutchDJ",
+	"playData": {
+		"stage": "tomongus",
+    		"album": "Impostor22",
+    		"ratings": {"normal": 4},
+		"noteStyle": "pixelImpostor",
+		"difficulties": ["normal"],
+		"characters": {"girlfriend": "gf-pixel", "opponent": "tomongus", "player": "bf-pixel"}
+	},
+	"songName": "Sussy Bussy",
+	"timeChanges": [
+		{"t": 0, "bpm": 132}
+	],
+	"generatedBy": "Psych Engine v1.0.4 - Chart Editor V-Slice Exporter",
+	"version": "2.2.3"
 }

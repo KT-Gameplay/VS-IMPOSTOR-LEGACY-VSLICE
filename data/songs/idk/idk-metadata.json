@@ -6,22 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "idkbf",
    "girlfriend": "gf",
-   "opponent": "idk",
-   "opponentVocals": [
-    "idk"
-   ],
-   "playerVocals": []
+   "opponent": "idk"
   },
   "stage": "idk",
   "noteStyle": "pixelImpostor",
-  "album": "volume1",
+  "ratings": {"normal": 4},
+  "album": "Impostor16",
   "stickerPack": "default",
   "previewEnd": 0
  },

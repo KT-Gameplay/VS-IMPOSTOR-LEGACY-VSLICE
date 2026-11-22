@@ -1,0 +1,140 @@
+import flixel.FlxG;
+import flixel.util.FlxTimer;
+import funkin.Conductor;
+import funkin.Paths;
+import funkin.graphics.video.FunkinVideoSprite;
+import funkin.modding.events.CountdownScriptEvent;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.play.Countdown;
+import funkin.play.PlayState;
+import funkin.play.song.Song;
+
+class EjectedSong extends Song
+{
+var ejectedVideo:FunkinVideoSprite = null;
+
+public function new()
+{
+    super('ejected');
+}
+
+public function onCountdownStart(event:CountdownScriptEvent):Void
+{
+    super.onCountdownStart(event);
+
+    new FlxTimer().start(0.00001, function(_) {
+        Countdown.skipCountdown();
+
+        new FlxTimer().start(0.01, function(_) {
+            if (PlayState.instance == null) return;
+            if (ejectedVideo != null) return;
+
+            ejectedVideo = new FunkinVideoSprite(0, 0);
+            ejectedVideo.zIndex = 100000;
+
+            ejectedVideo.bitmap.onFormatSetup.add(function() {
+                if (ejectedVideo == null) return;
+
+                var scale:Float = Math.min(
+                    FlxG.width / ejectedVideo.bitmap.bitmapData.width,
+                    FlxG.height / ejectedVideo.bitmap.bitmapData.height
+                );
+
+                ejectedVideo.setGraphicSize(
+                    (ejectedVideo.bitmap.bitmapData.width * scale) + 10,
+                    ejectedVideo.bitmap.bitmapData.height * scale
+                );
+
+                ejectedVideo.updateHitbox();
+                ejectedVideo.screenCenter();
+            });
+
+            ejectedVideo.bitmap.onEndReached.add(function() {
+                if (ejectedVideo == null) return;
+
+                if (PlayState.instance != null)
+                {
+                    PlayState.instance.remove(ejectedVideo);
+                }
+
+                ejectedVideo.destroy();
+                ejectedVideo = null;
+            }, true);
+
+            PlayState.instance.add(ejectedVideo);
+            PlayState.instance.refresh();
+
+            ejectedVideo.camera = PlayState.instance.camCutscene;
+
+            var videoPath:String = Paths.videos('week2/ejected');
+
+            if (ejectedVideo.load(videoPath))
+            {
+                ejectedVideo.play();
+                ejectedVideo.bitmap.volumeAdjust = 1;
+            }
+            else
+            {
+                ejectedVideo.destroy();
+                ejectedVideo = null;
+            }
+        });
+    });
+}
+
+public function onUpdate(event:UpdateScriptEvent):Void
+{
+    super.onUpdate(event);
+
+    if (PlayState.instance == null) return;
+
+    var songPosition:Float = Conductor.instance.songPosition;
+    var bpm:Float = Conductor.instance.bpm;
+
+    PlayState.instance.camHUD.y =
+        Math.sin((songPosition / 1000) * (bpm / 60) * -1.0) * 15;
+
+    PlayState.instance.camHUD.angle =
+        Math.sin((songPosition / 1200) * (bpm / 60) * -1.0) * 1.2;
+
+    PlayState.instance.camGame.shake(0.002, 0.1);
+}
+
+public function onSongRetry(event:ScriptEvent):Void
+{
+    super.onSongRetry(event);
+
+    clearVideo();
+
+    if (PlayState.instance == null) return;
+
+    PlayState.instance.camHUD.y = 0;
+    PlayState.instance.camHUD.angle = 0;
+}
+
+public function onSongEnd(event:ScriptEvent):Void
+{
+    super.onSongEnd(event);
+
+    clearVideo();
+
+    if (PlayState.instance == null) return;
+
+    PlayState.instance.camHUD.y = 0;
+    PlayState.instance.camHUD.angle = 0;
+}
+
+function clearVideo():Void
+{
+    if (ejectedVideo == null) return;
+
+    if (PlayState.instance != null)
+    {
+        PlayState.instance.remove(ejectedVideo);
+    }
+
+    ejectedVideo.destroy();
+    ejectedVideo = null;
+}
+}

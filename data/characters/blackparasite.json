@@ -1,0 +1,75 @@
+{
+	"version": "1.0.0",
+	"name": "blackparasite",
+	"assetPath": "characters/story/black/blackparasite",
+	"flipX": false,
+	"renderType": "multianimateatlas",
+	"healthIcon": {
+		"id": "black",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		-2053,
+		-740
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 6,
+	"scale": 1,
+	"animations": [
+		{
+			"name": "singUP",
+			"prefix": "UP",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "idle",
+			"prefix": "IDLE",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": true,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "RIGHT",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "DOWN",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "LEFT",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		}
+	]
+}

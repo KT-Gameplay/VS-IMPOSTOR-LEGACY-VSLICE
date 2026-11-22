@@ -20,7 +20,7 @@
 		"id": "drippy",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/freeplay/drippypop",
+	"assetPath": "characters/freeplay/drippypop",
 	"animations": [
 		{
 			"frameIndices": [],

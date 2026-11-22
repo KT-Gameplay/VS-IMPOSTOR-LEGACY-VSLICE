@@ -1,0 +1,125 @@
+{
+	"version": "1.0.0",
+	"name": "bf-defeat-scared",
+	"assetPath": "characters/bf/defeatBf",
+	"flipX": true,
+	"renderType": "multianimateatlas",
+	"healthIcon": {
+		"id": "bf",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 6,
+	"scale": 1,
+	"animations": [
+		{
+			"name": "idle",
+			"prefix": "fear idle",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "idle-loop",
+			"prefix": "fear idle loop",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": true,
+			"fps": 24
+		},
+		{
+			"name": "singLEFTmiss",
+			"prefix": "fear left miss",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHTmiss",
+			"prefix": "fear right miss",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUPmiss",
+			"prefix": "fear up miss",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singDOWNmiss",
+			"prefix": "fear down miss",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "fear left",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "fear down",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUP",
+			"prefix": "fear up",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "fear right",
+			"offsets": [
+				0,
+				0
+			],
+			"looped": false,
+			"fps": 24
+		}
+	]
+}

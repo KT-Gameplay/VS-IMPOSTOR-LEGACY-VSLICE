@@ -1,8 +1,6 @@
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import flixel.util.FlxColor;
-import funkin.Paths;
-import flixel.text.FlxTextBorderStyle;
 
 class LegacyModule extends Module
 {
@@ -28,45 +26,34 @@ class LegacyModule extends Module
         }
     }
 
-    function onCountdownStart(event)
-    {
-        super.onCountdownStart(event);
-        if(bfOff == null && dadOff == null) return;
-
-        //if(PlayState.instance.currentSong.id.toLowerCase() != 'double-trouble') PlayState.instance.tweenCameraToPosition(dadOff[0], dadOff[1], 0);
-    }
-
-    function onUpdate(event)
-    {
-        if(PlayState.instance == null)
-        {
-            bfOff = null;
-            dadOff = null;
-            return;
-        }
-
-        //if(Preferences.subtitles) PlayState.instance.subtitles.subtitleText.setFormat(Paths.font('liberbold.ttf'), 24, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        if(Preferences.subtitles)
-        {
-            PlayState.instance.subtitles.subtitleText.font = Paths.font('liberbold.ttf');
-            PlayState.instance.subtitles.subtitleText.size = 24;
-            PlayState.instance.subtitles.subtitleText.borderStyle = FlxTextBorderStyle.OUTLINE;
-            PlayState.instance.subtitles.subtitleText.borderColor = FlxColor.BLACK;
-        }
-        super.onUpdate(event);
-        if(bfOff == null && dadOff == null) return;
-
-        PlayState.instance.currentStage.getDad().cameraFocusPoint.x = dadOff[0];
-        PlayState.instance.currentStage.getDad().cameraFocusPoint.y = dadOff[1];
-
-        PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x = bfOff[0];
-        PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y = bfOff[1];
-    }
-
     override function onSongEvent(event)
     {
         if(PlayState.instance == null) return;
         super.onSongEvent(event);
+
+        if(bfOff == null && dadOff == null) return;
+
+        if(event.eventData.eventKind == 'FocusCamera')
+        {
+            var char:Int = event.eventData.getInt('char');
+
+            switch(char)
+            {
+                case 1:            
+                    event.cancel();
+
+                    PlayState.instance.resetCamera(false, false, false);      
+                    PlayState.instance.cancelCameraFollowTween();
+                    PlayState.instance.cameraFollowPoint.setPosition(dadOff[0], dadOff[1]);
+
+                case 0:
+                    event.cancel();
+
+                    PlayState.instance.resetCamera(false, false, false);
+                    PlayState.instance.cancelCameraFollowTween();
+                    PlayState.instance.cameraFollowPoint.setPosition(bfOff[0], bfOff[1]);
+            }
+        }
 
         if(event.eventData.eventKind == 'flash')
         {

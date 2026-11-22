@@ -25,7 +25,5 @@ class InsaneStreamerSong extends Song // what the fucking fuck
         vig = new FlxSprite(0, 0).loadGraphic(Paths.image('BG/jerma/vignette', 'shared'));
         vig.cameras = [PlayState.instance.camHUD];
         PlayState.instance.add(vig);
-
-        LegacyUtils.camSpecialThing([900, 450], [1000, 625]);
     }
 }

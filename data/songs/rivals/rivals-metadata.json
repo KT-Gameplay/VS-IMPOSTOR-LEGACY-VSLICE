@@ -6,27 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf-pixel",
    "girlfriend": "gf-pixel",
-   "opponent": "tomongus",
-   "opponentVocals": [
-    "tomongus"
-   ],
-   "playerVocals": []
+   "opponent": "tomongus"
   },
   "stage": "tomongus",
   "noteStyle": "pixelImpostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 5},
+  "album": "Impostor22",
   "stickerPack": "default",
   "previewEnd": 0
  },

@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "name": "grey",
+  "assetPath": "characters/triple/greythreat",
+  "singTime": 6,
+  "scale": 0.9,
+  "flipX": false,
+  "offsets": [0,120],
+  "cameraOffsets": [438,0],
+  "healthIcon": {
+    "id": "gray",
+    "scale": 1
+  },
+  "renderType": "multianimateatlas",
+  "animations": [
+    {
+      "name": "singRIGHT",
+      "prefix": "right",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        102,
+        83
+      ]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        106,
+        84
+      ]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        105,
+        88
+      ]
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        102,
+        84
+      ]
+    },
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        104,
+        115
+      ]
+    }
+  ]
+}

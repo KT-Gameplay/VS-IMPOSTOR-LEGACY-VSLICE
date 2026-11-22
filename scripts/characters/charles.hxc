@@ -1,10 +1,5 @@
-import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.play.character.AnimateAtlasCharacter;
-import funkin.Paths;
-import funkin.Preferences;
-import flixel.addons.display.FlxRuntimeShader;
-import funkin.play.PlayState;
-import flixel.graphics.FlxGraphic;
 
 class Charles extends AnimateAtlasCharacter
 {
@@ -13,60 +8,35 @@ class Charles extends AnimateAtlasCharacter
         super('charles');
     }
 
-    public var charlesSpeed:Float = (Preferences.flashingLights ? 1.3 : .8);
-    var back:FlxSprite;
-    var sky:FlxSprite;
-    var maskShader:FlxRuntimeShader = null;
+    var cloud:FunkinSprite;
 
     override function onCreate(event)
     {
         super.onCreate(event);
 
-        back = new FlxSprite(0, 0, Paths.image('henry/charles/charlesBg'));
-        back.scale.set(0.8, 0.8);
-        back.updateHitbox();
+        cloud = FunkinSprite.createTextureAtlas(-392, -274, 'henry/charlesClouds', '', {cacheOnLoad: false});
+        cloud.anim.addByFrameLabel('move', 'clouds moving', 60, true);
+        cloud.scale.set(0.8, 0.8);
+        cloud.anim.play('move');
+        cloud.origin.set();
 
-        maskShader = new FlxRuntimeShader(Assets.getText(Paths.frag('charlesCloudMask')));
+        var cloudElement:FlxSpriteElement = new animate.internal.elements.FlxSpriteElement(cloud);
+        cloudElement.active = false;
 
-        sky = new FlxSprite(0, 0, Paths.image('henry/charles/charlesBgBack'));
-        sky.scale.set(0.8, 0.8);
-        sky.updateHitbox();
-        sky.screenCenter();
-        sky.shader = maskShader;
-
-        var bmp:FlxGraphic = FlxGraphic.fromAssetKey(Paths.image('henry/charles/skyClouds'));
-        maskShader.setBitmapData('u_mask', bmp.bitmap);
-        maskShader.setFloatArray('u_mask_size', [bmp.width, bmp.height]);
-        maskShader.setFloatArray('u_mask_offset', [0, -0.45]);
-
-        addToStage(back);
-        addToStage(sky);
+        this.timeline.layers[2].forEachFrame((frame) -> frame.add(cloudElement));
     }
-
-  function addToStage(sprite:FlxSprite)
-  {
-    if (this.debug) return;
-
-    currentStage.add(sprite);
-  }
 
     function onUpdate(event)
     {
         super.onUpdate(event);
 
-        maskShader.setFloatArray('u_mask_offset', [maskShader.getFloatArray('u_mask_offset')[0] + (charlesSpeed * event.elapsed), -0.45]);
+        cloud.update(event.elapsed);
+    }
 
-        back.x = this.x - 120 - 642.5;
-        back.y = this.y - 47 - 113;
-        sky.x = this.x + 75 - 642.5;
-        sky.y = this.y - 34 - 113;
+    function onDestroy(event):Void
+    {
+        super.onDestroy(event);
 
-        if(back.zIndex != this.zIndex - 2)
-        {
-        back.zIndex = this.zIndex - 1;
-        sky.zIndex = this.zIndex - 2;
-        if(PlayState.instance != null)
-        PlayState.instance.currentStage.refresh();
-        }
+        cloud.destroy();
     }
 }

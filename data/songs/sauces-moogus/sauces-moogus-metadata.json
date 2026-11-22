@@ -6,26 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bfsauce",
    "girlfriend": "gf",
-   "opponent": "chefogus",
-   "opponentVocals": [
-    "chefogus"
-   ],
-   "playerVocals": []
+   "opponent": "chefogus"
   },
   "stage": "chef",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 4},
+  "album": "Impostor30",
   "stickerPack": "default",
   "previewEnd": 0
  },

@@ -1,0 +1,299 @@
+import Reflect;
+import flixel.FlxG;
+import flixel.FlxCamera;
+import legacy.objects.AmongUIState;
+import flixel.FlxSprite;
+import flixel.input.mouse.FlxMouse;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxText.FlxTextBorderStyle;
+import flixel.util.FlxColor;
+import funkin.Assets;
+import funkin.Paths;
+import funkin.modding.module.ModuleHandler;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.util.TouchUtil;
+
+class LegacyAwardsState extends AmongUIState
+{
+  static var curSel:Int = 0;
+  static var columnsPerRow:Int = 7;
+
+  var data:Dynamic;
+  var achievements:Array<Dynamic> = [];
+  var icons:Array<FlxSprite> = [];
+  var nameText:FlxText;
+  var infoText:FlxText;
+  var completionText:FlxText;
+  var playTimeText:FlxText;
+  var countText:FlxText;
+  var hoveredMouseSel:Int = -1;
+  var touchMode:Bool = false;
+  var leaving:Bool = false;
+  var menuReady:Bool = false;
+
+  function new()
+  {
+    super();
+  }
+
+  override function create():Void
+  {
+    menuReady = false;
+    super.create();
+    if (!baseReady)
+    {
+      leaving = true;
+      return;
+    }
+    FlxG.camera.bgColor = FlxColor.BLACK;
+    touchMode = !Std.isOfType(TouchUtil.touch, FlxMouse);
+    FlxG.mouse.visible = !touchMode;
+    leaving = false;
+
+    data = ModuleHandler.getModule('LegacyMenu');
+    if (data == null)
+    {
+      leaving = true;
+      FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+      return;
+    }
+
+    data.reloadWeeks();
+    data.reloadCosmicubes();
+    data.loadAwards();
+    data.checkAchievements();
+    achievements = data.awards;
+    if (achievements == null) achievements = [];
+    if (achievements.length <= 0)
+    {
+      leaving = true;
+      FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+      return;
+    }
+    curSel = FlxMath.wrap(curSel, 0, achievements.length - 1);
+
+    if (backButton != null)
+    {
+      backButton.setPosition(15, 15);
+      add(backButton).revive();
+    }
+
+    icons = [];
+    for (i in 0...achievements.length)
+    {
+      var row:Int = Std.int(i / columnsPerRow);
+      var column:Int = i % columnsPerRow;
+      var unlocked:Bool = data.hasAchievement(Std.string(achievements[i].id));
+      var iconName:String = Std.string(achievements[i].icon == null ? achievements[i].id : achievements[i].icon);
+      if (!unlocked) iconName = 'blank';
+      var icon:FlxSprite = new FlxSprite(85 + column * 165, 30 + row * 130);
+      var awardImage:String = 'awards/' + iconName;
+      if (!Assets.exists(Paths.image(awardImage))) awardImage = 'awards/blank';
+      if (Assets.exists(Paths.image(awardImage))) icon.loadGraphic(Paths.image(awardImage));
+      else icon.makeGraphic(120, 120, 0xFF555555);
+      icon.setGraphicSize(120, 120);
+      icon.updateHitbox();
+      icon.ID = i;
+      icon.scrollFactor.set();
+      add(icon);
+      icons.push(icon);
+    }
+
+    nameText = new FlxText(0, 540, FlxG.width, '', 40);
+    infoText = new FlxText(0, 580, FlxG.width, '', 25);
+    completionText = new FlxText(10, 0, 560, '', 25);
+    playTimeText = new FlxText(10, 0, 560, '', 25);
+    countText = new FlxText(0, 0, FlxG.width - 30, '', 25);
+
+    for (text in [nameText, infoText, completionText, playTimeText, countText])
+    {
+      text.setFormat(Paths.font('vcr.ttf'), text.size, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      text.antialiasing = true;
+      text.borderSize = 2;
+      text.scrollFactor.set();
+      add(text);
+    }
+    nameText.setFormat(Paths.font('vcr.ttf'), 40, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    nameText.borderSize = 2;
+    infoText.setFormat(Paths.font('vcr.ttf'), 25, FlxColor.WHITE, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    infoText.borderSize = 1.5;
+    infoText.y = 580;
+    completionText.alignment = 'left';
+    playTimeText.alignment = 'left';
+    countText.alignment = 'right';
+    playTimeText.y = FlxG.height - 34 - playTimeText.height;
+    completionText.y = playTimeText.y - completionText.height;
+    countText.y = FlxG.height - 9 - countText.height;
+
+    refreshFooter();
+    refreshSelection();
+    FlxG.camera.fade(FlxColor.BLACK, 0.35, true);
+    menuReady = true;
+  }
+
+  function refreshFooter():Void
+  {
+    var total:Int = achievements.length;
+    var unlocked:Int = 0;
+    for (award in achievements) if (data.hasAchievement(Std.string(award.id))) unlocked++;
+    countText.text = 'AWARDS: ' + unlocked + ' / ' + total;
+    countText.color = unlocked >= total ? 0xFFFFE066 : FlxColor.WHITE;
+
+    var percent:Float = data.globalCompletion();
+    completionText.text = 'COMPLETION: ' + Math.floor(percent) + '%';
+    completionText.color = percent >= 100 ? 0xFFFFE066 : FlxColor.WHITE;
+
+    var totalSeconds:Int = Std.int(Math.max(0, data.totalPlayTime()));
+    var hours:Int = Std.int(totalSeconds / 3600);
+    var minutes:Int = Std.int((totalSeconds % 3600) / 60);
+    var seconds:Int = totalSeconds % 60;
+    playTimeText.text = 'TOTAL PLAY TIME: ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+
+    playTimeText.y = FlxG.height - playTimeText.height - 9;
+    completionText.y = playTimeText.y - completionText.height - 2;
+    countText.y = FlxG.height - countText.height - 9;
+  }
+
+  function refreshSelection():Void
+  {
+    if (achievements.length == 0) return;
+    refreshFooter();
+    var selected:Dynamic = achievements[curSel];
+    var unlocked:Bool = data.hasAchievement(Std.string(selected.id));
+    var secret:Bool = selected.hidden == true && !unlocked;
+
+    nameText.color = unlocked ? 0xFFFFE066 : FlxColor.WHITE;
+    if (secret)
+    {
+      nameText.text = '???';
+      infoText.text = 'SECRET AWARD';
+    }
+    else
+    {
+      nameText.text = Std.string(selected.name == null ? selected.id : selected.name);
+      var desc:String = selected.desc == null ? '' : Std.string(selected.desc);
+      var hint:String = selected.hint == null ? '' : Std.string(selected.hint);
+      if (!unlocked && hint.length > 0) infoText.text = hint;
+      else infoText.text = desc;
+    }
+
+    for (icon in icons)
+    {
+      icon.alpha = icon.ID == curSel ? 1 : (icon.ID == hoveredMouseSel ? 0.82 : 0.58);
+    }
+  }
+
+  function changeColumn(amount:Int):Void
+  {
+    var row:Int = Std.int(curSel / columnsPerRow);
+    var maxColumn:Int = Std.int(Math.min(columnsPerRow, achievements.length - row * columnsPerRow));
+    if (maxColumn <= 1) return;
+    var column:Int = FlxMath.wrap(curSel % columnsPerRow + amount, 0, maxColumn - 1);
+    curSel = row * columnsPerRow + column;
+    FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
+    refreshSelection();
+  }
+
+  function changeRow(amount:Int):Void
+  {
+    var column:Int = curSel % columnsPerRow;
+    var row:Int = Std.int(curSel / columnsPerRow);
+    var rows:Int = Std.int(Math.ceil(achievements.length / columnsPerRow));
+    if (rows <= 1) return;
+    var nextRow:Int = FlxMath.wrap(row + amount, 0, rows - 1);
+    var index:Int = nextRow * columnsPerRow + column;
+    if (index >= achievements.length) index = achievements.length - 1;
+    curSel = index;
+    FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
+    refreshSelection();
+  }
+
+  function getTouchPoint(camera:FlxCamera = null):Dynamic
+  {
+    var pointer:Dynamic = touchMode ? TouchUtil.touch : FlxG.mouse;
+    if (pointer == null) return null;
+    var point:Dynamic = pointer.getWorldPosition(camera == null ? FlxG.camera : camera);
+    var result:Dynamic = {x: point.x, y: point.y};
+    point.put();
+    return result;
+  }
+
+  function pointerOver(sprite:FlxSprite, camera:FlxCamera = null):Bool
+  {
+    if (sprite == null) return false;
+    var targetCamera:FlxCamera = camera == null ? FlxG.camera : camera;
+    var point:Dynamic = getTouchPoint(targetCamera);
+    if (point == null) return false;
+    return point.x >= sprite.x && point.x <= sprite.x + sprite.width && point.y >= sprite.y && point.y <= sprite.y + sprite.height;
+  }
+
+  function handlePointer():Void
+  {
+    var nextHover:Int = -1;
+    for (icon in icons)
+    {
+      if (!pointerOver(icon)) continue;
+      nextHover = icon.ID;
+      if ((!touchMode && FlxG.mouse.justPressed) || (touchMode && TouchUtil.justPressed))
+      {
+        if (curSel != icon.ID)
+        {
+          curSel = icon.ID;
+          FlxG.sound.play(Paths.sound('scrollMenu'), 0.5);
+          refreshSelection();
+        }
+      }
+      break;
+    }
+    if (hoveredMouseSel != nextHover)
+    {
+      hoveredMouseSel = nextHover;
+      refreshSelection();
+    }
+  }
+
+  override public function exit():Void
+  {
+    if (leaving) return;
+    leaving = true;
+    FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    if (!baseReady || !menuReady || data == null || achievements == null || icons == null || countText == null)
+    {
+      super.update(elapsed);
+      return;
+    }
+    if (leaving)
+    {
+      super.update(elapsed);
+      return;
+    }
+
+    if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.BACKSPACE)
+    {
+      leaving = true;
+      FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+      super.update(elapsed);
+      return;
+    }
+    if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) changeColumn(-1);
+    if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) changeColumn(1);
+    if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W) changeRow(-1);
+    if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S) changeRow(1);
+
+    if ((!touchMode && FlxG.mouse.justPressed && pointerOver(backButton, camUpper)) || (touchMode && TouchUtil.justPressed && pointerOver(backButton, camUpper)))
+    {
+      leaving = true;
+      FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+      super.update(elapsed);
+      return;
+    }
+    handlePointer();
+    refreshFooter();
+    super.update(elapsed);
+  }
+}

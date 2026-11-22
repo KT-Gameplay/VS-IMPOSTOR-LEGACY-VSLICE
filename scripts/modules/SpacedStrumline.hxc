@@ -23,7 +23,7 @@ class SpacedStrumline extends Module
        var playerStrum = PlayState.instance.playerStrumline;
        var oppStrum = PlayState.instance.opponentStrumline;
 
-       PlayState.instance.playerStrumline.x = FlxG.width - playerStrum.width - (Constants.STRUMLINE_X_OFFSET + cutoutSize); // same gap as opponent strumline from screen end.
+       PlayState.instance.playerStrumline.x = FlxG.width - playerStrum.width - (Constants.STRUMLINE_X_OFFSET + cutoutSize);
        PlayState.instance.opponentStrumline.x = Constants.STRUMLINE_X_OFFSET + cutoutSize;
     }
 }

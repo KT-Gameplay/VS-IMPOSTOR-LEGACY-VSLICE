@@ -1,0 +1,85 @@
+{
+	"version": "1.0.0",
+	"name": "jelqer",
+	"assetPath": "characters/jorsawsee/jelqer",
+	"flipX": false,
+	"renderType": "multisparrow",
+	"healthIcon": {
+		"id": "thejelqer",
+		"isPixel": false
+	},
+	"cameraOffsets": [
+		10,
+		230
+	],
+	"death": {
+		"cameraOffsets": [
+			0,
+			0
+		]
+	},
+	"singTime": 6,
+	"scale": 1.1,
+	"animations": [
+		{
+			"name": "danceLeft",
+			"prefix": "jelqer dance left",
+			"offsets": [
+				-3,
+				-153
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "danceRight",
+			"prefix": "jelqer dance right",
+			"offsets": [
+				-23,
+				-153
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singDOWN",
+			"prefix": "jelqer down",
+			"offsets": [
+				-85,
+				-213
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singUP",
+			"prefix": "jelqer up",
+			"offsets": [
+				-122,
+				-116
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singRIGHT",
+			"prefix": "jelqer right",
+			"offsets": [
+				-67,
+				-188
+			],
+			"looped": false,
+			"fps": 24
+		},
+		{
+			"name": "singLEFT",
+			"prefix": "jelqer left",
+			"offsets": [
+				30,
+				-150
+			],
+			"looped": false,
+			"fps": 24
+		}
+	]
+}

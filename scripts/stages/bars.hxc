@@ -39,7 +39,8 @@ class BarsStage extends Stage
     {
         super.buildStage();
 
-        grid = new FlxSkewedSprite(0, -1000, Paths.image('BG/bars/gridBars', 'shared'));
+        // Removido o argumento 'shared'
+        grid = new FlxSkewedSprite(0, -1000, Paths.image('BG/bars/gridBars'));
         grid.alpha = 0.3;
         grid.antialiasing = false;
         grid.origin.set(grid.frameWidth * 0.5, 0);
@@ -52,7 +53,8 @@ class BarsStage extends Stage
         add(grid);
         grid.updateHitbox();
 
-        gridUnder = new FlxSkewedSprite(0, 0, Paths.image('BG/bars/gridBars', 'shared'));
+        // Removido o argumento 'shared'
+        gridUnder = new FlxSkewedSprite(0, 0, Paths.image('BG/bars/gridBars'));
         gridUnder.alpha = 0.3;
         gridUnder.antialiasing = false;
         gridUnder.origin.set(gridUnder.frameWidth * 0.5, 0);
@@ -115,7 +117,7 @@ class BarsStage extends Stage
             vhsShader = new FlxRuntimeShader(Assets.getText(Paths.frag('vhs')));
             vhsShader.setInt('uFrame', 0);
             vhsShader.setFloat('uInterlace', 1.0);
-		
+        
             FlxG.camera.filters = [new ShaderFilter(vhsShader)];
         }
 
@@ -123,12 +125,12 @@ class BarsStage extends Stage
         {
             character.antialiasing = false;
             character.setPosition(Math.round(character.x), Math.round(character.y));
-            character.origin.set(Math.round(character.origin.x), Math.round(character.origin.y)); // fuck you ! fuck you ! fuck y
+            character.origin.set(Math.round(character.origin.x), Math.round(character.origin.y)); 
         }
 
         PlayState.instance.iconP1.antialiasing = false;
         PlayState.instance.iconP2.antialiasing = false;
-	
+    
         showdankBlack();
     }
 
@@ -148,7 +150,7 @@ class BarsStage extends Stage
             dankBlack.revive();
             dankBlack.visible = true;
         }
-	
+    
         dankBlack.alpha = 1;
     }
 
@@ -160,12 +162,12 @@ class BarsStage extends Stage
         {
             FlxTween.tween(dankBlack, {alpha: 0}, 0.2,
             {
-				ease: FlxEase.quadOut,
-				onComplete: function(_) {
-					dankBlack.visible = false;
-					dankBlack.kill();
-				}
-			});
+                ease: FlxEase.quadOut,
+                onComplete: function(_) {
+                    dankBlack.visible = false;
+                    dankBlack.kill();
+                }
+            });
         }
     }
 
@@ -173,22 +175,22 @@ class BarsStage extends Stage
     {
         super.onUpdate(event);
         waveTime += event.elapsed;
-	
+    
         if (vhsShader != null)
         {
             vhsFrame += 1;
             vhsShader.setInt('uFrame', vhsFrame);
             vhsShader.setFloat('uInterlace', 1.0);
         }
-	
+    
         gridScrollY += event.elapsed * 0.02;
         gridShader.setFloat('uScrollY', -gridScrollY);
         gridUnderShader.setFloat('uScrollY', -gridScrollY);
-	
+    
         var wave = Math.sin(waveTime * 1.5) * 6;
         fg.y = fgBaseY + wave;
         fg2.y = fg2BaseY - wave;
-	
+    
         this.getDad().y = dadBaseY + wave;
         this.getBoyfriend().y = bfBaseY - wave;
     }

@@ -1,0 +1,32 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+
+class TwoOpponent extends Module
+{	
+    function new(){
+        super("TwoOpponent");
+    }
+
+    var songList:Array<String> = ['double-kill'];
+
+  function onNoteHit(event:HitNoteScriptEvent)
+  {
+if (PlayState.instance == null) return;
+if (songList.contains(PlayState.instance.currentSong.id.toLowerCase()))
+{
+			if(event.note.noteData.kind == "GF")
+			{
+      PlayState.instance.currentStage.getGirlfriend().playSingAnimation(event.note.noteData.getDirection(), false);
+      PlayState.instance.currentStage.getGirlfriend().holdTimer = 0;
+			event.stopPropagation();
+			return;
+			}
+			if(event.note.noteData.kind == "Both Opponents Sing")
+			{
+      PlayState.instance.currentStage.getGirlfriend().playSingAnimation(event.note.noteData.getDirection(), false);
+      PlayState.instance.currentStage.getGirlfriend().holdTimer = 0;
+			return;
+			}
+}
+  }
+}

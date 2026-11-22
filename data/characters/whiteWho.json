@@ -20,7 +20,7 @@
 		"id": "whitewho",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/freeplay/whitewho",
+	"assetPath": "characters/freeplay/whitewho",
 	"animations": [
 		{
 			"frameIndices": [],

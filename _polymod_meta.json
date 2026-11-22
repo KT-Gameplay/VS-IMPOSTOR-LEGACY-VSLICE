@@ -1,16 +1,32 @@
 {
-	"title": "VS Impostor Legacy",
-	"description": "a Port of VS Impostor Legacy",
+	"title": "Vs Impostor V-Slice Port",
+	"description": "a Port of the mod Vs Impostor legacy",
+	"homepage": "https://gamebanana.com/mods/717797",
 	"contributors": [
 		{
+		"name": "Juxz",
+		"role": "Porter",
+        "url": "https://gamebanana.com/members/4708815"
+		},
+		{
 		"name": "KT_Gameplay",
-		"role": "Porter and Scripter",
+		"role": "Porter",
         "url": "https://gamebanana.com/members/4774795"
 		},
 		{
-		"name": "jarekboho",
+		"name": "ZanguyLOL",
+		"role": "Coder",
+        "url": "https://gamebanana.com/members/5516988"
+		},
+		{
+		"name": "Jarek",
 		"role": "Coder",
         "url": "https://gamebanana.com/members/2145650"
+		},
+		{
+		"name": "IMPOSTORM",
+		"role": "Original Mod Development Team",
+        "url": "https://gamebanana.com/mods/55652"
 		}
 	],
 	"api_version":"0.8.4",

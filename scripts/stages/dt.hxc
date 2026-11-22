@@ -102,9 +102,6 @@ override function buildStage()
 	mist5.alpha = .05;
 	add(mist5);
 	mist5.zIndex = 10;
-	
-	add(mist6);
-	add(mist7);
 
 	mist6 = new FlxBackdrop(Paths.image(ext + 'mist', 'shared'), 0x01);
 	mist6.scrollFactor.set(1.3, 1.3);
@@ -115,6 +112,7 @@ override function buildStage()
 	mist6.updateHitbox();
 	mist6.alpha = 0.9;
 	mist6.zIndex = 10;
+	add(mist6);
 	
 	mist7 = new FlxBackdrop(Paths.image(ext + 'mist', 'shared'), 0x01);
 	mist7.scrollFactor.set(1.3, 1.3);
@@ -125,6 +123,7 @@ override function buildStage()
 	mist7.updateHitbox();
 	mist7.alpha = 0.7;
 	mist7.zIndex = 10;
+	add(mist7);
 	
 	mist6.color = mist7.color = FlxColor.fromRGB(160, 110, 255);
 
@@ -240,7 +239,7 @@ function onUpdate(event)
 {
 	super.onUpdate(event);
 
-	if(Conductor.instance == null) curBeat = Conductor.instance.songPosition / Conductor.instance.beatLengthMs;
+	if(Conductor.instance != null) curBeat = Conductor.instance.songPosition / Conductor.instance.beatLengthMs;
 }
 
 function setNextThunder():Void

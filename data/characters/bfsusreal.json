@@ -1,12 +1,11 @@
 {
-	"renderType": "animateatlas",
+	"renderType": "sparrow",
 	"version": "1.0.1",
 	"offsets": [
 		0,
 		0
 	],
 	"danceEvery": 2,
-	"applyStageMatrix": false,
 	"scale": 1,
 	"name": "bfsusreal",
 	"cameraOffsets": [
@@ -18,206 +17,131 @@
 	"singTime": 4,
 	"startingAnimation": "idle",
 	"healthIcon": {
-		"offsets": [
-			0,
-			0
-		],
-		"shouldBop": true,
-		"isPixel": false,
-		"scale": 1,
-		"flipX": false,
-		"id": "bf"
+		"id": "bf",
+		"isPixel": false
 	},
-	"assetPath": "shared:characters/bf/bfSus",
-	"atlasSettings": {
-		"applyStageMatrix": false,
-		"useRenderTexture": false,
-		"filterQuality": 1,
-		"cacheOnLoad": false,
-		"swfMode": true
-	},
+	"assetPath": "characters/bf/bfsusreal",
 	"animations": [
 		{
+			"frameIndices": [],
+			"prefix": "idle",
 			"offsets": [
 				-5,
 				0
 			],
-			"frameIndices": [],
-			"prefix": "idle",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
+			"frameRate": 24,
 			"name": "idle",
-			"flipY": false,
-			"frameRate": 24
+			"looped": false
 		},
 		{
-			"offsets": [
-				-3,
-				1
-			],
 			"frameIndices": [],
 			"prefix": "left",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
+			"offsets": [
+				-57,
+				-7
+			],
+			"frameRate": 24,
 			"name": "singLEFT",
-			"flipY": false,
-			"frameRate": 24
+			"looped": false
 		},
 		{
-			"offsets": [
-				-9,
-				4
-			],
 			"frameIndices": [],
 			"prefix": "down",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
+			"offsets": [
+				-65,
+				-51
+			],
+			"frameRate": 24,
 			"name": "singDOWN",
-			"flipY": false,
-			"frameRate": 24
+			"looped": false
 		},
 		{
-			"offsets": [
-				-4,
-				-1
-			],
 			"frameIndices": [],
 			"prefix": "up",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
+			"offsets": [
+				36,
+				28
+			],
+			"frameRate": 24,
 			"name": "singUP",
-			"flipY": false,
-			"frameRate": 24
+			"looped": false
 		},
 		{
-			"offsets": [
-				-3,
-				0
-			],
 			"frameIndices": [],
 			"prefix": "right",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
-			"name": "singRIGHT",
-			"flipY": false,
-			"frameRate": 24
-		},
-		{
 			"offsets": [
-				-12,
+				-67,
 				-6
 			],
+			"frameRate": 24,
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
 			"frameIndices": [],
-			"prefix": "fire",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
+			"prefix": "bf blow",
+			"offsets": [
+				460,
+				115
+			],
+			"frameRate": 24,
 			"name": "shoot",
-			"flipY": false,
-			"frameRate": 24
+			"looped": false
 		},
 		{
-			"offsets": [
-				-20,
-				3
-			],
 			"frameIndices": [],
-			"prefix": "charge",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
+			"prefix": "BF charge",
+			"offsets": [
+				-24,
+				-52
+			],
+			"frameRate": 24,
 			"name": "pull",
-			"flipY": false,
-			"frameRate": 24
+			"looped": false
 		},
 		{
-			"offsets": [
-				-19,
-				7
-			],
 			"frameIndices": [],
-			"prefix": "miss down",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
+			"prefix": "missdown",
+			"offsets": [
+				-65,
+				-24
+			],
+			"frameRate": 24,
 			"name": "singDOWNmiss",
-			"flipY": false,
-			"frameRate": 24
+			"looped": false
 		},
 		{
-			"offsets": [
-				-12,
-				-3
-			],
 			"frameIndices": [],
-			"prefix": "miss left",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
-			"name": "singLEFTmiss",
-			"flipY": false,
-			"frameRate": 24
-		},
-		{
+			"prefix": "missleft",
 			"offsets": [
-				-4,
+				-57,
 				1
 			],
+			"frameRate": 24,
+			"name": "singLEFTmiss",
+			"looped": false
+		},
+		{
 			"frameIndices": [],
-			"prefix": "miss right",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
+			"prefix": "missright",
+			"offsets": [
+				67,
+				5
+			],
+			"frameRate": 24,
 			"name": "singRIGHTmiss",
-			"flipY": false,
-			"frameRate": 24
+			"looped": false
 		},
 		{
-			"offsets": [
-				-10,
-				0
-			],
 			"frameIndices": [],
-			"prefix": "miss up",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
+			"prefix": "missup",
+			"offsets": [
+				53,
+				28
+			],
+			"frameRate": 24,
 			"name": "singUPmiss",
-			"flipY": false,
-			"frameRate": 24
-		},
-		{
-			"offsets": [
-				-9,
-				-4
-			],
-			"frameIndices": [],
-			"prefix": "hey",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": false,
-			"name": "hey",
-			"flipY": false,
-			"frameRate": 24
-		},
-		{
-			"offsets": [
-				-9,
-				-4
-			],
-			"frameIndices": [],
-			"prefix": "hey-loop",
-			"animType": "framelabel",
-			"flipX": false,
-			"looped": true,
-			"name": "hey-loop",
-			"flipY": false,
-			"frameRate": 24
+			"looped": false
 		}
 	]
 }

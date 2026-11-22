@@ -1,0 +1,478 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.modding.events.SongEventScriptEvent;
+import flixel.group.FlxTypedSpriteGroup;
+import flixel.math.FlxMath;
+import flixel.util.FlxColor;
+import funkin.Paths;
+import funkin.Conductor;
+import funkin.save.Save;
+
+class EjectedStage extends Stage
+{
+    var intro:FunkinVideoSprite;
+    var black:FlxSprite;
+
+    var cloudScroll:FlxTypedSpriteGroup;
+    var farClouds:FlxTypedSpriteGroup;
+
+    var middleBuildings:FlxTypedSpriteGroup;
+    var rightBuildings:FlxTypedSpriteGroup;
+    var leftBuildings:FlxTypedSpriteGroup;
+
+    var ejectedSpeed:Float = 9;
+    var fgCloud:FlxSprite;
+    var speedlines:FlxBackdrop;
+    public var sky:FlxSprite;
+    var platform:FlxSprite;
+
+    var speedPass:Array<Float> = [11000, 11000, 11000, 11000];
+    var farSpeedPass:Array<Float> = [11000, 11000, 11000, 11000, 11000, 11000, 11000];
+
+    var ext:String = 'stages/mira/ejected/';
+
+    var boyfriend:FlxSprite;
+    var gf:FlxSprite;
+    var dad:FlxSprite;
+
+    var bfX:Float = 0;
+    var bfY:Float = 0;
+    var gfX:Float = 0;
+    var gfY:Float = 0;
+    var dadX:Float = 0;
+    var dadY:Float = 0;
+
+    var positionsSaved:Bool = false;
+
+    var bfTimer:Float = 0;
+    var gfTimer:Float = 2.1;
+    var dadTimer:Float = 4.2;
+
+    var bfFloatSpeed:Float = 2.4;
+    var gfFloatSpeed:Float = 2.2;
+    var dadFloatSpeed:Float = 2.35;
+
+    var bfRangeX:Float = 18;
+    var gfRangeX:Float = 14;
+    var dadRangeX:Float = 18;
+
+    var bfRangeY:Float = 28;
+    var gfRangeY:Float = 24;
+    var dadRangeY:Float = 28;
+
+    var floatLerp:Float = 0.15;
+
+    var zoomTween:FlxTween;
+    
+    var shakeTimer:Float = 0; // Otimização para o shake da câmera
+
+    var characterGray:FlxColor = FlxColor.fromRGB(225, 225, 225);
+
+    public function new()
+    {
+        super('ejected');
+    }
+
+    override function onCreate(event:ScriptEvent):Void
+    {
+        super.onCreate(event);
+
+        ejectedSpeed = Save.instance.options.flashingLights ? 9 : 3.3;
+        camZoomingDecay = .5;
+
+        sky = new FlxSprite(-2372.25 + (1000), -4181.7 + (656 * 5)).loadGraphic(Paths.image(ext + 'sky'));
+        sky.antialiasing = true;
+        sky.scale.set(5, 5);
+        sky.updateHitbox();
+        sky.scrollFactor.set(0, 0);
+        sky.zIndex = 10;
+        add(sky);
+
+        rightBuildings = new FlxTypedSpriteGroup();
+        leftBuildings = new FlxTypedSpriteGroup();
+        middleBuildings = new FlxTypedSpriteGroup();
+
+        rightBuildings.zIndex = 100;
+        middleBuildings.zIndex = 110;
+        leftBuildings.zIndex = 120;
+
+        for (i in 0...2)
+        {
+            var rightBuilding = new FlxSprite(1022.3, -390.45);
+            rightBuilding.loadGraphic(Paths.image(ext + 'buildingB'));
+            rightBuilding.antialiasing = true;
+            rightBuilding.scale.set(2, 2);
+            rightBuilding.updateHitbox();
+            rightBuilding.scrollFactor.set(0.5, 0.5);
+            rightBuildings.add(rightBuilding);
+        }
+
+        add(rightBuildings);
+
+        for (i in 0...2)
+        {
+            var middleBuilding = new FlxSprite(-76.15, 1398.5);
+            middleBuilding.loadGraphic(Paths.image(ext + 'buildingA'));
+            middleBuilding.antialiasing = true;
+            middleBuilding.scale.set(2, 2);
+            middleBuilding.updateHitbox();
+            middleBuilding.scrollFactor.set(0.5, 0.5);
+            middleBuildings.add(middleBuilding);
+        }
+
+        add(middleBuildings);
+
+        for (i in 0...2)
+        {
+            var leftBuilding = new FlxSprite(-1099.3, 7286.55);
+            leftBuilding.loadGraphic(Paths.image(ext + 'buildingB'));
+            leftBuilding.antialiasing = true;
+            leftBuilding.scale.set(2, 2);
+            leftBuilding.updateHitbox();
+            leftBuilding.scrollFactor.set(0.5, 0.5);
+            leftBuildings.add(leftBuilding);
+        }
+
+        add(leftBuildings);
+
+        rightBuildings.members[0].y = 6803.1;
+        middleBuildings.members[0].y = 8570.5;
+        leftBuildings.members[0].y = 14050.2;
+
+        platform = new FlxSprite(955, 1200);
+        platform.frames = Paths.getSparrowAtlas('stages/common/platform');
+        platform.animation.addByPrefix('bop', 'floating', 24, true);
+        platform.animation.play('bop');
+        platform.alpha = 0.00001;
+        platform.zIndex = 200;
+        add(platform);
+
+        cloudScroll = new FlxTypedSpriteGroup();
+        farClouds = new FlxTypedSpriteGroup();
+
+        if (!Save.instance.options.lowQuality && Save.instance.options.flashingLights)
+        {
+            for (i in 0...3)
+            {
+                var newCloud:FlxSprite = new FlxSprite();
+                newCloud.frames = Paths.getSparrowAtlas(ext + 'scrollingClouds');
+                newCloud.animation.addByPrefix('idle', 'Cloud' + i, 24, false);
+                newCloud.animation.play('idle');
+
+                switch (i)
+                {
+                    case 0:
+                        newCloud.setPosition(-9.65, -224.35);
+                        newCloud.scrollFactor.set(0.8, 0.8);
+                    case 1:
+                        newCloud.setPosition(-1342.85, -350.45);
+                        newCloud.scrollFactor.set(0.6, 0.6);
+                    case 2:
+                        newCloud.setPosition(1784.65, -957.05);
+                        newCloud.scrollFactor.set(1.3, 1.3);
+                    case 3:
+                        newCloud.setPosition(-2217.45, -1377.65);
+                        newCloud.scrollFactor.set(1, 1);
+                }
+
+                cloudScroll.add(newCloud);
+            }
+
+            for (i in 0...7)
+            {
+                var newCloud:FlxSprite = new FlxSprite();
+                newCloud.frames = Paths.getSparrowAtlas(ext + 'scrollingClouds');
+                newCloud.animation.addByPrefix('idle', 'Cloud' + i, 24, false);
+                newCloud.animation.play('idle');
+                newCloud.alpha = 0.5;
+
+                switch (i)
+                {
+                    case 0: newCloud.setPosition(-1308, -1039.9);
+                    case 1: newCloud.setPosition(464.3, -890.5);
+                    case 2: newCloud.setPosition(2458.45, -1085.85);
+                    case 3: newCloud.setPosition(-666.95, -172.05);
+                    case 4: newCloud.setPosition(-1616.6, 1016.95);
+                    case 5: newCloud.setPosition(1714.25, 200.45);
+                    case 6: newCloud.setPosition(-167.05, 710.25);
+                }
+
+                farClouds.add(newCloud);
+            }
+        }
+
+        fgCloud = new FlxSprite(-2660.4, -402).loadGraphic(Paths.image(ext + 'fgClouds'));
+        fgCloud.antialiasing = true;
+        fgCloud.scale.set(2, 2);
+        fgCloud.updateHitbox();
+        fgCloud.scrollFactor.set(0.2, 0.2);
+
+        speedlines = new FlxBackdrop().loadGraphic(Paths.image(ext + 'speedlines'));
+        speedlines.scale.set(3, 3);
+        speedlines.updateHitbox();
+        speedlines.scrollFactor.set(.3, .3);
+        speedlines.alpha = 0.5;
+        speedlines.velocity.y = -2000 * (Save.instance.options.flashingLights ? 1.75 : 0.75);
+
+        farClouds.zIndex = 900;
+        cloudScroll.zIndex = 950;
+        fgCloud.zIndex = 20;
+        speedlines.zIndex = 1050;
+
+        add(farClouds);
+        add(cloudScroll);
+        add(fgCloud);
+        add(speedlines);
+
+        refresh();
+    }
+
+    override function onCountdownStart(event:ScriptEvent):Void
+    {
+        super.onCountdownStart(event);
+        setupCharacters();
+    }
+
+    function setupCharacters():Void
+    {
+        if (boyfriend == null) boyfriend = getBoyfriend();
+        if (gf == null) gf = getGirlfriend();
+        if (dad == null) dad = getDad();
+
+        if (gf != null) gf.scrollFactor.set(0.7, 0.7);
+
+        if (!positionsSaved)
+        {
+            if (boyfriend != null) { bfX = boyfriend.x; bfY = boyfriend.y; }
+            if (gf != null) { gfX = gf.x; gfY = gf.y; }
+            if (dad != null) { dadX = dad.x; dadY = dad.y; }
+
+            if (boyfriend != null && gf != null && dad != null)
+                positionsSaved = true;
+        }
+
+        applyCharacterColors();
+
+        if (gf != null) gf.angle = 0;
+        if (platform != null) platform.alpha = 1;
+    }
+
+    function applyCharacterColors():Void
+    {
+        if (boyfriend != null && boyfriend.color != characterGray) boyfriend.color = characterGray;
+        if (gf != null && gf.color != characterGray) gf.color = characterGray;
+        if (dad != null && dad.color != characterGray) dad.color = characterGray;
+    }
+
+    override function onUpdate(event:UpdateScriptEvent):Void
+    {
+        super.onUpdate(event);
+        
+        var elapsed:Float = event.elapsed;
+
+        if (!positionsSaved)
+        {
+            if (boyfriend == null) boyfriend = getBoyfriend();
+            if (gf == null) gf = getGirlfriend();
+            if (dad == null) dad = getDad();
+
+            if (boyfriend != null && gf != null && dad != null)
+            {
+                bfX = boyfriend.x; bfY = boyfriend.y;
+                gfX = gf.x; gfY = gf.y;
+                dadX = dad.x; dadY = dad.y;
+                positionsSaved = true;
+                applyCharacterColors(); // Aplicado apenas quando necessário
+            }
+        }
+
+        if (positionsSaved)
+        {
+            bfTimer += elapsed * bfFloatSpeed;
+            gfTimer += elapsed * gfFloatSpeed;
+            dadTimer += elapsed * dadFloatSpeed;
+
+            if (boyfriend != null)
+            {
+                boyfriend.x += ((bfX + Math.sin(bfTimer) * bfRangeX) - boyfriend.x) * floatLerp;
+                boyfriend.y += ((bfY + Math.sin(bfTimer * 2) * bfRangeY) - boyfriend.y) * floatLerp;
+            }
+
+            if (gf != null)
+            {
+                gf.x += ((gfX + Math.sin(gfTimer) * gfRangeX) - gf.x) * floatLerp;
+                gf.y += ((gfY + Math.sin(gfTimer * 2) * gfRangeY) - gf.y) * floatLerp;
+                if (gf.angle != 0) gf.angle = 0;
+            }
+
+            if (dad != null)
+            {
+                dad.x += ((dadX + Math.sin(dadTimer) * dadRangeX) - dad.x) * floatLerp;
+                dad.y += ((dadY + Math.sin(dadTimer * 2) * dadRangeY) - dad.y) * floatLerp;
+            }
+        }
+
+        var ps = PlayState.instance;
+        if (ps != null)
+        {
+            var songPos = Conductor.songPosition;
+            var bpmFactor = (Conductor.bpm / 60) * -1.0;
+            
+            ps.camHUD.scroll.y = Math.sin((songPos / 1000) * bpmFactor) * 15;
+            ps.camHUD.scrollAngle = Math.sin((songPos / 1200) * bpmFactor) * 1.2;
+
+            if (Save.instance.options.flashingLights)
+            {
+                shakeTimer -= elapsed;
+                if (shakeTimer <= 0)
+                {
+                    ps.camGame.shake(0.002, 0.1);
+                    shakeTimer = 0.1; // Restaura o timer para evitar criação excessiva de shakes em memória
+                }
+            }
+        }
+
+        var lerpFactor:Float = Math.max(0, Math.min(1, elapsed * ejectedSpeed)); // boundTo embutido para performance
+
+        if (cloudScroll != null && cloudScroll.members != null)
+        {
+            var len = cloudScroll.members.length;
+            for (i in 0...len)
+            {
+                var cloud = cloudScroll.members[i];
+                if (cloud == null) continue;
+
+                cloud.y = FlxMath.lerp(cloud.y, cloud.y - speedPass[i], lerpFactor);
+
+                if (cloud.y < -1789.65)
+                {
+                    var randomScale = FlxG.random.float(1.5, 2.2);
+                    var randomScroll = FlxG.random.float(1, 1.3);
+
+                    speedPass[i] = FlxG.random.float(1100, 1300);
+
+                    cloud.scale.set(randomScale, randomScale);
+                    cloud.scrollFactor.set(randomScroll, randomScroll);
+                    cloud.x = FlxG.random.float(-3578.95, 3259.6);
+                    cloud.y = 2196.15;
+                }
+            }
+        }
+
+        if (farClouds != null && farClouds.members != null)
+        {
+            var len = farClouds.members.length;
+            for (i in 0...len)
+            {
+                var fCloud = farClouds.members[i];
+                if (fCloud == null) continue;
+
+                fCloud.y = FlxMath.lerp(fCloud.y, fCloud.y - farSpeedPass[i], lerpFactor);
+
+                if (fCloud.y < -1614)
+                {
+                    var randomScale = FlxG.random.float(0.2, 0.5);
+                    var randomScroll = FlxG.random.float(0.2, 0.4);
+
+                    farSpeedPass[i] = FlxG.random.float(1100, 1300);
+
+                    fCloud.scale.set(randomScale, randomScale);
+                    fCloud.scrollFactor.set(randomScroll, randomScroll);
+                    fCloud.x = FlxG.random.float(-2737.85, 3485.4);
+                    fCloud.y = 1738.6;
+                }
+            }
+        }
+
+        // Loop unificado de prédios: calcula tudo em uma única iteração
+        if (middleBuildings != null && middleBuildings.members != null)
+        {
+            var len = middleBuildings.members.length;
+            for (i in 0...len)
+            {
+                var mBuild = middleBuildings.members[i];
+                if (mBuild == null) continue;
+
+                if (mBuild.y < -11759.9)
+                {
+                    mBuild.y = 3190.5;
+                    mBuild.animation.play(FlxG.random.bool(50) ? '1' : '2');
+                }
+
+                mBuild.y = FlxMath.lerp(mBuild.y, mBuild.y - 1300, lerpFactor);
+
+                if (leftBuildings != null && leftBuildings.members[i] != null)
+                    leftBuildings.members[i].y = mBuild.y + 5888;
+                
+                if (rightBuildings != null && rightBuildings.members[i] != null && leftBuildings != null)
+                    rightBuildings.members[i].y = leftBuildings.members[i].y;
+            }
+        }
+
+        if (fgCloud != null && FlxG.sound.music != null && FlxG.sound.music.length > 0)
+        {
+            fgCloud.y = FlxMath.lerp(-702, -902, Conductor.songPosition / FlxG.sound.music.length);
+        }
+    }
+
+    override function onSongEvent(event:SongEventScriptEvent):Void
+    {
+        super.onSongEvent(event);
+
+        var eventName = event.eventData.eventKind != null ? event.eventData.eventKind : event.eventData.event;
+
+        if (eventName == "FocusCamera")
+        {
+            var charTarget:Int = event.eventData.getInt('char');
+
+            if (zoomTween != null)
+                zoomTween.cancel();
+
+            if (charTarget == 0)
+            {
+                zoomTween = FlxTween.tween(
+                    PlayState.instance,
+                    {currentCameraZoom: 0.65},
+                    0.7,
+                    {ease: FlxEase.smoothStepInOut}
+                );
+            }
+            else if (charTarget == 1)
+            {
+                zoomTween = FlxTween.tween(
+                    PlayState.instance,
+                    {currentCameraZoom: 0.5},
+                    0.5,
+                    {ease: FlxEase.smoothStepInOut}
+                );
+            }
+        }
+    }
+
+    override function onDestroy(event:ScriptEvent):Void
+    {
+        if (zoomTween != null)
+            zoomTween.cancel();
+
+        super.onDestroy(event);
+    }
+
+    function boundTo(value:Float, min:Float, max:Float):Float
+    {
+        var newValue:Float = value;
+
+        if (newValue < min)
+            newValue = min;
+        else if (newValue > max)
+            newValue = max;
+
+        return newValue;
+    }
+}

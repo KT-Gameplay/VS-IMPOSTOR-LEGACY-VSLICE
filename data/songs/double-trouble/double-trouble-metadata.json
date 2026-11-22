@@ -6,24 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf",
    "girlfriend": "gf-dt",
-   "opponent": "green-dt",
-   "opponentVocals": ["green-dt"],
-   "playerVocals": []
+   "opponent": "green-dt"
   },
   "stage": "dt",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 15},
+  "album": "Impostor39",
   "stickerPack": "default",
   "previewEnd": 0
  },

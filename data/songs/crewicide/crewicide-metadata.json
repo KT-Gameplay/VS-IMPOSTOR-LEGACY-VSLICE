@@ -6,22 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf",
    "girlfriend": "gf",
-   "opponent": "dave",
-   "opponentVocals": [
-    "dave"
-   ],
-   "playerVocals": []
+   "opponent": "dave"
   },
   "stage": "dave",
   "noteStyle": "impostor",
-  "album": "volume1",
+  "ratings": {"normal": 4},
+  "album": "Impostor32",
   "stickerPack": "default",
   "previewEnd": 0
  },

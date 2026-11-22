@@ -6,22 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "blue-ow",
    "girlfriend": "gf",
-   "opponent": "red-ow",
-   "opponentVocals": [
-    "red-ow"
-   ],
-   "playerVocals": []
+   "opponent": "red-ow"
   },
   "stage": "ow",
   "noteStyle": "impostor",
-  "album": "volume1",
+  "ratings": {"normal": 6},
+  "album": "Impostor38",
   "stickerPack": "default",
   "previewEnd": 0
  },

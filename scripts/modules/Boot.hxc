@@ -1,0 +1,31 @@
+import flixel.FlxG;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.Module;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.mainmenu.MainMenuState;
+
+class LegacyMenuBootModule extends Module
+{
+  var switching:Bool = false;
+
+  function new()
+  {
+    super('LegacyMenuBoot', 1);
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+    if (!Std.isOfType(FlxG.state, MainMenuState))
+    {
+      switching = false;
+      return;
+    }
+
+    if (switching) return;
+
+    switching = true;
+    FlxG.switchState(() -> ScriptedMusicBeatState.init('LegacyMainMenuState'));
+  }
+}

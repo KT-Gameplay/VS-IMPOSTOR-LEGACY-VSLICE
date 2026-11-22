@@ -12,6 +12,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
+import animate.internal.elements.FlxSpriteElement;
 
 class DoubleTroubleSong extends Song
 {
@@ -49,44 +50,45 @@ class DoubleTroubleSong extends Song
 
         bf = PlayState.instance.currentStage.getBoyfriend();
         gf = PlayState.instance.currentStage.getGirlfriend();
-        redElement = new animate.internal.elements.FlxSpriteElement(redPostor);
+        redElement = new FlxSpriteElement(redPostor);
         dad = PlayState.instance.currentStage.getDad();
         var placeholder = dad.library.getSymbol('red placeholder');
 	
-	placeholder.timeline.layers[0].forEachFrame((frame) -> {
-		for (i in frame.elements)
-			i.visible = false;
-			
-		frame.add(redElement);
-	});
+        placeholder.timeline.layers[0].forEachFrame((frame) -> {
+            for (i in frame.elements)
+                i.visible = false;
+                
+            frame.add(redElement);
+        });
 
-    bfShader.setAdjustColor(-78, -25, -15, -58);
-	bfShader.addLayer([
-		.8, 0, 0, 0, 0,
-		0, 1, 0, 0, 0,
-		.3, 0, 1, 0, 0,
-		0, 0, 0, 1, 0
-	], 90, 35, .01, 1, .5);
-	
-	greenShader.copyFrom(gfShader.copyFrom(bfShader));
-	greenShader.setAdjustColor(-28, -22, -10, -60);
+        bfShader.setAdjustColor(-78, -25, -15, -58);
+        bfShader.addLayer([
+            .8, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            .3, 0, 1, 0, 0,
+            0, 0, 0, 1, 0
+        ], 90, 35, .01, 1, .5);
+        
+        greenShader.copyFrom(gfShader.copyFrom(bfShader));
+        greenShader.setAdjustColor(-28, -22, -10, -60);
 
-    redShader.copyFrom(greenShader);
-	
-	bfShader.layers[0].angle = 110;
-	greenShader.layers[0].angle = 70;
+        redShader.copyFrom(greenShader);
+        
+        bfShader.layers[0].angle = 110;
+        greenShader.layers[0].angle = 70;
 
-    bfShader.attachedSprite = bf;
-    gfShader.attachedSprite = gf;
-    greenShader.attachedSprite = dad;
-    redShader.attachedSprite = redPostor;
+        bfShader.attachedSprite = bf;
+        gfShader.attachedSprite = gf;
+        greenShader.attachedSprite = dad;
+        redShader.attachedSprite = redPostor;
 
-    rainShader = new FlxRuntimeShader(Assets.getText(Paths.frag('rain-legacy')));
-	rainShader.setFloatArray('uScreenResolution', [FlxG.width, FlxG.height]);
-	rainShader.setFloat('uTime', 0);
-	rainShader.setFloat('uScale', FlxG.height / 200);
-	rainShader.setFloat('uIntensity', rainIntensity);
-    if(Save.instance.modOptions["Shaders"]) PlayState.instance.camGame.filters = [new ShaderFilter(rainShader)];
+        rainShader = new FlxRuntimeShader(Assets.getText(Paths.frag('rain-legacy')));
+        rainShader.data.uScreenResolution.value = [FlxG.width, FlxG.height];
+        rainShader.data.uTime.value = [0];
+        rainShader.data.uScale.value = [FlxG.height / 200];
+        rainShader.data.uIntensity.value = [rainIntensity];
+        
+        if(Save.instance.modOptions["Shaders"]) PlayState.instance.camGame.filters = [new ShaderFilter(rainShader)];
     }
 
     function onCountdownStart(event)
@@ -104,7 +106,6 @@ class DoubleTroubleSong extends Song
     {
         PlayState.instance.isInCutscene = true;
 
-        // camera set up
         PlayState.instance.camHUD.alpha = 0.001;
         PlayState.instance.tweenCameraToPosition(2350, 1320, 0);
         PlayState.instance.currentCameraZoom = 1.3;
@@ -113,12 +114,15 @@ class DoubleTroubleSong extends Song
 
         var introSound:FlxSound = FlxG.sound.load(Paths.sound('stage/dtIntro'));
         
-        // animation set up
         bfIntro = FunkinSprite.createTextureAtlas(2100, 1080, 'BG/dt/bfIntro', 'shared', {cacheOnLoad: true, swfMode: true});
         bfIntro.anim.addByFrameLabel('intro', 'intro', 24, false);
-        PlayState.instance.currentStage.add(bfIntro);
+        
+        var bfTarget = PlayState.instance.currentStage.getBoyfriend();
+        var bfIndex = PlayState.instance.currentStage.members.indexOf(bfTarget);
+        PlayState.instance.currentStage.insert(bfIndex, bfIntro);
+        
         bfShader.attachedSprite = bfIntro;
-        PlayState.instance.currentStage.getBoyfriend().kill();
+        bfTarget.kill();
         bfIntro.anim.play('intro', true);
         PlayState.instance.currentStage.getGirlfriend().playAnimation('intro', true);
         PlayState.instance.currentStage.scriptGet('lightningDarken')?.push(bfIntro);
@@ -140,9 +144,9 @@ class DoubleTroubleSong extends Song
 
             PlayState.instance.tweenCameraToPosition(1100, 1000, 6, FlxEase.smootherStepOut);
             PlayState.instance.tweenCameraZoom(0.62, 6, true, FlxEase.smootherStepOut);
-		
+        
             FlxTween.tween(PlayState.instance.camHUD, {alpha: 1}, 2, {ease: FlxEase.sineInOut});
-		
+        
             new FlxTimer().start(5, function(_) {
                 PlayState.instance.currentStage.remove(bfIntro);
                 bfIntro.destroy();
@@ -156,42 +160,46 @@ class DoubleTroubleSong extends Song
     }
 
     function onUpdate(event):Void
-{
-    var game = PlayState.instance;
-	heartRad += event.elapsed;
-	rainShader.setFloatArray('uCameraBounds',
-		[game.camGame.scroll.x + game.camGame.viewMarginX, game.camGame.scroll.y + game.camGame.viewMarginY, game.camGame.scroll.x
-			+ game.camGame.viewMarginX
-			+ game.camGame.width, game.camGame.scroll.y
-			+ game.camGame.viewMarginY
-			+ game.camGame.height]);
-	rainShader.setFloat('uTime', heartRad);
-	rainShader.setFloat('uIntensity', rainIntensity);
-}
+    {
+        var game = PlayState.instance;
+        heartRad += event.elapsed;
+        
+        if(rainShader != null)
+        {
+            rainShader.data.uCameraBounds.value = [
+                game.camGame.scroll.x + game.camGame.viewMarginX, 
+                game.camGame.scroll.y + game.camGame.viewMarginY, 
+                game.camGame.scroll.x + game.camGame.viewMarginX + game.camGame.width, 
+                game.camGame.scroll.y + game.camGame.viewMarginY + game.camGame.height
+            ];
+            rainShader.data.uTime.value = [heartRad];
+            rainShader.data.uIntensity.value = [rainIntensity];
+        }
+    }
 
-function onNoteHit(event)
-{
-    if(event.note.noteData.getMustHitNote()) return;
+    function onNoteHit(event)
+    {
+        if(event.note.noteData.getMustHitNote()) return;
 
-    var greenSing:Bool = (event.note.noteData.kind != 'GF');
+        var greenSing:Bool = (event.note.noteData.kind != 'GF');
 
-    if (event.note.noteData.kind == 'Both Opponents Sing')
-	{
-		if (redSnap) redPostor.playSingAnimation(event.note.noteData.getDirection(), false, 'mad'); // im jsut so tired
-		else redPostor.playSingAnimation(event.note.noteData.getDirection(), false);
-		redPostor.holdTimer = 0;
-	}
-	else if (!greenSing)
-	{
-		if (redSnap) redPostor.playSingAnimation(event.note.noteData.getDirection(), false, 'mad'); // im jsut so tired
-		else redPostor.playSingAnimation(event.note.noteData.getDirection(), false);
-		redPostor.holdTimer = 0;
-		event.stopPropagation();
-	}
-	else
-	{
-		redPostor.playSingAnimation(event.note.noteData.getDirection(), false, 'balance');
-		redPostor.holdTimer = 0;
-	}
-}
+        if (event.note.noteData.kind == 'Both Opponents Sing')
+        {
+            if (redSnap) redPostor.playSingAnimation(event.note.noteData.getDirection(), false, 'mad'); 
+            else redPostor.playSingAnimation(event.note.noteData.getDirection(), false);
+            redPostor.holdTimer = 0;
+        }
+        else if (!greenSing)
+        {
+            if (redSnap) redPostor.playSingAnimation(event.note.noteData.getDirection(), false, 'mad'); 
+            else redPostor.playSingAnimation(event.note.noteData.getDirection(), false);
+            redPostor.holdTimer = 0;
+            event.stopPropagation();
+        }
+        else
+        {
+            redPostor.playSingAnimation(event.note.noteData.getDirection(), false, 'balance');
+            redPostor.holdTimer = 0;
+        }
+    }
 }

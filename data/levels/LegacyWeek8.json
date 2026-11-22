@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "name": "Jorsawsee's Jams",
+  "titleAsset": "storymenu/titles/WeekJ",
+  "visible": true,
+  "props": [
+  ],
+  "background": "#3B82F6",
+  "songs": ["o2", "voting-time", "turbulence", "victory"]
+}

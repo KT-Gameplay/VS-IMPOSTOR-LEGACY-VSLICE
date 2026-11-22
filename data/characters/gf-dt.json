@@ -20,7 +20,7 @@
 		"id": "face",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/gf/doubleTroubleGf",
+	"assetPath": "characters/gf/doubleTroubleGf",
 	"animations": [
 		{
 			"frameIndices": [],

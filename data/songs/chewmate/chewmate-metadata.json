@@ -6,28 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bfsus-pixel",
    "girlfriend": "gf-pixel",
-   "opponent": "hamster",
-   "opponentVocals": [
-    "hamster"
-   ],
-   "playerVocals": []
+   "opponent": "hamster"
   },
   "stage": "tomongus",
   "noteStyle": "pixelImpostor",
-  "ratings": {
-   "easy": 0,
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 3},
+  "album": "Impostor22",
   "stickerPack": "default",
   "previewEnd": 0
  },

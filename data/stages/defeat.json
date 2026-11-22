@@ -1,0 +1,173 @@
+{
+	"version": "1.0.0",
+	"name": "Defeat",
+	"cameraZoom": 0.6,
+	"props": [
+		{
+			"zIndex": 0,
+			"position": [
+				-1400,
+				-200
+			],
+			"scale": [
+				4,
+				4
+			],
+			"alpha": 0.4,
+			"name": "defeatthing",
+			"assetPath": "stages/void/defeatpulse",
+			"scroll": [
+				0.8,
+				0.8
+			]
+		},
+		{
+			"zIndex": 0,
+			"position": [
+				-280,
+				-125
+			],
+			"scale": [
+				2,
+				2
+			],
+			"alpha": 0.01,
+			"name": "old_defeat",
+			"assetPath": "stages/void/defeatfnf",
+			"scroll": [
+				1,
+				1
+			]
+		},
+		{
+			"zIndex": 0,
+			"position": [
+				-500,
+				50
+			],
+			"scale": [
+				1.3,
+				1.3
+			],
+			"alpha": 0.001,
+			"name": "bodies2",
+			"assetPath": "stages/void/idontknwo",
+			"scroll": [
+				0.5,
+				0.5
+			]
+		},
+		{
+			"zIndex": 2,
+			"position": [
+				-700,
+				-500
+			],
+			"scale": [
+				4,
+				4
+			],
+			"alpha": 0.001,
+			"name": "subtract",
+			"assetPath": "stages/void/subtract",
+			"blend": "subtract",
+			"scroll": [
+				0,
+				0
+			]
+		},
+		{
+			"zIndex": 4,
+			"position": [
+				-1000,
+				-720
+			],
+			"scale": [
+				1.6,
+				1.6
+			],
+			"alpha": 0.001,
+			"name": "edgeglow1",
+			"assetPath": "stages/void/edgeglow",
+			"blend": "add",
+			"scroll": [
+				0,
+				0
+			]
+		},
+		{
+			"zIndex": 4,
+			"position": [
+				-1000,
+				720
+			],
+			"scale": [
+				1.6,
+				1.6
+			],
+			"alpha": 0.001,
+			"name": "edgeglow2",
+			"assetPath": "stages/void/edgeglow",
+			"blend": "add",
+			"scroll": [
+				0,
+				0
+			]
+		},
+		{
+			"zIndex": 3,
+			"position": [
+				-500,
+				-200
+			],
+			"scale": [
+				4,
+				4
+			],
+			"alpha": 0.6,
+			"name": "lightoverlay",
+			"assetPath": "stages/void/iluminao omaga",
+			"blend": "add",
+			"scroll": [
+				1,
+				1
+			]
+		}
+	],
+	"characters": {
+		"bf": {
+			"zIndex": 0,
+			"position": [
+				1239,
+				956
+			],
+			"cameraOffsets": [
+				590,
+				315
+			]
+		},
+		"dad": {
+			"zIndex": 1,
+			"position": [
+				860,
+				1150
+			],
+			"cameraOffsets": [
+				850,
+				175
+			]
+		},
+		"gf": {
+			"zIndex": 0,
+			"position": [
+				400,
+				100
+			],
+			"cameraOffsets": [
+				0,
+				0
+			],
+			"alpha": 0
+		}
+	}
+}

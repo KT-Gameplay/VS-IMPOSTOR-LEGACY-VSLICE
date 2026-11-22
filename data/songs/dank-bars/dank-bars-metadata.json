@@ -5,28 +5,16 @@
  "charter": "Orbyy",
  "offsets": { },
  "playData": {
-  "difficulties": [
-   "easy",
-   "normal",
-   "hard"
-  ],
+  "difficulties": ["normal"],
   "characters": {
    "player": "senpai-bars",
    "girlfriend": "gf",
-   "opponent": "bars",
-   "opponentVocals": [
-    "bars"
-   ],
-   "playerVocals": [
-    "senpai-bars"
-   ]
+   "opponent": "bars"
   },
   "stage": "bars",
   "noteStyle": "pixelImpostor",
-  "ratings": {
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 7},
+  "album": "ImpostorW",
   "stickerPack": "default",
   "previewEnd": 0
  },

@@ -5,26 +5,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf",
    "girlfriend": "gf",
-   "opponent": "jerma",
-   "opponentVocals": [
-    "jerma"
-   ],
-   "playerVocals": []
+   "opponent": "jerma"
   },
   "stage": "jerma",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 4},
+  "album": "Impostor37",
   "stickerPack": "default",
   "previewEnd": 0
  },

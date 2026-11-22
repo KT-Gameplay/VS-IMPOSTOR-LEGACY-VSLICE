@@ -28,7 +28,7 @@
 		"flipX": false,
 		"id": "pico"
 	},
-	"assetPath": "shared:characters/pico/picoroomcode",
+	"assetPath": "characters/bf/pico",
 	"atlasSettings": {
 		"applyStageMatrix": false,
 		"useRenderTexture": false,

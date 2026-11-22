@@ -7,23 +7,17 @@
  "playData": {
   "songVariations": [],
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "clowfoe",
    "girlfriend": "fabs",
-   "opponent": "attack",
-   "opponentVocals": [
-    "attack"
-   ]
+   "opponent": "attack"
   },
+  "album": "Impostor33",
   "stage": "attack",
   "noteStyle": "impostor",
-  "ratings": {
-   "hard": 0
-  },
+  "ratings": {"normal": 6},
   "previewEnd": 0
  },
  "generatedBy": "Friday Night Funkin' - v0.8.5",

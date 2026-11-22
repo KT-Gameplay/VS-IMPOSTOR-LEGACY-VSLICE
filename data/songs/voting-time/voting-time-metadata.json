@@ -1,0 +1,38 @@
+{
+  "version": "2.2.4",
+  "songName": "Voting Time",
+  "artist": "punkett, JADS",
+  "charter": "Thales",
+  "offsets": {},
+  "playData": {
+    "difficulties": [
+      "normal"
+    ],
+    "characters": {
+      "player": "bf",
+      "girlfriend": "jelqer",
+      "opponent": "warchief"
+    },
+    "stage": "voting",
+    "noteStyle": "impostor",
+    "ratings": {"normal": 7},
+    "album": "Impostor19"
+  },
+  "generatedBy": "Funkin' Tools",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 134,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}

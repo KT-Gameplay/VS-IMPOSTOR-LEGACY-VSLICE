@@ -6,26 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bf-lava",
    "girlfriend": "gf",
-   "opponent": "maroonParasite",
-   "opponentVocals": [
-    "maroonP"
-   ],
-   "playerVocals": []
+   "opponent": "maroonP"
   },
   "stage": "boiling",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 6},
+  "album": "Impostor9",
   "stickerPack": "default",
   "previewEnd": 0
  },

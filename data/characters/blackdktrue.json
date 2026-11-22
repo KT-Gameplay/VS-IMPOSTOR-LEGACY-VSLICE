@@ -1,0 +1,119 @@
+{
+  "version": "1.0.0",
+  "name": "blackdk",
+  "assetPath": "characters/story/black/blackdk",
+  "startingAnimation": "idle",
+  "singTime": 6,
+  "scale": 1,
+  "flipX": false,
+  "cameraOffsets": [
+    -70,
+    110
+  ],
+  "healthIcon": {
+    "id": "black",
+    "scale": 1,
+    "flipX": false,
+    "isPixel": false
+  },
+  "healthbarColors": [
+    161,
+    161,
+    161
+  ],
+  "renderType": "multianimateatlas",
+  "isPixel": false,
+  "animations": [
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        83,
+        648
+      ]
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        104,
+        673
+      ]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "right",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        -16,
+        671
+      ]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        212,
+        634
+      ]
+    },
+    {
+      "name": "fall",
+      "prefix": "fall",
+      "fps": 24,
+      "looped": false,
+      "offsets": [
+        156,
+        658
+      ],
+      "frameIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28
+      ]
+    },
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "fps": 24,
+      "looped": true,
+      "offsets": [
+        62,
+        641
+      ]
+    }
+  ]
+}

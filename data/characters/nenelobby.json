@@ -20,7 +20,7 @@
 		"id": "face",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/nene/Nenelobby",
+	"assetPath": "characters/gf/Nenelobby",
 	"animations": [
 		{
 			"frameIndices": [

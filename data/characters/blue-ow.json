@@ -20,7 +20,7 @@
 		"id": "blue-ow",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/freeplay/blue_ow",
+	"assetPath": "characters/freeplay/blue_ow",
 	"animations": [
 		{
 			"frameIndices": [],

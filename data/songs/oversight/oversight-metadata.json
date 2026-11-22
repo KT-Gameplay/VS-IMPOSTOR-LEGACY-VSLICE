@@ -1,0 +1,38 @@
+{
+  "version": "2.2.4",
+  "songName": "Oversight",
+  "artist": "Emihead, Rareblin",
+  "charter": "SquidBoy84",
+  "offsets": {},
+  "playData": {
+    "difficulties": ["normal"],
+    "characters": {
+      "player": "bf",
+      "girlfriend": "gf",
+      "opponent": "white"
+    },
+    "stage": "airship",
+    "noteStyle": "impostor",
+    "ratings": {"normal": 5},
+    "album": "Impostor6",
+    "previewStart": 0,
+    "previewEnd": 0
+  },
+  "generatedBy": "Chart Convert. V2 GCD",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 156,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}

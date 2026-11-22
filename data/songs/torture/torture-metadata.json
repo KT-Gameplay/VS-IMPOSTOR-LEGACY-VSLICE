@@ -5,26 +5,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "ziffytorture",
    "girlfriend": "piptorture",
-   "opponent": "cvaltorture",
-   "opponentVocals": [
-    "cvaltorture"
-   ],
-   "playerVocals": []
+   "opponent": "cvaltorture"
   },
   "stage": "torture",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 6},
+  "album": "Impostor35",
   "stickerPack": "default",
   "previewEnd": 0
  },

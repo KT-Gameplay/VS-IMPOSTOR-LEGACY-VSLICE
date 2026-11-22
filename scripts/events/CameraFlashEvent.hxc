@@ -1,0 +1,70 @@
+import funkin.play.event.ScriptedSongEvent;
+import funkin.play.PlayState;
+import flixel.FlxCamera;
+import flixel.util.FlxColor;
+import funkin.Conductor;
+import Std;
+
+class CameraFlashEvent extends ScriptedSongEvent {
+    public function new() {
+        super('CameraFlashEvent');
+    }
+
+    public override function handleEvent(data):Void {
+        if (PlayState.instance == null) return;
+
+        var v = data.value;
+        var reversed:Bool = v.reversed ?? false;
+        var color:Int = Std.parseInt('0xFF' + v.color) ?? 0xFFFFFFFF;
+        var time:Float = v.time ?? 4.0;
+        var cameraName:String = v.camera ?? 'camHUD';
+
+        var camera:FlxCamera = cameraName == 'camGame' ? PlayState.instance.camGame : PlayState.instance.camHUD;
+        var duration:Float = (Conductor.instance.stepLengthMs / 1000.0) * time;
+
+        if (reversed) {
+            camera.fade(color, duration, false, function() {
+                camera.fade(color, 0.001, true);
+            }, true);
+        } else {
+            camera.flash(color, duration, null, true);
+        }
+    }
+
+    public override function getTitle():String {
+        return 'Camera Flash';
+    }
+
+    public override function getEventSchema() {
+        return ([
+            {
+                name: 'reversed',
+                title: 'Reversed?',
+                defaultValue: false,
+                type: 'bool'
+            },
+            {
+                name: 'color',
+                title: 'Hex Color (RRGGBB)',
+                defaultValue: 'FFFFFF',
+                type: 'string'
+            },
+            {
+                name: 'time',
+                title: 'Time (Steps)',
+                defaultValue: 4.0,
+                step: 0.25,
+                min: 0.25,
+                type: 'float',
+                units: 'steps'
+            },
+            {
+                name: 'camera',
+                title: 'Camera',
+                defaultValue: 'camHUD',
+                type: 'enum',
+                keys: ['HUD Camera' => 'camHUD', 'Game Camera' => 'camGame']
+            }
+        ]);
+    }
+}

@@ -1,0 +1,115 @@
+{
+	"renderType": "sparrow",
+	"offsets": [
+		0,
+		0
+	],
+	"applyStageMatrix": false,
+	"startingAnimation": "idle",
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"isPixel": false,
+		"scale": 1,
+		"id": "white",
+		"flipX": false
+	},
+	"assetPath": "characters/story/white/whitedk",
+	"healthbarColors": [
+		161,
+		161,
+		161
+	],
+	"version": "1.0.0",
+	"danceEvery": 1,
+	"scale": 1.1,
+	"name": "white",
+	"flipX": false,
+	"cameraOffsets": [
+		248,
+		-97
+	],
+	"singTime": 5,
+	"isPixel": false,
+	"atlasSettings": {
+		"applyStageMatrix": false,
+		"useRenderTexture": false,
+		"filterQuality": 1,
+		"cacheOnLoad": false,
+		"swfMode": true
+	},
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "idle_w",
+			"animType": "framelabel",
+			"flipX": false,
+			"name": "idle",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				61,
+				-45
+			],
+			"fps": 24,
+			"prefix": "down_w",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singDOWN",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				2,
+				11
+			],
+			"fps": 24,
+			"prefix": "right_w",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT",
+			"animType": "symbol",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				37,
+				36
+			],
+			"fps": 24,
+			"prefix": "up_w",
+			"flipX": false,
+			"animType": "symbol",
+			"name": "singUP",
+			"looped": false,
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				29,
+				-3
+			],
+			"fps": 24,
+			"prefix": "left_w",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT",
+			"animType": "symbol",
+			"flipY": false,
+			"frameRate": 24
+		}
+	]
+}

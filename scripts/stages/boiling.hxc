@@ -65,18 +65,13 @@ class BoilingStage extends Stage
 
         lava.y = -694;
         FlxTween.tween(lava, {y: -750}, 200);
-
-        LegacyUtils.camSpecialThing([1760, 380], [1900, 435]);
     }
 
     function onUpdate(event)
     {
         super.onUpdate(event);
-
-        var iTime:Float;
-        iTime += event.elapsed;
         
-        heatwaveShader.setFloat("iTime", iTime);
+        heatwaveShader.setFloat("iTime", event.elapsed);
     }
 
     function onSongEvent(event)
@@ -91,6 +86,8 @@ class BoilingStage extends Stage
             if(Math.isNaN(speed)) speed = 0;
 
             if(chromTween != null) chromTween.cancel();
+           // chromTween = FlxTween.tween(caShader, {amount: theAmount}, theSpeed, {ease: FlxEase.sineOut});
+           // ya nope cuz it aint a separate class for shader
 
             chromTween = FlxTween.num(chromValue, value, speed,{ease: FlxEase.sineOut}, function(num:Float) 
                 {

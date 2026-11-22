@@ -3,7 +3,38 @@
   "name": "Toogus",
   "directory": "",
   "cameraZoom": 0.9,
-  "props": [],
+  "props": [
+    {
+      "assetPath": "BG/mira-cafe/mirabg",
+      "atlasSettings": null,
+      "name": "bg",
+      "position": [-127, 37],
+      "scale": 1.06,
+      "startingAnimation": "",
+      "scroll": [1, 1],
+      "zIndex": 0
+    },
+    {
+      "assetPath": "BG/mira-cafe/mirafg",
+      "atlasSettings": null,
+      "name": "fg",
+      "position": [-1649, 49],
+      "scale": 1.06,
+      "startingAnimation": "",
+      "scroll": [1, 1],
+      "zIndex": 5
+    },
+    {
+      "assetPath": "BG/mira-cafe/table_bg",
+      "atlasSettings": null,
+      "name": "tn",
+      "position": [-1659, 42],
+      "scale": 1.06,
+      "startingAnimation": "",
+      "scroll": [1, 1],
+      "zIndex": 21
+    }
+  ],
   "characters": {
     "bf": {
       "zIndex": 300,

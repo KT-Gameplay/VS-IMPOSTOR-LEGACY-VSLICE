@@ -1,8 +1,7 @@
 {
  "version": "2.0.0",
  "scrollSpeed": {
-  "normal": 1,
-  "hard": 2.8
+  "normal": 2.8
  },
  "events": [
   {
@@ -272,9 +271,7 @@
   }
  ],
  "notes": {
-  "easy": [],
-  "normal": [],
-  "hard": [
+  "normal": [
    {
     "t": 10105.2631578947,
     "d": 7

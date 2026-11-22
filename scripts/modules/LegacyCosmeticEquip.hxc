@@ -1,0 +1,9 @@
+import funkin.modding.module.Module;
+
+class LegacyCosmeticEquipModule extends Module
+{
+  function new()
+  {
+    super('LegacyCosmeticEquip', 1);
+  }
+}

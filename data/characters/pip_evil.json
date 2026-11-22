@@ -20,7 +20,7 @@
 		"id": "pip",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/misc/cvp/pipAtlas",
+	"assetPath": "characters/misc/cvp/pipAtlas",
 	"animations": [
 		{
 			"frameIndices": [],

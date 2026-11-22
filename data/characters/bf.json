@@ -1,0 +1,276 @@
+{
+	"renderType": "multianimateatlas",
+	"offsets": [
+		17,
+		14
+	],
+	"applyStageMatrix": false,
+	"startingAnimation": "idle",
+	"death": {
+		"cameraOffsets": [
+			-73,
+			42
+		]
+	},
+	"healthIcon": {
+		"isPixel": false,
+		"shouldBop": true,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 1,
+		"id": "bf",
+		"flipX": false
+	},
+	"assetPath": "characters/BOYFRIEND",
+	"version": "1.0.0",
+	"danceEvery": 1,
+	"scale": 1,
+	"name": "Boyfriend",
+	"flipX": true,
+	"cameraOffsets": [
+		-18,
+		36
+	],
+	"isPixel": false,
+	"singTime": 8,
+	"atlasSettings": {
+		"swfMode": true,
+		"applyStageMatrix": false,
+		"useRenderTexture": false,
+		"filterQuality": 1,
+		"cacheOnLoad": false
+	},
+	"animations": [
+		{
+			"offsets": [
+				499,
+				99
+			],
+			"prefix": "Dies",
+			"name": "firstDeath",
+			"looped": false,
+			"animType": "symbol",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "characters/gameover/GenericDeath"
+		},
+		{
+			"offsets": [
+				588,
+				98
+			],
+			"prefix": "Loop",
+			"looped": true,
+			"name": "deathLoop",
+			"animType": "symbol",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "characters/gameover/GenericDeath"
+		},
+		{
+			"offsets": [
+				826,
+				101
+			],
+			"prefix": "Confirm",
+			"name": "deathConfirm",
+			"looped": false,
+			"animType": "symbol",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "characters/gameover/GenericDeath"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Idle",
+			"name": "idle",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Left",
+			"name": "singLEFT",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Down",
+			"name": "singDOWN",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"flipY": false,
+			"frameRate": 24,
+			"prefix": "Up",
+			"name": "singUP",
+			"looped": false,
+			"flipX": false,
+			"animType": "framelabel"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Right",
+			"name": "singRIGHT",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Left Miss",
+			"name": "singLEFTmiss",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Down Miss",
+			"name": "singDOWNmiss",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Up Miss",
+			"name": "singUPmiss",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Right Miss",
+			"name": "singRIGHTmiss",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Hey",
+			"name": "hey",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"prefix": "Cheer",
+			"name": "cheer",
+			"looped": false,
+			"animType": "framelabel",
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": "shared:characters/bf"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "Scared",
+			"looped": false,
+			"name": "scared",
+			"flipX": false,
+			"animType": "framelabel",
+			"flipY": false,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				-2,
+				0
+			],
+			"fps": 24,
+			"frameIndices": [
+				6,
+				7,
+				8,
+				9
+			],
+			"prefix": "Scared",
+			"looped": true,
+			"name": "idle-scared",
+			"flipX": false,
+			"animType": "framelabel",
+			"flipY": false,
+			"frameRate": 24
+		}
+	]
+}

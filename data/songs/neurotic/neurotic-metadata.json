@@ -6,26 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bfairship",
    "girlfriend": "gf-gray",
-   "opponent": "grey",
-   "opponentVocals": [
-    "grey"
-   ],
-   "playerVocals": []
+   "opponent": "grey"
   },
   "stage": "gray",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 8},
+  "album": "Impostor10",
   "stickerPack": "default",
   "previewEnd": 0
  },

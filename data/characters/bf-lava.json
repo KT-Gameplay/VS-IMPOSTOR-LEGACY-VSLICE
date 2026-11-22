@@ -1,5 +1,5 @@
 {
-	"renderType": "animateatlas",
+	"renderType": "sparrow",
 	"version": "1.0.1",
 	"offsets": [
 		0,
@@ -20,7 +20,7 @@
 		"id": "bf",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/bf/bfLava",
+	"assetPath": "characters/bf/bflava",
 	"animations": [
 		{
 			"frameIndices": [],

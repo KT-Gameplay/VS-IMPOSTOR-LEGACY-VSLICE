@@ -25,7 +25,6 @@ class TomongusTuesdaySong extends Song
         if(event.eventData.eventKind == 'tuesdayblast')
         {
             FlxG.sound.play(Paths.sound('stage/soundTuesday'));
-            PlayState.instance.currentStage.getBoyfriend().shouldBop = false;
         }
     }
 }

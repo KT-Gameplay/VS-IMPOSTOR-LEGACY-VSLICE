@@ -6,25 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bfpolus",
    "girlfriend": "gfpolus",
-   "opponent": "maroon",
-   "opponentVocals": [
-    "maroon"
-   ],
-   "playerVocals": []
+   "opponent": "maroon"
   },
   "stage": "maroon",
   "noteStyle": "impostor",
-  "ratings": {
-   "easy": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 4},
+  "album": "Impostor9",
   "stickerPack": "default",
   "previewEnd": 0
  },

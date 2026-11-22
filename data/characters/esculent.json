@@ -23,7 +23,7 @@
 	"atlasSettings": {
 		"useRenderTexture": true
 	},
-	"assetPath": "shared:characters/freeplay/esculent",
+	"assetPath": "characters/freeplay/esculent",
 	"animations": [
 		{
 			"frameIndices": [],

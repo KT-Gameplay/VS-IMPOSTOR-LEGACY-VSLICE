@@ -1,5 +1,5 @@
 {
-	"renderType": "multisparrow",
+	"renderType": "sparrow",
 	"version": "1.0.1",
 	"offsets": [
 		0,
@@ -120,40 +120,6 @@
 			"frameRate": 24,
 			"name": "singUPmiss",
 			"looped": false
-		},
-		{
-			"frameIndices": [],
-			"renderType": "animateatlas",
-			"assetPath": "shared:characters/bf",
-			"prefix": "Death Intro",
-			"offsets": [
-				22,
-				15
-			],
-			"name": "firstDeath"
-		},
-		{
-			"frameIndices": [],
-			"renderType": "animateatlas",
-			"assetPath": "shared:characters/bf",
-			"prefix": "Death Loop",
-			"offsets": [
-				22,
-				15
-			],
-			"name": "deathLoop",
-			"looped": true
-		},
-		{
-			"frameIndices": [],
-			"renderType": "animateatlas",
-			"assetPath": "shared:characters/bf",
-			"prefix": "Death Confirm",
-			"offsets": [
-				22,
-				15
-			],
-			"name": "deathConfirm"
 		}
 	]
 }

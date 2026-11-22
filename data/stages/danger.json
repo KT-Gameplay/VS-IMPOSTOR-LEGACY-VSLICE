@@ -1,0 +1,24 @@
+{
+ "version": "1.0.2",
+ "name": "Danger",
+ "directory": "",
+ "props": [],
+ "characters": {
+"bf": {
+    "position": [2200, 1130],
+    "zIndex": 13,
+    "cameraOffsets": [-100, -100]
+   },
+   "gf": {
+    "position": [1200, 558],
+    "zIndex": 11,
+    "cameraOffsets": [0, 0]
+   },
+   "dad": {
+    "position": [500, 790],
+    "zIndex": 15,
+    "cameraOffsets": [100, -100]
+   }
+ },
+ "cameraZoom": 2
+}

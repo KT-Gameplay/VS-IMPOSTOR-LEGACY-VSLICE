@@ -20,7 +20,7 @@
 		"id": "pink",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/triple/pink/pink",
+	"assetPath": "characters/triple/pink/pink",
 	"animations": [
 		{
 			"frameIndices": [],

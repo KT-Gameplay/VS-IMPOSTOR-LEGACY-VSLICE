@@ -1,0 +1,375 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.Conductor;
+import funkin.modding.events.SongTimeScriptEvent;
+
+class Cargo extends Stage
+{
+    var cargoDark:FlxSprite;
+    var cargoDarkFG:FlxSprite;
+    var cargoDarken:Bool = false;
+    var showDlowDK:Bool = false;
+    var testMode:Bool = false;
+
+    var mainoverlayDK:FlxSprite;
+    var lightoverlayDK:FlxSprite;
+    var cargoAirship:FlxSprite;
+    var defeatDKoverlay:FlxSprite;
+    var cargoBG:FlxSprite;
+
+    var yellow:Dynamic;
+    var isBfGhost:Bool = false;
+    var mandoSing:Bool = false;
+
+    var lastProcessedStep:Int = -1;
+
+    public function new()
+    {
+        super('cargo');
+    }
+
+    override function buildStage():Void
+    {
+        super.buildStage();
+
+        mainoverlayDK = getNamedProp('newoverlay1');
+        lightoverlayDK = getNamedProp('newoverlay2');
+        cargoAirship = getNamedProp('airshipFlashback');
+        defeatDKoverlay = getNamedProp('iluminao omaga');
+        cargoBG = getNamedProp('cargo');
+
+        cargoDark = new FlxSprite(-1000, -1000);
+        cargoDark.makeGraphic(3840, 2160, 0xFF000000);
+        cargoDark.scrollFactor.set(0, 0);
+        cargoDark.alpha = 0.001;
+        cargoDark.zIndex = 99;
+        add(cargoDark);
+
+        cargoDarkFG = new FlxSprite(-640, -360);
+        cargoDarkFG.makeGraphic(2560, 1440, 0xFF000000);
+        cargoDarkFG.scrollFactor.set(0, 0);
+        cargoDarkFG.alpha = testMode ? 0 : 1;
+        cargoDarkFG.zIndex = 100000;
+        add(cargoDarkFG);
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+
+        var songPos = Conductor.instance.songPosition;
+
+        if (songPos >= 0 && songPos < 1200 && cargoDarkFG != null)
+        {
+            cargoDarkFG.alpha -= elapsed / 5;
+        }
+
+        if (cargoDarken)
+        {
+            if (cargoDark != null)
+            {
+                cargoDark.alpha = FlxMath.lerp(
+                    cargoDark.alpha,
+                    1,
+                    Math.max(0, Math.min(1, elapsed * 1.4))
+                );
+            }
+
+            if (PlayState.instance != null && PlayState.instance.currentStage != null)
+            {
+                var dad = PlayState.instance.currentStage.getDad();
+                var gf = PlayState.instance.currentStage.getGirlfriend();
+
+                if (dad != null)
+                {
+                    dad.alpha = FlxMath.lerp(
+                        dad.alpha,
+                        0.001,
+                        Math.max(0, Math.min(1, elapsed * 1.4))
+                    );
+                }
+
+                if (gf != null)
+                {
+                    gf.alpha = FlxMath.lerp(
+                        gf.alpha,
+                        0.001,
+                        Math.max(0, Math.min(1, elapsed * 1.4))
+                    );
+                }
+            }
+
+            if (mainoverlayDK != null)
+            {
+                mainoverlayDK.alpha = FlxMath.lerp(
+                    mainoverlayDK.alpha,
+                    0.001,
+                    Math.max(0, Math.min(1, elapsed * 1.4))
+                );
+            }
+
+            if (lightoverlayDK != null)
+            {
+                lightoverlayDK.alpha = FlxMath.lerp(
+                    lightoverlayDK.alpha,
+                    0.001,
+                    Math.max(0, Math.min(1, elapsed * 1.4))
+                );
+            }
+        }
+
+        if (showDlowDK && cargoAirship != null)
+        {
+            cargoAirship.alpha = FlxMath.lerp(
+                cargoAirship.alpha,
+                0.45,
+                Math.max(0, Math.min(1, elapsed * 0.1))
+            );
+        }
+    }
+
+    override function onSongStart(event:Dynamic):Void
+    {
+        super.onSongStart(event);
+
+        lastProcessedStep = -1;
+        cargoDarken = false;
+        showDlowDK = false;
+
+        if (cargoDark != null)
+        {
+            cargoDark.alpha = 0.001;
+        }
+
+        if (cargoDarkFG != null)
+        {
+            cargoDarkFG.alpha = testMode ? 0 : 1;
+        }
+
+        if (cargoBG != null)
+        {
+            cargoBG.alpha = 1;
+        }
+
+        if (PlayState.instance != null && PlayState.instance.camHUD != null)
+        {
+            PlayState.instance.camHUD.visible = false;
+            PlayState.instance.camHUD.alpha = 1;
+        }
+    }
+
+    override function onStepHit(event:SongTimeScriptEvent):Void
+    {
+        super.onStepHit(event);
+
+        var currentStep:Int = event.step;
+
+        if (currentStep <= lastProcessedStep)
+        {
+            return;
+        }
+
+        var startStep:Int = lastProcessedStep + 1;
+
+        if (startStep < 0)
+        {
+            startStep = 0;
+        }
+
+        for (step in startStep...currentStep + 1)
+        {
+            processStep(step);
+        }
+
+        lastProcessedStep = currentStep;
+    }
+
+    function processStep(step:Int):Void
+    {
+        switch (step)
+        {
+            case 16:
+                if (cargoDarkFG != null)
+                {
+                    cargoDarkFG.alpha = 0;
+                }
+
+                if (PlayState.instance != null && PlayState.instance.camHUD != null)
+                {
+                    PlayState.instance.camHUD.visible = true;
+                }
+
+            case 1424:
+                cargoDarken = true;
+                FlxG.camera.flash(0xFF000000, 0.55);
+
+            case 1552:
+                showDlowDK = true;
+
+            case 1680:
+                showDlowDK = false;
+                cargoDarken = false;
+
+                if (cargoAirship != null)
+                {
+                    cargoAirship.alpha = 0.001;
+                }
+
+                if (cargoDark != null)
+                {
+                    cargoDark.alpha = 0.001;
+                }
+
+                if (PlayState.instance != null && PlayState.instance.currentStage != null)
+                {
+                    var dad = PlayState.instance.currentStage.getDad();
+                    var gf = PlayState.instance.currentStage.getGirlfriend();
+
+                    if (dad != null)
+                    {
+                        dad.alpha = 1;
+                    }
+
+                    if (gf != null)
+                    {
+                        gf.alpha = 1;
+                    }
+                }
+
+                if (cargoBG != null)
+                {
+                    cargoBG.alpha = 1;
+                }
+
+                if (lightoverlayDK != null)
+                {
+                    lightoverlayDK.alpha = 0.6;
+                }
+
+                if (mainoverlayDK != null)
+                {
+                    mainoverlayDK.alpha = 0.51;
+                }
+
+            case 3285:
+                if (cargoDarkFG != null)
+                {
+                    FlxTween.tween(
+                        cargoDarkFG,
+                        {alpha: 1},
+                        Conductor.instance.stepLengthMs * 4 / 1000
+                    );
+                }
+
+            case 3300:
+                if (PlayState.instance != null)
+                {
+                    if (cargoBG != null)
+                    {
+                        cargoBG.alpha = 0;
+                    }
+
+                    if (defeatDKoverlay != null)
+                    {
+                        defeatDKoverlay.alpha = 0.1;
+                    }
+
+                    if (lightoverlayDK != null)
+                    {
+                        lightoverlayDK.alpha = 0;
+                    }
+
+                    if (cargoDark != null)
+                    {
+                        cargoDark.alpha = 1;
+                    }
+
+                    if (PlayState.instance.currentStage != null)
+                    {
+                        var dad = PlayState.instance.currentStage.getDad();
+
+                        if (dad != null)
+                        {
+                            dad.alpha = 0;
+                        }
+                    }
+
+                    if (cargoDarkFG != null)
+                    {
+                        cargoDarkFG.alpha = 1;
+                        FlxTween.tween(cargoDarkFG, {alpha: 0}, 2.75);
+                    }
+
+                    if (mainoverlayDK != null)
+                    {
+                        mainoverlayDK.flipY = true;
+                        mainoverlayDK.scale.y *= 3;
+                        mainoverlayDK.y += 1200;
+                    }
+                }
+
+            case 3672:
+                if (defeatDKoverlay != null)
+                {
+                    FlxTween.tween(
+                        defeatDKoverlay,
+                        {alpha: 1},
+                        Conductor.instance.stepLengthMs * 20 / 1000,
+                        {ease: FlxEase.sineInOut}
+                    );
+                }
+
+                if (mainoverlayDK != null)
+                {
+                    FlxTween.tween(
+                        mainoverlayDK.scale,
+                        {y: mainoverlayDK.scale.y * 2},
+                        Conductor.instance.stepLengthMs * 24 / 1000,
+                        {ease: FlxEase.sineInOut}
+                    );
+                }
+
+            case 3765:
+                FlxG.camera.flash(0xFFFF0000, 2.75);
+
+                if (PlayState.instance != null)
+                {
+                    if (PlayState.instance.currentStage != null)
+                    {
+                        var gf = PlayState.instance.currentStage.getGirlfriend();
+                        var bf = PlayState.instance.currentStage.getBoyfriend();
+
+                        if (gf != null)
+                        {
+                            gf.visible = false;
+                        }
+
+                        if (bf != null)
+                        {
+                            bf.visible = false;
+                        }
+                    }
+
+                    if (cargoBG != null)
+                    {
+                        cargoBG.alpha = 0;
+                    }
+
+                    if (defeatDKoverlay != null)
+                    {
+                        defeatDKoverlay.visible = false;
+                    }
+
+                    if (PlayState.instance.camHUD != null)
+                    {
+                        PlayState.instance.camHUD.visible = false;
+                    }
+                }
+        }
+    }
+}

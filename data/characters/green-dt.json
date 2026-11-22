@@ -20,7 +20,7 @@
 		"id": "dt",
 		"isPixel": false
 	},
-	"assetPath": "shared:characters/freeplay/doubleTrouble",
+	"assetPath": "characters/freeplay/doubleTrouble",
 	"animations": [
 		{
 			"frameIndices": [],

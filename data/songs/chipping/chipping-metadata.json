@@ -6,22 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "pip_evil",
    "girlfriend": "gf",
-   "opponent": "cval",
-   "opponentVocals": [
-    "cval"
-   ],
-   "playerVocals": []
+   "opponent": "cval"
   },
   "stage": "piptowers",
   "noteStyle": "impostor",
-  "album": "volume1",
+  "ratings": {"normal": 5},
+  "album": "Impostor34",
   "stickerPack": "default",
   "previewEnd": 0
  },

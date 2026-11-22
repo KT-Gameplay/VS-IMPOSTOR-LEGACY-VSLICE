@@ -15,9 +15,7 @@ import funkin.modding.module.Module;
 class HUDFadeEvent extends SongEvent 
 {
   function new() {
-    super('HUDFadeEvent', {
-      processOldEvents: true
-    });
+    super("HUDFadeEvent");
   }
 
   public var eventTitle:String = "HUD Fade Event";

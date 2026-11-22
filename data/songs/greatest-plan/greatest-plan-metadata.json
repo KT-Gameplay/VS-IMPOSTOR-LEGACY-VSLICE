@@ -6,25 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "henryphone",
    "girlfriend": "gf",
-   "opponent": "charles",
-   "opponentVocals": [
-    "charles"
-   ],
-   "playerVocals": []
+   "opponent": "charles"
   },
   "stage": "henry",
   "noteStyle": "impostor",
-  "ratings": {
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"hard": 6},
+  "album": "Impostor25",
   "stickerPack": "default",
   "previewEnd": 0
  },

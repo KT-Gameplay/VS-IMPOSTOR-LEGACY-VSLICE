@@ -22,7 +22,7 @@ class HenryStage extends Stage
     var greatestBF = null;
     var charlesEnter:Bool = false;
     var dad;
-    var targetX = null;
+    var targetX;
 
     var colorShader:FlxRuntimeShader = null;
 
@@ -34,7 +34,7 @@ class HenryStage extends Stage
 
         charlesEnter = false;
         dad = this.getDad();
-        if(targetX == null) targetX = dad.x + 600;
+        targetX = dad.x + 600;
         
         if(PlayState.instance.currentSong.id.toLowerCase() == 'reinforcements' || PlayState.instance.currentSong.id.toLowerCase() == 'armed')
         {
@@ -74,7 +74,7 @@ class HenryStage extends Stage
 
         if(PlayState.instance.currentSong.id.toLowerCase() == 'greatest-plan')
         {      
-            if(this.getBoyfriend().getCurrentAnimation() != 'intro') this.getBoyfriend().playAnimation('intro', true);
+            this.getBoyfriend().playAnimation('intro', true);
             PlayState.instance.tweenCameraToPosition(1000, 550, 0);
         }
 
@@ -108,18 +108,6 @@ class HenryStage extends Stage
             case 'Ellie Drop':
                 this.getGirlfriend().alpha = 1;
                 this.getGirlfriend().playAnimation('enter', false);
-        }
-    }
-
-    function onSongRetry(event)
-    {
-        super.onSongRetry(event);
-
-        if(PlayState.instance.currentSong.id.toLowerCase() == 'greatest-plan')
-        {
-            dad.x = targetX - 600;
-            PlayState.instance.tweenCameraToPosition(1000, 550, 0);
-            this.getBoyfriend().playAnimation('intro', true);
         }
     }
 

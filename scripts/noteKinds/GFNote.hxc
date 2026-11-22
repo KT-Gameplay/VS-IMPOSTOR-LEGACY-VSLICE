@@ -30,10 +30,10 @@ class GfSingNote extends ScriptedNoteKind {
     // Make bf no longer sing when gf starts singing
     if (event.note.noteData.getMustHitNote(Strumline.KEY_COUNT)) {
       var bf:BaseCharacter = PlayState.instance.currentStage.getBoyfriend();
-      bf.anim?.curAnim?.name = 'idle';
+      if (bf != null && bf.anim != null && bf.anim.curAnim != null) bf.anim.curAnim.name = 'idle';
     }
 
-    gf.playAnimation(animToPlay);
+    gf.playAnimation(animToPlay, true);
   }
 
   override public function onUpdate(event:UpdateScriptEvent) {
@@ -45,15 +45,22 @@ class GfSingNote extends ScriptedNoteKind {
     var gf:BaseCharacter = currentStage.getGirlfriend();
     if (gf == null) return;
 
+    var hasActiveHold:Bool = false;
+
     for (strumline in [PlayState.instance.playerStrumline, PlayState.instance.opponentStrumline]) {
       for (holdNote in strumline.holdNotes.members) {
         if (holdNote == null || !holdNote.alive || holdNote.noteData == null || holdNote.noteData.kind != this.noteKind) continue;
 
-        // Make sure gf keeps singing while the note is held.
         if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
-          if (gf.isSinging() || PlayState.instance.isBotPlayMode) gf.holdTimer = 0;
+          hasActiveHold = true;
+          gf.holdTimer = 0;
         }
       }
+    }
+
+    if (!hasActiveHold && gf.isSinging() && !gf.isAnimationFinished())
+    {
+      gf.holdTimer = 0;
     }
   }
 }

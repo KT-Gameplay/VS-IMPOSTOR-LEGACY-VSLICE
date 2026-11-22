@@ -28,7 +28,7 @@
 		"flipX": false,
 		"id": "powers"
 	},
-	"assetPath": "shared:characters/jorsawsee/powers",
+	"assetPath": "characters/jorsawsee/powers",
 	"atlasSettings": {
 		"applyStageMatrix": false,
 		"useRenderTexture": false,

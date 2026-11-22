@@ -1,0 +1,28 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.audio.FunkinSound;
+import funkin.Paths;
+import funkin.save.Save;
+import flixel.FlxG;
+
+class Hitsound extends Module
+{
+	function new()
+	{
+		super("Hitsound");
+	}
+
+	override function onNoteHit(event)
+	{
+		super.onNoteHit(event);
+
+		if (PlayState.instance == null) return;
+		if (event.note == null) return;
+		if (!event.note.noteData.getMustHitNote()) return;
+
+		var volume:Int = Save.instance.modOptions.get('hitsoundVolume');
+		if (volume == null || volume <= 0) return;
+
+		FlxG.sound.play(Paths.sound('hitsound'), volume / 100);
+	}
+}

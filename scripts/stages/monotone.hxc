@@ -1,0 +1,546 @@
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.Conductor;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+import legacy.shaders.ExtraDropShadowShader;
+
+class monotone extends Stage
+{
+	var backProp:Dynamic;
+	var backThingsProp:Dynamic;
+	var floorProp:Dynamic;
+
+	var backThingsRedProp:Dynamic;
+	var reactorRedProp:Dynamic;
+	var reactorLightRedProp:Dynamic;
+	var reactorProp:Dynamic;
+	var reactorLightProp:Dynamic;
+
+	var overlayProp:Dynamic;
+	var overlay2Prop:Dynamic;
+	var wiresProp:Dynamic;
+
+	var defeatPulseProp:Dynamic;
+	var greenBgProp:Dynamic;
+	var greenTowerProp:Dynamic;
+
+	var topBar:FunkinSprite;
+	var bottomBar:FunkinSprite;
+	var blackBarsBuilt:Bool = false;
+
+	var currentState:String = "monotone";
+	var greenTowerTween:FlxTween;
+
+	var speedA:FlxSprite;
+	var speedB:FlxSprite;
+	var speedStartY:Float = -8;
+	var speedSpeed:Float = 4000;
+	var speedOffset:Float = -80;
+	var speedZ:Int = 0;
+
+	var blackScreen:FlxSprite;
+	var whiteFlash:FlxSprite;
+	var whiteFlashTween:FlxTween;
+
+	var dialogueSprite:FunkinSprite;
+	var baseShader:ExtraDropShadowShader;
+	var redShader:ExtraDropShadowShader;
+	var greenShader:ExtraDropShadowShader;
+	var blackShader:ExtraDropShadowShader;
+
+	public function new()
+	{
+		super("monotone");
+	}
+
+	override function onCreate(event:ScriptEvent):Void
+	{
+		super.onCreate(event);
+
+		cacheProps();
+		buildBlackBars();
+		buildSpeedlinesLoop();
+		buildBlackOverlay();
+		buildWhiteFlash();
+		buildDialogueSprite();
+		buildShaders();
+
+		applyStateForStep(0);
+		applyShaderState("monotone");
+	}
+
+	override function onCreatePost(event:ScriptEvent):Void
+	{
+		super.onCreatePost(event);
+		applyShaderState(currentState);
+	}
+
+	override function onStepHit(event:SongTimeScriptEvent):Void
+	{
+		super.onStepHit(event);
+
+		switch (event.step)
+		{
+			case 384:
+				doWhiteFlash();
+			case 570:
+				showDialogue();
+			case 512, 1110, 1380, 1858, 2135, 3385:
+				setBlackScreen(true);
+			case 632:
+				hideDialogue();
+				setBlackScreen(false);
+			case 1140, 1619, 1883, 2162:
+				setBlackScreen(false);
+		}
+
+		var desiredState:String = getStateForStep(event.step);
+		if (desiredState != currentState)
+			switchState(desiredState);
+
+		if (event.step == 632)
+			setBlackScreen(false);
+	}
+
+	override function onBeatHit(event:SongTimeScriptEvent):Void
+	{
+		super.onBeatHit(event);
+		if (currentState == "black" && defeatPulseProp != null && event.beat % 4 == 0)
+		{
+			defeatPulseProp.scale.x = 5.5;
+			defeatPulseProp.scale.y = 5.0;
+			FlxTween.cancelTweensOf(defeatPulseProp.scale);
+			FlxTween.tween(defeatPulseProp.scale, {x: 4.0, y: 4.0}, 0.8, {ease: FlxEase.sineOut});
+		}
+	}
+
+	override function onUpdate(event:UpdateScriptEvent):Void
+	{
+		super.onUpdate(event);
+		syncBlackBars();
+		
+		if (speedA != null && speedB != null)
+		{
+			if (currentState == "green")
+			{
+				speedA.visible = true;
+				speedB.visible = true;
+				speedA.alpha = 1;
+				speedB.alpha = 1;
+				moveLoopVertical(speedA, speedB, speedSpeed, speedStartY, speedOffset, event.elapsed);
+			}
+			else
+			{
+				speedA.alpha = 0.00001;
+				speedB.alpha = 0.00001;
+			}
+		}
+		
+		// Removidas as chamadas contínuas de screenCenter() daqui para evitar lag.
+	}
+
+	override function onSongRetry(event:ScriptEvent):Void
+	{
+		super.onSongRetry(event);
+		resetStageState();
+	}
+
+	override function onGameOver(event:ScriptEvent):Void
+	{
+		super.onGameOver(event);
+		FlxG.camera.bgColor = 0xFF000000;
+		resetStageState();
+	}
+
+	override function onDestroy(event:ScriptEvent):Void
+	{
+		resetStageState();
+		super.onDestroy(event);
+	}
+
+	function getStateForStep(step:Int):String
+	{
+		if (step >= 3145) return "monotone";
+		if (step >= 3116) return "black";
+		if (step >= 3100) return "green";
+		if (step >= 3024) return "red";
+		if (step >= 2906) return "black";
+		if (step >= 2725) return "green";
+		if (step >= 2667) return "red";
+		if (step >= 2162) return "monotone";
+		if (step >= 1883) return "black";
+		if (step >= 1619) return "monotone";
+		if (step >= 1133) return "green";
+		if (step >= 871) return "monotone";
+		if (step >= 632) return "red";
+		return "monotone";
+	}
+
+	function cacheProps():Void
+	{
+		backProp = getNamedProp("back");
+		backThingsProp = getNamedProp("backthings");
+		floorProp = getNamedProp("Floor");
+		backThingsRedProp = getNamedProp("backthingsred");
+		reactorRedProp = getNamedProp("ReactorRed");
+		reactorLightRedProp = getNamedProp("ReactorLightRed");
+		reactorProp = getNamedProp("Reactor");
+		reactorLightProp = getNamedProp("Reactorlight");
+		
+		if (reactorLightProp == null)
+			reactorLightProp = getNamedProp("ReactorLight");
+
+		overlayProp = getNamedProp("overlay");
+		overlay2Prop = getNamedProp("overlay2");
+		wiresProp = getNamedProp("wires1");
+
+		defeatPulseProp = getNamedProp("defeatpulse");
+		greenBgProp = getNamedProp("evilejected");
+		greenTowerProp = getNamedProp("brombom");
+
+		speedA = getNamedProp("speedlines");
+		if (speedA != null)
+		{
+			speedStartY = speedA.y;
+			speedZ = speedA.zIndex;
+		}
+	}
+
+	function buildBlackBars():Void
+	{
+		if (blackBarsBuilt) return;
+		var ps = PlayState.instance;
+		if (ps == null) return;
+
+		topBar = makeBar(0);
+		bottomBar = makeBar(FlxG.height - 90);
+		ps.add(topBar);
+		ps.add(bottomBar);
+		ps.refresh();
+		blackBarsBuilt = true;
+	}
+
+	function makeBar(y:Float):FunkinSprite
+	{
+		var ps = PlayState.instance;
+		var bar = new FunkinSprite(0, y);
+		bar.makeSolidColor(FlxG.width + 3, 90, 0xFF000000);
+		bar.cameras = [ps.camHUD];
+		bar.scrollFactor.set(0, 0);
+		bar.zIndex = -1000;
+		return bar;
+	}
+
+	function syncBlackBars():Void
+	{
+		if (!blackBarsBuilt) return;
+		if (topBar != null) { topBar.x = 0; topBar.y = 0; }
+		if (bottomBar != null) { bottomBar.x = 0; bottomBar.y = FlxG.height - 90; }
+	}
+
+	function buildSpeedlinesLoop():Void
+	{
+		if (speedA == null || speedB != null) return;
+		speedA.y = speedStartY;
+		var space = speedA.height + speedOffset;
+		speedB = new FlxSprite(speedA.x, speedStartY + space);
+		cloneSprite(speedA, speedB, speedZ);
+		add(speedB);
+		refresh();
+	}
+
+	function cloneSprite(src:FlxSprite, trg:FlxSprite, z:Int):Void
+	{
+		trg.loadGraphic(src.graphic);
+		trg.scale.set(src.scale.x, src.scale.y);
+		trg.scrollFactor.set(src.scrollFactor.x, src.scrollFactor.y);
+		trg.alpha = src.alpha;
+		trg.visible = src.visible;
+		trg.updateHitbox();
+		trg.zIndex = z;
+	}
+
+	function moveLoopVertical(a:FlxSprite, b:FlxSprite, speed:Float, startY:Float, off:Float, e:Float):Void
+	{
+		var m = speed * e;
+		var sp = a.height + off;
+		a.y -= m;
+		b.y -= m;
+
+		if (a.y + a.height <= startY) a.y = b.y + sp;
+		if (b.y + b.height <= startY) b.y = a.y + sp;
+	}
+
+	function buildBlackOverlay():Void
+	{
+		if (blackScreen != null || PlayState.instance == null) return;
+		blackScreen = new FlxSprite();
+		blackScreen.makeGraphic(FlxG.width * 4, FlxG.height * 4, 0xFF000000);
+		blackScreen.scrollFactor.set(0, 0);
+		blackScreen.cameras = [PlayState.instance.camGame];
+		blackScreen.screenCenter();
+		blackScreen.alpha = 0;
+		blackScreen.visible = true;
+		blackScreen.zIndex = 9998;
+		add(blackScreen);
+	}
+
+	function buildWhiteFlash():Void
+	{
+		if (whiteFlash != null || PlayState.instance == null) return;
+		whiteFlash = new FlxSprite();
+		whiteFlash.makeGraphic(FlxG.width * 4, FlxG.height * 4, 0xFFFFFFFF);
+		whiteFlash.scrollFactor.set(0, 0);
+		whiteFlash.cameras = [PlayState.instance.camOther];
+		whiteFlash.screenCenter();
+		whiteFlash.alpha = 0;
+		whiteFlash.visible = true;
+		whiteFlash.zIndex = 9999;
+		add(whiteFlash);
+	}
+
+	function buildDialogueSprite():Void
+	{
+		if (dialogueSprite != null || PlayState.instance == null) return;
+		dialogueSprite = FunkinSprite.createSparrow(0, 0, "stages/skeld/monotone/dialogue");
+		dialogueSprite.cameras = [PlayState.instance.camOther];
+		dialogueSprite.scrollFactor.set(0, 0);
+		dialogueSprite.visible = false;
+		dialogueSprite.alpha = 1;
+		dialogueSprite.zIndex = 10000;
+
+		if (dialogueSprite.animation != null) {
+			dialogueSprite.animation.addByPrefix("dialogue", "dialogue", 24, false);
+			dialogueSprite.animation.play("dialogue", true);
+			dialogueSprite.animation.pause();
+		}
+
+		dialogueSprite.screenCenter();
+		add(dialogueSprite);
+		PlayState.instance.refresh();
+	}
+
+	function showDialogue():Void
+	{
+		if (dialogueSprite == null) return;
+		dialogueSprite.visible = true;
+		dialogueSprite.alpha = 1;
+		dialogueSprite.screenCenter();
+		if (dialogueSprite.animation != null)
+			dialogueSprite.animation.play("dialogue", true);
+	}
+
+	function hideDialogue():Void
+	{
+		if (dialogueSprite == null) return;
+		dialogueSprite.alpha = 0;
+		dialogueSprite.visible = false;
+		if (dialogueSprite.animation != null)
+			dialogueSprite.animation.pause();
+	}
+
+	function doWhiteFlash():Void
+	{
+		if (whiteFlash == null) return;
+		
+		if (whiteFlashTween != null)
+		{
+			whiteFlashTween.cancel();
+			whiteFlashTween = null;
+		}
+
+		whiteFlash.screenCenter();
+		whiteFlash.alpha = 1;
+		whiteFlash.visible = true;
+		whiteFlashTween = FlxTween.tween(whiteFlash, {alpha: 0}, 0.16, {ease: FlxEase.sineOut});
+	}
+
+	function setBlackScreen(on:Bool):Void
+	{
+		if (blackScreen == null) return;
+		if (on) blackScreen.screenCenter(); // Alinha apenas quando for ativado
+		blackScreen.alpha = on ? 1 : 0;
+		blackScreen.visible = on;
+	}
+
+	function buildShaders():Void
+	{
+		baseShader = new ExtraDropShadowShader();
+		baseShader.threshold = .05;
+		baseShader.strength = .85;
+
+		redShader = new ExtraDropShadowShader().copyFrom(baseShader);
+		redShader.setAdjustColor(-78, -25, -15, -58);
+
+		greenShader = new ExtraDropShadowShader().copyFrom(baseShader);
+		greenShader.setAdjustColor(-28, -22, -10, -60);
+
+		blackShader = new ExtraDropShadowShader().copyFrom(baseShader);
+		blackShader.setAdjustColor(-90, -90, -90, -90);
+	}
+
+	function switchState(state:String):Void
+	{
+		if (state == null || state == currentState) return;
+		currentState = state;
+		doWhiteFlash();
+
+		switch (state)
+		{
+			case "red": applyRed();
+			case "green": applyGreen();
+			case "black": applyBlack();
+			default: applyMonotone();
+		}
+		applyShaderState(state);
+	}
+
+	function applyShaderState(state:String):Void
+	{
+		var sh:ExtraDropShadowShader = baseShader;
+		switch (state)
+		{
+			case "red": sh = redShader;
+			case "green": sh = greenShader;
+			case "black": sh = blackShader;
+			default: sh = baseShader;
+		}
+
+		applyShader(backProp, sh);
+		applyShader(backThingsProp, sh);
+		applyShader(floorProp, sh);
+		applyShader(backThingsRedProp, sh);
+		applyShader(reactorProp, sh);
+		applyShader(reactorRedProp, sh);
+		applyShader(reactorLightProp, sh);
+		applyShader(reactorLightRedProp, sh);
+		applyShader(overlayProp, sh);
+		applyShader(overlay2Prop, sh);
+		applyShader(wiresProp, sh);
+		applyShader(defeatPulseProp, sh);
+		applyShader(greenBgProp, sh);
+		applyShader(greenTowerProp, sh);
+
+		if (speedA != null) speedA.shader = sh;
+		if (speedB != null) speedB.shader = sh;
+	}
+
+	function applyShader(prop:Dynamic, sh:ExtraDropShadowShader):Void
+	{
+		if (prop != null && sh != null) prop.shader = sh;
+	}
+
+	function applyStateForStep(step:Int):Void
+	{
+		if (step >= 3145) { applyMonotone(); return; }
+		if (step >= 3116) { applyBlack(); return; }
+		if (step >= 3100) { applyGreen(); return; }
+		if (step >= 3024) { applyRed(); return; }
+		if (step >= 2906) { applyBlack(); return; }
+		if (step >= 2725) { applyGreen(); return; }
+		if (step >= 2667) { applyRed(); return; }
+		if (step >= 2162) { applyMonotone(); return; }
+		if (step >= 1883) { applyBlack(); return; }
+		if (step >= 1619) { applyMonotone(); return; }
+		if (step >= 1133) { applyGreen(); return; }
+		if (step >= 871) { applyMonotone(); return; }
+		if (step >= 632) { applyRed(); return; }
+		applyMonotone();
+	}
+
+	function applyMonotone():Void
+	{
+		setProp(backProp, true); setProp(backThingsProp, true); setProp(floorProp, true);
+		setProp(backThingsRedProp, false); setProp(reactorRedProp, false); setProp(reactorLightRedProp, false);
+		setProp(reactorProp, true); setProp(reactorLightProp, true);
+		setProp(overlayProp, true); setProp(overlay2Prop, true); setProp(wiresProp, true);
+		setProp(defeatPulseProp, false); setProp(greenBgProp, false); setProp(greenTowerProp, false);
+		if (speedA != null) speedA.alpha = 0.00001;
+		if (speedB != null) speedB.alpha = 0.00001;
+	}
+
+	function applyRed():Void
+	{
+		setProp(backProp, true); setProp(backThingsProp, false); setProp(floorProp, true);
+		setProp(backThingsRedProp, true); setProp(reactorRedProp, true); setProp(reactorLightRedProp, true);
+		setProp(reactorProp, false); setProp(reactorLightProp, false);
+		setProp(overlayProp, true); setProp(overlay2Prop, true); setProp(wiresProp, true);
+		setProp(defeatPulseProp, false); setProp(greenBgProp, false); setProp(greenTowerProp, false);
+		if (speedA != null) speedA.alpha = 0.00001;
+		if (speedB != null) speedB.alpha = 0.00001;
+	}
+
+	function applyGreen():Void
+	{
+		setProp(backProp, false); setProp(backThingsProp, false); setProp(floorProp, false);
+		setProp(backThingsRedProp, false); setProp(reactorRedProp, false); setProp(reactorLightRedProp, false);
+		setProp(reactorProp, false); setProp(reactorLightProp, false);
+		setProp(overlayProp, true); setProp(overlay2Prop, false); setProp(wiresProp, true);
+		setProp(defeatPulseProp, false); setProp(greenBgProp, true); setProp(greenTowerProp, true);
+
+		if (greenTowerProp != null)
+		{
+			if (greenTowerTween != null)
+			{
+				greenTowerTween.cancel();
+				greenTowerTween = null;
+			}
+			greenTowerProp.y = 0.001;
+			greenTowerTween = FlxTween.tween(greenTowerProp, {y: -300}, 20);
+		}
+		if (speedA != null) { speedA.visible = true; speedA.alpha = 1; }
+		if (speedB != null) { speedB.visible = true; speedB.alpha = 1; }
+	}
+
+	function applyBlack():Void
+	{
+		setProp(backProp, false); setProp(backThingsProp, false); setProp(floorProp, false);
+		setProp(backThingsRedProp, false); setProp(reactorRedProp, false); setProp(reactorLightRedProp, false);
+		setProp(reactorProp, false); setProp(reactorLightProp, false);
+		setProp(overlayProp, true); setProp(overlay2Prop, false); setProp(wiresProp, true);
+		setProp(defeatPulseProp, true); setProp(greenBgProp, false); setProp(greenTowerProp, false);
+		if (speedA != null) speedA.alpha = 0.00001;
+		if (speedB != null) speedB.alpha = 0.00001;
+	}
+
+	function setProp(prop:Dynamic, on:Bool):Void
+	{
+		if (prop != null) {
+			prop.visible = on;
+			prop.alpha = on ? 1 : 0;
+		}
+	}
+
+	function resetStageState():Void
+	{
+		currentState = "monotone";
+		if (greenTowerTween != null)
+		{
+			greenTowerTween.cancel();
+			greenTowerTween = null;
+		}
+		if (whiteFlashTween != null)
+		{
+			whiteFlashTween.cancel();
+			whiteFlashTween = null;
+		}
+
+		cacheProps();
+		applyMonotone();
+		applyShaderState("monotone");
+		syncBlackBars();
+
+		if (blackScreen != null) { blackScreen.alpha = 0; blackScreen.visible = false; }
+		if (whiteFlash != null) whiteFlash.alpha = 0;
+		if (dialogueSprite != null) { dialogueSprite.alpha = 0; dialogueSprite.visible = false; }
+	}
+}

@@ -1,39 +1,28 @@
 #pragma header
+vec2 uv = openfl_TextureCoordv.xy;
 
-uniform vec3 r;
-uniform vec3 g;
-uniform vec3 b;
+uniform vec3 red;
+uniform vec3 green;
+uniform vec3 blue;
+uniform float visor;
+uniform float opacity;
 
-uniform float mult;
-uniform float enabled;
+vec3 rgb2hsv(vec3 color) {
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(color.b, color.g, K.w, K.z), vec4(color.g, color.b, K.x, K.y), step(color.b, color.g));
+    vec4 q = mix(vec4(p.x, p.y, p.w, color.r), vec4(color.r, p.y, p.z, p.x), step(p.x, color.r));
+    float d = q.x - min(q.w, q.y);
+    float e = 0.00001;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
 
-uniform float a_alpha;
-uniform float a_flash;
-
-		vec4 rgb(sampler2D bitmap, vec2 coord) 
-		{
-			vec4 color = flixel_texture2D(bitmap, coord);
-			
-			if (!hasTransform || color.a == 0. || mult == 0. || enabled == 0.) return color;
-
-			vec4 newColor = color;
-			newColor.rgb = min(color.r * r + color.g * g + color.b * b, vec3(1.));
-			newColor.a = color.a;
-			
-			color = mix(color, newColor, mult * enabled);
-			
-			if (color.a > 0.) return vec4(color.rgb, color.a);
-			
-			return vec4(0.);
-		}
-
-		void main() 
-		{
-			vec4 texOutput = rgb(bitmap, openfl_TextureCoordv);
-			
-			if (a_flash != 0.0) texOutput = mix(texOutput, vec4(1.), a_flash) * texOutput.a;
-
-			texOutput *= a_alpha;
-
-			gl_FragColor = texOutput;
-		}
+void main() {
+    vec4 texColor = texture2D(bitmap, uv);
+    vec3 gHsv = rgb2hsv(vec3(texColor.r, texColor.g, texColor.b));
+	float tAlpha = texColor.a * opacity;
+    gl_FragColor = vec4(
+    (((texColor.r * red.x) + (texColor.g * green.x) + (texColor.b * blue.x)) * gHsv.y + (1.0 - gHsv.y) * gHsv.z) * tAlpha,
+    (((texColor.r * red.y) + (texColor.g * green.y) + (texColor.b * blue.y)) * gHsv.y + (1.0 - gHsv.y) * gHsv.z) * tAlpha,
+    (((texColor.r * red.z) + (texColor.g * green.z) + (texColor.b * blue.z)) * gHsv.y + (1.0 - gHsv.y) * gHsv.z + visor * ((1 - texColor.g) * (1 - texColor.r) * (1 - texColor.b)) * gHsv.z) * tAlpha,
+    tAlpha); //a
+}

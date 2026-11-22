@@ -6,9 +6,7 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bfairship",
@@ -21,11 +19,8 @@
   },
   "stage": "gray",
   "noteStyle": "impostor",
-  "ratings": {
-   "easy": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 7},
+  "album": "Impostor10",
   "stickerPack": "default",
   "previewEnd": 0
  },

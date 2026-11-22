@@ -1,8 +1,7 @@
 {
  "version": "2.0.0",
  "scrollSpeed": {
-  "normal": 1,
-  "hard": 2.8
+  "normal": 2.8
  },
  "events": [
   {
@@ -391,16 +390,14 @@
    "t": 219205.964585274,
    "e": "SetCameraBop",
    "v": {
-	"rate": 999,
-	"intensity": 1,
+	"rate": 0,
+	"intensity": 0,
 	"offset": 0
 }
   }
  ],
  "notes": {
-  "easy": [],
-  "normal": [],
-  "hard": [
+  "normal": [
    {
     "t": 0,
     "d": 4

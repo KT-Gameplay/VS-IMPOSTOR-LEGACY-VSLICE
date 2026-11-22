@@ -6,26 +6,17 @@
  "offsets": { },
  "playData": {
   "difficulties": [
-   "easy",
-   "normal",
-   "hard"
+   "normal"
   ],
   "characters": {
    "player": "bfsusreal",
    "girlfriend": "gf-tuesday",
-   "opponent": "tuesday",
-   "opponentVocals": [
-    "tuesday"
-   ],
-   "playerVocals": []
+   "opponent": "tuesday"
   },
   "stage": "tuesday",
   "noteStyle": "impostor",
-  "ratings": {
-   "normal": 0,
-   "hard": 0
-  },
-  "album": "volume1",
+  "ratings": {"normal": 4},
+  "album": "Impostor23",
   "stickerPack": "default",
   "previewEnd": 0
  },
