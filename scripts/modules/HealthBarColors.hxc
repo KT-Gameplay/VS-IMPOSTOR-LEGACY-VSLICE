@@ -1,0 +1,175 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+
+class HealthBarColors extends Module
+{
+    var lastBar = null;
+    var lastPlayer = "";
+    var lastOpponent = "";
+
+    public function new()
+    {
+        super("HealthBarColors");
+    }
+
+    public override function onUpdate(event)
+    {
+        var game = PlayState.instance;
+        if (game == null || game.currentStage == null || game.healthBar == null)
+        {
+            lastBar = null;
+            return;
+        }
+
+        var player = game.currentStage.getBoyfriend();
+        var opponent = game.currentStage.getDad();
+        if (player == null || opponent == null) return;
+
+        var bar = game.healthBar;
+        var playerId = player.characterId;
+        var opponentId = opponent.characterId;
+
+        if (bar == lastBar && playerId == lastPlayer && opponentId == lastOpponent)
+            return;
+
+        var left = themColorz(opponentId, 0xffff0000);
+        var right = playerColor(playerId, 0xff66ff33);
+        bar.createFilledBar(left, 
+        right);
+        bar.updateBar();
+		game.scoreText.textColor = left;
+
+        lastBar = bar;
+        lastPlayer = playerId;
+        lastOpponent = opponentId;
+    }
+
+    function themColorz(id:String, fallback:Int):Int
+    {
+        return switch (id.toLowerCase())
+        {
+            case "bf", "bfpolus", "bfpolusblow", "bfmira", "bfairship",
+                 "bfairshipcalm", "bfballer", "bfsauce", "bfsusreal",
+                 "amongbf", "dripbf", "forkbf", "bf-legs", "bf-fall",
+                 "bf-ghost", "bf-ghost-retro", "bf-lava", "bf-monotone",
+                 "bf-reactor", "bf-stick", "bf-windy", "bf-defeat-normal",
+                 "bf-defeat-scared":
+                0xff31b0d1;
+
+            case "bf-dead", "amongbf-dead", "amongbfweird-dead", "bfairship-dead",
+                 "bf-fall-dead", "bf-ghost-dead", "bf-polus-dead", "bf-running-death",
+                 "bf-stick-death", "bf-defeat-dead", "bf-defeat-dead-retro",
+                 "bf-defeat-dead-balls", "bf-defeat-dead-balls-retro",
+                 "genericdeath", "genericdeath-black", "genericdeath-grey",
+                 "genericdeath-nomic", "genericdeath-pico", "genericdeath-pink",
+                 "genericdeath-white":
+                0xff31b0d1;
+
+            case "bf-pixel", "bf-pixel-dead", "bfsus-pixel": 0xff7bd6f6;
+            case "bf-running": 0xff31b0e5;
+            case "bf-dark": 0xffe1e1e1;
+
+            case "gf", "amonggf", "gf-danger", "gf-fall", "gf-ghost",
+                 "gf-gray", "gf-pixel", "gf-pretender", "gf-reactor",
+                 "gf-stick", "gfmira", "gfmira2", "gfpolus":
+                0xffa5004d;
+            case "gf-tuesday": 0xffff00af;
+
+            case "red", "red-sabotage", "red-meltdown": 0xffbb2d2d;
+            case "redow": 0xffd71814;
+            case "redp": 0xfff51b57;
+            case "redmungusp": 0xfffb0f0f;
+
+            case "green", "greenreactor": 0xff1f6b2b;
+            case "greenejected", "doubletrouble": 0xff003315;
+            case "green-dark": 0xff000000;
+            case "greennotbornyesterdayonthelookout", "default-death": 0xff00771b;
+            case "greenp": 0xff339966;
+            case "doubletroublered", "doubletroublegf": 0xff808080;
+
+            case "black", "blackold", "top", "blackspeaker", "speakermungus": 0xffff0000;
+            case "blackdk", "blackkill", "danger", "blake": 0xff3a1b4f;
+            case "blackp": 0xff3a1b63;
+            case "blackparasite": 0xffff1266;
+
+            case "white", "whitedk", "whitespeaker": 0xffd1d2f8;
+            case "whitemad", "whitefuck", "whitewho", "whitewho-dead": 0xffeee9f3;
+            case "whitep": 0xffd2d5fa;
+
+            case "maroon", "maroonthreat": 0xff52232f;
+            case "maroonparasite": 0xffff6928;
+            case "maroonplayable", "maroonplayablelava",
+                 "maroonplayableop", "maroonplayableoplava": 0xff663333;
+
+            case "pink", "pretender", "pinkthreat": 0xffee64cc;
+            case "pinkplayable": 0xffff6699;
+            case "yellow", "yellow-ghost", "yellowspeaker": 0xfff0b946;
+            case "yellow-teleport": 0xffffcc1f;
+            case "yellowplayable", "yellowplayablestabbed": 0xfffad559;
+
+            case "grey", "greythreat", "noob49", "noob49dark", "noob49player",
+                 "noob49retro", "noob49shift", "noob49stabbed": 0xff625773;
+            case "minigrey", "minigreyop", "minigreyopscary", "minigreyscary": 0xff645f7a;
+            case "bluewho", "bluewhonormal": 0xff6666ff;
+            case "blue-ow", "blue-ow-dead", "blueow", "bluehit": 0xff0fccff;
+
+            case "chefogus": 0xffc75e52;
+            case "chefplayable": 0xffff801f;
+            case "monotone": 0xff392c49;
+            case "esculent", "shit": 0xff87423d;
+            case "jorsawsee", "jorsawghost": 0xff277fe7;
+            case "mungus", "madgus", "charles": 0xffff283c;
+            case "meangus": 0xffff2828;
+            case "nuzzus": 0xfff05c86;
+            case "henry", "henryphone", "henryphone-dead": 0xffbdd7d8;
+            case "ellie": 0xffffffff;
+            case "reginald": 0xfffec028;
+            case "rhm": 0xffe44832;
+            case "drippico", "picoroomcode", "picoroomcode-death": 0xffb7d855;
+            case "drippypop": 0xff9c4ecc;
+            case "pip", "pip_evil", "piptorture": 0xfffeaa47;
+            case "cval", "cvaltorture": 0xff0066cc;
+            case "ziffytorture": 0xffff9933;
+            case "clowfoe": 0xffde3538;
+            case "fabs": 0xff70b2f0;
+            case "dave": 0xff4c51b5;
+            case "biddle": 0xfffff36f;
+            case "jerma": 0xff5ec2c2;
+            case "jelqer": 0xffe9b4d7;
+            case "powers": 0xff89d7ff;
+            case "warchief": 0xff710faf;
+            case "nenelobby": 0xffa1a1a1;
+            case "idk": 0xffff8cb1;
+            case "idkbf", "idkbf-dead": 0xff00a2e8;
+            case "fall-guy": 0xffff99cc;
+            case "hamster": 0xffffaa6f;
+            case "tomongus", "tomongusplayer": 0xffff676f;
+            case "tuesday": 0xffff6770;
+            case "tuesdayplayable": 0xffff6d7c;
+            case "upboy": 0xff8bc4d9;
+            case "upgirl": 0xffd40069;
+            case "attack": 0xfffcf0de;
+            case "bars": 0xfff76368;
+            case "senpai-angry": 0xffffab6f;
+            case "limegreenweekinvsimpostor": 0xff66ff66;
+            case "limegreenmonotone", "limegreenplayable", "limegreenrunner": 0xff1bf567;
+
+            case "amongbfweird": 0xff7d8ebe;
+            case "amonggfweird", "gfweird", "gfweird-2", "gfweird-sheriff": 0xff006ea9;
+            case "bfblack": 0xff2b2c3c;
+            case "bfweird", "bfweird-stabbed", "bfweird-windy", "bfweirdsheriff": 0xff8289bf;
+            case "bobby": 0xff3e54c3;
+            case "deadnoob49", "triplespeaker": 0xff756789;
+            case "detective": 0xff383a46;
+            case "detectiveplayer": 0xff42454f;
+            case "evilbf", "evilbfold": 0xfff03f3e;
+            case "evilgfnew": 0xff70000d;
+            case "horsemate": 0xff6f7a0b;
+            case "picoweird": 0xffd4cb50;
+            case "purple": 0xff99377c;
+            case "tinyhenry": 0xffd6ebff;
+
+            default: fallback;
+        };
+    }
+}
