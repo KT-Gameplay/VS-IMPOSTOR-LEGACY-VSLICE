@@ -105,7 +105,7 @@ class LegacyUI extends Module
         var font = Paths.font("vcr-bmp.png");
         var fontData = Paths.font("vcr-bmp.fnt");
 
-        if (song == "sussus-nuzzus" && Assets.exists(Paths.font("apple_kid.ttf")))
+        if (song == "sussus-nuzzus" && (Assets.exists(Paths.font("apple_kid.png")) && Assets.exists(Paths.font("apple_kid.fnt"))))
         {
             font = Paths.font("apple_kid.png");
             fontData = Paths.font("apple_kid.fnt");
