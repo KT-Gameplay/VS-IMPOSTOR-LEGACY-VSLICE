@@ -1,5 +1,4 @@
 import flixel.FlxG;
-import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxStringUtil;
 import funkin.Assets;
@@ -7,9 +6,16 @@ import funkin.Highscore;
 import funkin.Paths;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
+import flixel.text.FlxBitmapText;
+import flixel.graphics.frames.FlxBitmapFont;
 
 class LegacyUI extends Module
 {
+    /*
+    yo zan
+    if ur seeing this then i changed the score text to bitmap text
+    cuz flx text causes lag for sustain notes since it updates every frame
+    */
     var original = null;
     var scoreLine = null;
     var song = "";
@@ -96,18 +102,16 @@ class LegacyUI extends Module
         original = game.scoreText;
         song = game.currentSong.id.toLowerCase();
 
-        var font = Paths.font("vcr.ttf");
-        var size = 20;
+        var font = Paths.font("vcr-bmp.png");
+        var fontData = Paths.font("vcr-bmp.fnt");
 
         if (song == "sussus-nuzzus" && Assets.exists(Paths.font("apple_kid.ttf")))
         {
-            font = Paths.font("apple_kid.ttf");
-            size = 50;
+            font = Paths.font("apple_kid.png");
+            fontData = Paths.font("apple_kid.fnt");
         }
 
-        scoreLine = new FlxText(0, 0, FlxG.width, "", size);
-        scoreLine.setFormat(font, size, 0xffffffff, "center", original.borderStyle, 0xff000000);
-        scoreLine.borderSize = 1.25;
+        scoreLine = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(font, fontData)); // no size cuz we have to manually do it
         scoreLine.wordWrap = false;
         scoreLine.scrollFactor.set(0, 0);
         scoreLine.cameras = [game.camHUD];
