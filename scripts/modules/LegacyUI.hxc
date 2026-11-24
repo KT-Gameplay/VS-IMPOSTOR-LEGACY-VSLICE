@@ -1,0 +1,144 @@
+import flixel.FlxG;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxStringUtil;
+import funkin.Assets;
+import funkin.Highscore;
+import funkin.Paths;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import flixel.text.FlxBitmapText;
+import flixel.graphics.frames.FlxBitmapFont;
+
+class LegacyUI extends Module
+{
+    /*
+    yo zan
+    if ur seeing this then i changed the score text to bitmap text
+    cuz flx text causes lag for sustain notes since it updates every frame
+    */
+    var original = null;
+    var scoreLine = null;
+    var song = "";
+    var lastHits = -1;
+    var lastMisses = -1;
+    var lastScore = null;
+    var lastLimit = null;
+
+    public function new()
+    {
+        super("LegacyUI", 1, {state: PlayState});
+    }
+
+    public override function onUpdate(event)
+    {
+        var game = PlayState.instance;
+        if (game == null || game.currentSong == null || game.scoreText == null) return;
+        if (game.healthBarBG == null || game.camHUD == null) return;
+
+        if (original != game.scoreText)
+            makeScoreLine(game);
+
+        original.scale.set(0, 0);
+        scoreLine.color = original.textColor;
+        scoreLine.visible = original.visible;
+        scoreLine.alpha = original.alpha;
+        scoreLine.y = game.healthBarBG.y + 40;
+
+        if (song == "victory" && game.healthBarBG.y < FlxG.height / 2)
+            scoreLine.y = FlxG.height * 0.06;
+
+        var notes = Highscore.tallies;
+        if (notes == null) return;
+
+        var hits = notes.sick + notes.good + notes.bad + notes.shit;
+        var misses = notes.missed;
+        var points = game.songScore;
+        var limit = null;
+
+        if (song == "defeat")
+            limit = game.currentSong.scriptGet("missLimitCount");
+
+        if (points == lastScore && hits == lastHits && misses == lastMisses && limit == lastLimit)
+            return;
+
+        var accuracy = "N/A";
+        var rank = "N/A";
+        var played = hits + misses;
+
+        if (played > 0)
+        {
+            var earned = notes.sick * 100 + notes.good * 70 + notes.bad * 40;
+            var percent = Math.floor(earned * 100 / played) / 100;
+            accuracy = Std.string(percent) + "%";
+            rank = getRank(percent, misses);
+        }
+
+        var missText = Std.string(misses);
+        if (song == "victory")
+            missText = "Who cares? You already won!";
+        else if (limit != null)
+            missText += "/" + limit;
+
+        scoreLine.text = "Score: " + FlxStringUtil.formatMoney(points, false)
+            + " | Misses: " + missText
+            + " | Accuracy: " + accuracy
+            + " | Rank: " + rank;
+
+        if (lastHits >= 0 && hits > lastHits && !game.isBotPlayMode)
+        {
+            FlxTween.cancelTweensOf(scoreLine.scale);
+            scoreLine.scale.set(1.075, 1.075);
+            FlxTween.tween(scoreLine.scale, {x: 1, y: 1}, 0.2);
+        }
+
+        lastScore = points;
+        lastHits = hits;
+        lastMisses = misses;
+        lastLimit = limit;
+    }
+
+    function makeScoreLine(game)
+    {
+        original = game.scoreText;
+        song = game.currentSong.id.toLowerCase();
+
+        var font = Paths.font("vcr-bmp.png");
+        var fontData = Paths.font("vcr-bmp.fnt");
+
+        if (song == "sussus-nuzzus" && (Assets.exists(Paths.font("apple_kid.png")) && Assets.exists(Paths.font("apple_kid.fnt"))))
+        {
+            font = Paths.font("apple_kid.png");
+            fontData = Paths.font("apple_kid.fnt");
+        }
+
+        scoreLine = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(font, fontData)); // no size cuz we have to manually do it
+        scoreLine.wordWrap = false;
+        scoreLine.scrollFactor.set(0, 0);
+        scoreLine.cameras = [game.camHUD];
+        var top = original.zIndex;
+        if (game.healthBarBG != null) top = Math.max(top, game.healthBarBG.zIndex);
+        if (game.healthBar != null) top = Math.max(top, game.healthBar.zIndex);
+        if (game.iconP1 != null) top = Math.max(top, game.iconP1.zIndex);
+        if (game.iconP2 != null) top = Math.max(top, game.iconP2.zIndex);
+        scoreLine.zIndex = Std.int(top) + 1;
+
+        game.add(scoreLine);
+        game.refresh();
+
+        lastHits = -1;
+        lastMisses = -1;
+        lastScore = null;
+        lastLimit = null;
+    }
+
+    function getRank(percent, misses)
+    {
+        if (percent > 99 && misses == 0) return "P";
+        if (percent > 95 && misses == 0) return "S";
+        if (percent > 90 && misses <= 20) return "A";
+        if (percent > 85 && misses <= 30) return "B";
+        if (percent > 70 && misses <= 50) return "C";
+        if (percent > 50 && misses <= 70) return "D";
+        return "F";
+    }
+}
